@@ -12,12 +12,11 @@ Description: Interactive labelling of scatter plots and volcano plots using shin
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Suggests:
-    qvalue
 Imports:
     plotly,
     shiny,
     RColorBrewer,
-    DT
+    DT,
+    qvalue
 RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)
