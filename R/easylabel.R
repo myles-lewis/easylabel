@@ -7,13 +7,14 @@
 #'
 #' @details
 #' Instructions:
-#' 1. Hover over and click on/off genes which you want to label.
-#' 2. When you have selected all your chosen genes, then drag gene names to
-#'    move label positions.
-#' 3. You can move the legend as well.
-#' 4. Switch to SVG when finalised (only do this at last moment as otherwise
-#'    editing is very slow).
-#' 5. Press camera button in modebar to save image as SVG.
+#' * Hover over and click on/off genes which you want to label.
+#' * When you have selected all your chosen genes, then drag gene names to
+#'   move label positions.
+#' * You can move the legend as well.
+#' * Switch to SVG when finalised (only do this at last moment as otherwise
+#'   editing is very slow).
+#' * Press camera button in modebar to save image as SVG.
+#' * The Table tab shows a table view of the dataset to help with annotation.
 #' @param data Dataset to use for plot.
 #' @param x specifies column of x coordinates in `data`.
 #' @param y specifies column of y coordinates in `data`.
@@ -331,7 +332,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
 #' @importFrom qvalue qvalue
 #' @export
 
-volcanoplot <- function(data, x=NULL, y=NULL, fdrcutoff=0.05, fccut=0, scheme=c('darkgrey', 'red'),
+volcanoplot <- function(data, x=NULL, y=NULL, fdrcutoff=0.05, fccut=0, scheme=c('darkgrey', 'blue', 'red'),
                         show_counts=TRUE, useQ=FALSE, ...) {
   if (is.null(x)) {
     if ('log2FoldChange' %in% colnames(data)) x='log2FoldChange'  # DESeq2
@@ -377,7 +378,6 @@ volcanoplot <- function(data, x=NULL, y=NULL, fdrcutoff=0.05, fccut=0, scheme=c(
     siggenes[siggenes==1] <- as.numeric(fc) + 1
     data$col <- factor(siggenes, levels=0:2, labels=c('ns', paste0('FDR<', fdrcutoff, ', FC<', fccut),
                                                       paste0('FDR<', fdrcutoff, ', FC>', fccut)))
-    if (length(scheme==2)) scheme <- c('darkgrey', 'blue', 'red')
   }
   y <- 'log10P'
   # this line removes a few genes which have P value < FDR cutoff but are excluded by DESeq2

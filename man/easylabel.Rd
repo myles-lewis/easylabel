@@ -89,7 +89,7 @@ Interactive labelling of scatter plots using shiny and plotly interface.
 }
 \details{
 Instructions:
-\enumerate{
+\itemize{
 \item Hover over and click on/off genes which you want to label.
 \item When you have selected all your chosen genes, then drag gene names to
 move label positions.
@@ -97,6 +97,7 @@ move label positions.
 \item Switch to SVG when finalised (only do this at last moment as otherwise
 editing is very slow).
 \item Press camera button in modebar to save image as SVG.
+\item The Table tab shows a table view of the dataset to help with annotation.
 }
 }
 \seealso{

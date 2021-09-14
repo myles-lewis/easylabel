@@ -10,7 +10,7 @@ volcanoplot(
   y = NULL,
   fdrcutoff = 0.05,
   fccut = 0,
-  scheme = c("darkgrey", "red"),
+  scheme = c("darkgrey", "blue", "red"),
   show_counts = TRUE,
   useQ = FALSE,
   ...
