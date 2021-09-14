@@ -1,10 +1,18 @@
 ### easylabel
 
+Install from local repo
+```
+setwd("/users/.../")
+devtools::install("easylabel")
+library(easylabel)
+```
+
 Install from Github
 ```
 devtools::install_github("myles-lewis/easylabel")
 library(easylabel)
 ```
+(Not working yet)
 
 Instructions:
 1. Hover over and click on/off genes which you want to label.
