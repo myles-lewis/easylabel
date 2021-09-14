@@ -20,17 +20,29 @@
 #' @param col specifies the column (ideally a factor) in `data` with which
 #' to colour points.
 #' @param labs specifies the column in `data` with label names for points.
-#' If NULL defaults to use `rownames(data)`.
+#' If `NULL` defaults to use `rownames(data)`.
 #' @param scheme vector of colours for points.
 #' @param xlab x axis title.
 #' @param ylab y axis title.
-#' @param startLabels vector of initial points to be labelled.
+#' @param startLabels vector of initial labels.
 #' @param xlim the x limits (x1, x2) of the plot.
 #' @param ylim the y limits of the plot.
 #' @param symbols passed to plotly to specify symbols for normal points and
 #' outliers.
 #' @param showOutliers Logical whether to show outliers on the margins of the
 #' plot.
+#' @param width Width of the plot in pixels.
+#' @param height Height of the plot in pixels.
+#' @param showgrid Logical whether to show plotly gridlines.
+#' @param zeroline Logical whether to show lines at x=0 and y=0.
+#' @param hline Adds horizontal lines at values of y.
+#' @param vline Adds vertical lines at values of x.
+#' @param markerSize Size of markers as per plotly.
+#' @param alpha Alpha value for transparency of points.
+#' @param markerOutline List of plotly arguments to define marker outlines.
+#' @param marker List of arguments to control plotly markers.
+#' @param custom_annotation List of annotations to be added via [plotly::layout()].
+#' @seealso [plot_ly()]
 #' @importFrom shiny fluidPage tabsetPanel tabPanel fluidRow column
 #' radioButtons selectizeInput actionButton checkboxGroupInput observe
 #' updateSelectizeInput reactiveValues isolate reactive debounce

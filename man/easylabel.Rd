@@ -42,7 +42,7 @@ easylabel(
 to colour points.}
 
 \item{labs}{specifies the column in \code{data} with label names for points.
-If NULL defaults to use \code{rownames(data)}.}
+If \code{NULL} defaults to use \code{rownames(data)}.}
 
 \item{scheme}{vector of colours for points.}
 
@@ -50,7 +50,7 @@ If NULL defaults to use \code{rownames(data)}.}
 
 \item{ylab}{y axis title.}
 
-\item{startLabels}{vector of initial points to be labelled.}
+\item{startLabels}{vector of initial labels.}
 
 \item{xlim}{the x limits (x1, x2) of the plot.}
 
@@ -61,6 +61,28 @@ outliers.}
 
 \item{showOutliers}{Logical whether to show outliers on the margins of the
 plot.}
+
+\item{width}{Width of the plot in pixels.}
+
+\item{height}{Height of the plot in pixels.}
+
+\item{showgrid}{Logical whether to show plotly gridlines.}
+
+\item{zeroline}{Logical whether to show lines at x=0 and y=0.}
+
+\item{hline}{Adds horizontal lines at values of y.}
+
+\item{vline}{Adds vertical lines at values of x.}
+
+\item{markerSize}{Size of markers as per plotly.}
+
+\item{alpha}{Alpha value for transparency of points.}
+
+\item{markerOutline}{List of plotly arguments to define marker outlines.}
+
+\item{marker}{List of arguments to control plotly markers.}
+
+\item{custom_annotation}{List of annotations to be added via \code{\link[plotly:layout]{plotly::layout()}}.}
 }
 \description{
 Interactive labelling of scatter plots using shiny and plotly interface.
@@ -76,4 +98,7 @@ move label positions.
 editing is very slow).
 \item Press camera button in modebar to save image as SVG.
 }
+}
+\seealso{
+\code{\link[=plot_ly]{plot_ly()}}
 }
