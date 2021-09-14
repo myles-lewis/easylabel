@@ -1,0 +1,23 @@
+Package: easylabel
+Type: Package
+Title: Interactive scatter plot and volcano plot labels
+Version: 0.1.0
+Authors@R:
+    c(person(given = "Myles",family = "Lewis",
+    role = c("aut", "cre"),
+    email = "myles.lewis@qmul.ac.uk",
+    comment = c(ORCID = "0000-0001-9365-5345")))
+Maintainer: Myles Lewis <myles.lewis@qmul.ac.uk>
+Description: Interactive labelling of scatter plots and volcano plots using shiny/plotly interface.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Suggests:
+    qvalue
+Imports:
+    plotly,
+    shiny,
+    RColorBrewer,
+    DT
+RoxygenNote: 7.1.1
+Roxygen: list(markdown = TRUE)
