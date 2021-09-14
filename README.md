@@ -22,7 +22,7 @@ volc1 <- readRDS('DESeq2.nociceptive.res.RDS')
 volc2 <- readRDS('limma.output.RDS')
 scheme <- c('grey', 'green3', 'gold3', 'blue')
 
-easylabel(ymatrix, 'x', 'y', 'col', scheme, xlab="log<sub>2</sub> fold change post-Rituximab", ylab="log<sub>2</sub> fold change post-Tocilizumab")
+easylabel(ymatrix, 'x', 'y', 'col', scheme=scheme, xlab="log<sub>2</sub> fold change post-Rituximab", ylab="log<sub>2</sub> fold change post-Tocilizumab")
 
 volcanoplot(volc1)
 volcanoplot(volc1, fccut=1.25, fdrcutoff=0.2, ylim=c(0, 6), xlim=c(-5,5))
