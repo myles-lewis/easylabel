@@ -10,11 +10,14 @@
 #' * Hover over and click on/off genes which you want to label.
 #' * When you have selected all your chosen genes, then drag gene names to
 #'   move label positions.
+#' * Click the save button to export a PDF in base graphics.
+#' * The Table tab shows a table view of the dataset to help with annotation.
+#'
+#' To export an SVG from plotly:
 #' * You can move the legend as well.
 #' * Switch to SVG when finalised (only do this at last moment as otherwise
 #'   editing is very slow).
 #' * Press camera button in modebar to save image as SVG.
-#' * The Table tab shows a table view of the dataset to help with annotation.
 #' @param data Dataset to use for plot.
 #' @param x specifies column of x coordinates in `data`.
 #' @param y specifies column of y coordinates in `data`.

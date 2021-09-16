@@ -119,11 +119,16 @@ Instructions:
 \item Hover over and click on/off genes which you want to label.
 \item When you have selected all your chosen genes, then drag gene names to
 move label positions.
+\item Click the save button to export a PDF in base graphics.
+\item The Table tab shows a table view of the dataset to help with annotation.
+}
+
+To export an SVG from plotly:
+\itemize{
 \item You can move the legend as well.
 \item Switch to SVG when finalised (only do this at last moment as otherwise
 editing is very slow).
 \item Press camera button in modebar to save image as SVG.
-\item The Table tab shows a table view of the dataset to help with annotation.
 }
 }
 \seealso{
