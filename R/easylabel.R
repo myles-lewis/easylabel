@@ -21,29 +21,40 @@
 #' @param col specifies the column (ideally a factor) in `data` with which
 #' to colour points.
 #' @param labs specifies the column in `data` with label names for points.
-#' If `NULL` defaults to use `rownames(data)`.
+#' If `NULL` defaults to `rownames(data)`.
 #' @param scheme vector of colours for points.
-#' @param xlab x axis title.
-#' @param ylab y axis title.
+#' @param xlab x axis title. Accepts expressions when exporting base graphics.
+#' @param ylab y axis title. Accepts expressions when exporting base graphics.
 #' @param startLabels vector of initial labels.
 #' @param xlim the x limits (x1, x2) of the plot.
 #' @param ylim the y limits of the plot.
-#' @param symbols passed to plotly to specify symbols for normal points and
-#' outliers.
 #' @param showOutliers Logical whether to show outliers on the margins of the
 #' plot.
 #' @param width Width of the plot in pixels.
 #' @param height Height of the plot in pixels.
-#' @param showgrid Logical whether to show plotly gridlines.
+#' @param showgrid Logical whether to show gridlines.
 #' @param zeroline Logical whether to show lines at x=0 and y=0.
 #' @param hline Adds horizontal lines at values of y.
 #' @param vline Adds vertical lines at values of x.
-#' @param markerSize Size of markers as per plotly.
 #' @param alpha Alpha value for transparency of points.
+#' @param pch Main point symbol. See [points()].
+#' @param outlier_pch Symbol for outliers.
+#' @param outline_col Colour of symbol outlines. Set to `NA` for no outlines.
+#' @param outline_lwd Line width of symbol outlines.
+#' @param mgp The margin line for the axis title, axis labels and axis line.
+#' See [par()].
+#' @param fullname Logical whether to expand gene symbols using Bioconductor
+#' AnnotationDbi package. With multiple matches, returns first value only.
+#' See [mapIds()].
+#' @param AnnotationDb Annotation database to use when expanding gene symbols.
+#' Default database is human gene database [org.Hs.eg.db].
+#' @param symbols passed to plotly to specify symbols for normal points and
+#' outliers.
+#' @param markerSize Size of markers as per plotly.
 #' @param markerOutline List of plotly arguments to define marker outlines.
 #' @param marker List of arguments to control plotly markers.
 #' @param custom_annotation List of annotations to be added via [plotly::layout()].
-#' @seealso [plot_ly()]
+#' @seealso [plot_ly()] [par()]
 #' @importFrom shiny fluidPage tabsetPanel tabPanel fluidRow column
 #' radioButtons selectizeInput actionButton checkboxGroupInput observe
 #' updateSelectizeInput reactiveValues isolate reactive debounce
@@ -53,19 +64,28 @@
 #' event_register config plotlyProxy plotlyProxyInvoke add_markers %>%
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom DT dataTableOutput datatable formatSignif
+#' @importFrom AnnotationDbi mapIds
+#' @importFrom org.Hs.eg.db org.Hs.eg.db
 #' @export
 
 
 easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, startLabels=NULL,
-                      xlim=NULL, ylim=NULL, symbols=c('circle', 'diamond-open'),
+                      xlim=NULL, ylim=NULL,
                       showOutliers=TRUE,
                       width=800, height=600,
                       showgrid=FALSE, zeroline=TRUE, hline=NULL, vline=NULL,
-                      markerSize=8, alpha=1,
-                      markerOutline=list(width=0.5, color='white'),
+                      alpha=1,
+                      pch=21, outlier_pch=5,
+                      outline_col='white', outline_lwd=0.5,
+                      mgp=c(2, 0.7, 0),
+                      fullname=FALSE,
+                      AnnotationDb=org.Hs.eg.db,
+                      symbols=c('circle', 'diamond-open'),
+                      markerSize=8,
+                      markerOutline=list(width=outline_lwd, color=outline_col),
                       marker=list(size=markerSize, opacity=alpha, line=markerOutline),
-                      custom_annotation=NULL
-                     ) {
+                      custom_annotation=NULL, ...
+) {
   data$outlier <- FALSE
   if (!is.null(ylim)) {
     notNA <- !is.na(data[,y])
@@ -101,32 +121,37 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
   start_annot <- annotation(startLabels, data, x, y)
   start_xy <- lapply(start_annot, function(i) list(ax=i$ax, ay=i$ay))
   names(start_xy) <- startLabels
+  if (is.na(outline_col)) outline_lwd <- 0  # fix plotly no outlines
+  if (fullname) {
+    data$gene_fullname <- mapIds(AnnotationDb, labelchoices, "GENENAME", "ALIAS", multiVals = 'first')
+  }
 
   ui <- fluidPage(
     tabsetPanel(
       tabPanel("Plot",
-        fluidRow(
-          plotlyOutput("plotly", height=paste0(height, "px"))),
-        fluidRow(column(3,
-                        radioButtons("ptype", label=h5("Plot type"), choices=c("WebGL (fast)"=1, "SVG (slow)"=2), selected=1)),
-                 column(4,
-                        selectizeInput('label', h5('Select labels'), choices=NULL,
-                                       options=list(onInitialize = I('function() { this.setValue(""); }')),
-                                       multiple=T)),
-                 column(4,
-                        actionButton("add_batch", "Add batch"),
-                        actionButton("clear", "Clear all"))
-        )
+               fluidRow(
+                 plotlyOutput("plotly", height=paste0(height, "px"))),
+               fluidRow(column(3,
+                               radioButtons("ptype", label=h5("Plot type"), choices=c("WebGL (fast)"=1, "SVG (slow)"=2), selected=1)),
+                        column(4,
+                               selectizeInput('label', h5('Select labels'), choices=NULL,
+                                              options=list(onInitialize = I('function() { this.setValue(""); }')),
+                                              multiple=T)),
+                        column(4,
+                               actionButton("add_batch", "Add batch"),
+                               actionButton("clear", "Clear all"),
+                               downloadButton("save_plot", "Save"))
+               )
       ),
       tabPanel("Table",
-        fluidRow(
-          column(2,
-                 checkboxGroupInput('selgroup', 'Select groups', levels(data[, col]), selected = levels(data[, col]))
+               fluidRow(
+                 column(2,
+                        checkboxGroupInput('selgroup', 'Select groups', levels(data[, col]), selected = levels(data[, col]))
                  ),
-          column(10,
-                 DT::dataTableOutput("table")
-          )
-        )
+                 column(10,
+                        DT::dataTableOutput("table")
+                 )
+               )
       )
     )
   )
@@ -140,9 +165,9 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
       annot <- annotation(labs, data, x, y)
       isolate(labels$annot <- annot)
       if (!is.null(hline)) {
-          shapes=lapply(hline, function(i) {
-            list(type="line", line=list(width=1, color='#AAAAAA', dash='dash'), x0=0, x1=1, y0=i, y1=i, xref="paper")
-          })
+        shapes=lapply(hline, function(i) {
+          list(type="line", line=list(width=1, color='#AAAAAA', dash='dash'), x0=0, x1=1, y0=i, y1=i, xref="paper")
+        })
       } else {
         shapes=list()
       }
@@ -191,6 +216,79 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
         event_register(event='plotly_click')
 
     })
+
+    # download plot
+
+    output$save_plot <- downloadHandler(filename = function()
+    {"labelplot.pdf"}, content = function(file) {
+
+      labs <- labels$list
+      current_xy <- labelsxy$list
+      xrange <- range(data[, x], na.rm = TRUE)
+      yrange <- range(data[, y], na.rm = TRUE)
+      scheme2 <- adjustcolor(scheme, alpha.f = alpha)
+      data <- data[order(data$col), ]
+      legenddist <- max((max(nchar(levels(data$col)), na.rm = TRUE)+3) * 0.37, 6)
+
+      pdf(file, width = width/100, height = height/100 + 0.75)
+      op <- par(mgp=mgp, mar=c(4, 4, 2, legenddist))
+      plot(data[!data$outlier, x], data[!data$outlier, y],
+           pch=pch, bg=scheme2[data$col[!data$outlier]], col=outline_col, lwd=outline_lwd,
+           xlim=xlim, ylim=ylim, xlab=xlab, ylab=ylab,
+           las=1, bty='l', ...,
+           panel.first={
+             if (showgrid) abline(h=pretty(data[,y]), v=pretty(data[,x]), col='grey80', lwd=0.5)
+             if (zeroline) abline(h=0, v=0)
+           })
+      legtext <- levels(data$col)
+      legbg <- scheme2
+      col <- outline_col
+      pt.lwd <- outline_lwd
+      if (any(data$outlier)) {
+        points(data[data$outlier, x], data[data$outlier, y], pch=outlier_pch,
+               col=scheme2[data$col[data$outlier]])
+        pch <- c(rep(pch, length(legtext)), outlier_pch)
+        col <- c(rep(outline_col, length(legtext)), 'black')
+        pt.lwd <- c(rep(pt.lwd, length(legtext)), 1)
+        legtext <- c(legtext, 'Outlier')
+        legbg <- c(legbg, 'black')
+      }
+      abline(h=hline, v=vline, col='#AAAAAA', lty=2)
+      if (length(labs) > 0) {
+        annot <- annotation(labs, data, x, y, current_xy)
+        annotdf <- data.frame(x=unlist(lapply(annot, '[', 'x')),
+                              y=unlist(lapply(annot, '[', 'y')),
+                              ax=unlist(lapply(annot, '[', 'ax')),
+                              ay=unlist(lapply(annot, '[', 'ay')),
+                              text=unlist(lapply(annot, '[', 'text')))
+        annotdf$ax <- annotdf$x + annotdf$ax / (width - 150) * (xrange[2] - xrange[1]) * 1.2
+        annotdf$ay <- annotdf$y - annotdf$ay / height * (yrange[2] - yrange[1]) * 1.2
+        annotdf$texth <- strheight(labs, cex=0.72) * 1.6
+        annotdf$textw <- strwidth(labs, cex=0.72) * 1.07
+        for (i in 1:nrow(annotdf)) {
+          lines(c(annotdf$x[i], annotdf$ax[i]), c(annotdf$y[i], annotdf$ay[i]), xpd=NA)
+        }
+        rect(annotdf$ax - annotdf$textw/2, annotdf$ay - annotdf$texth/2,
+             annotdf$ax + annotdf$textw/2, annotdf$ay + annotdf$texth/2,
+             col='white', border = NA, xpd = NA)
+        text(annotdf$ax, annotdf$ay, annotdf$text, xpd=NA, cex=0.72)
+      }
+      legend(x=xrange[2] + (xrange[2] - xrange[1]) * 0.02, y=yrange[2],
+             legend=legtext, pt.bg=legbg,
+             pt.lwd=pt.lwd, pt.cex=0.9,
+             col=col, pch=pch, bty='n',
+             cex=0.75, xjust=0, yjust=0.5, xpd=NA)
+      if (!is.null(custom_annotation)) {
+        custtext <- custom_annotation[[1]]$text
+        custtext <- gsub("<br>", "\n", custtext)
+        legend(x=xrange[2] + (xrange[2] - xrange[1]) * 0.02, y=yrange[1],
+               legend=custtext,
+               bty='n', cex=0.65, xjust=0, yjust=0, xpd=NA)
+      }
+      par(op)
+      dev.off()
+
+    }, contentType = 'application/pdf')
 
     updateSelectizeInput(session, 'label', choices = labelchoices, server = TRUE)
     labels <- reactiveValues(list=startLabels)
@@ -261,11 +359,10 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
     })
 
     output$table <- DT::renderDataTable({
-      cols <- colnames(data)[sapply(data, class) == "numeric"]
-      df <- data[data[,col] %in% input$selgroup, ]
-      rn <- if (is.null(labs)) {
-        TRUE
-      } else {
+      showCols <- colnames(data)[!colnames(data) %in% c('log10P', 'col', 'outlier')]
+      df <- data[data[,col] %in% input$selgroup, showCols]
+      cols <- colnames(df)[sapply(df, class) == "numeric"]
+      rn <- if (is.null(labs)) TRUE else {
         labelchoices[data[,col] %in% input$selgroup, ]
       }
       datatable(df, rownames = rn) %>% formatSignif(cols, digits=3)
@@ -302,7 +399,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
       }
     })
 
-    }
+  }
 
   shinyApp(ui, server)
 
@@ -320,9 +417,16 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
 #' @param y column containing p values. For DESeq2 and limma objects this is
 #' automatically set.
 #' @param fdrcutoff Cut-off for FDR significance. Defaults to FDR < 0.05
-#' @param fccut Log fold change cut-off. Optional, where 0 means not applied.
+#' @param fccut Optional vector of log fold change cut-offs.
 #' @param scheme Colour scheme. If no fold change cut-off is set, 2 colours
+<<<<<<< Updated upstream
 #' need to be specified. With a fold change cut-off, 3 colours are required.
+=======
+#' need to be specified. With a single fold change cut-off, 3 or 5 colours are
+#' required, depending on whether the colours are symmetrical about x=0.
+#' Accommodates asymmetric colour schemes with multiple fold
+#' change cut-offs (see examples).
+>>>>>>> Stashed changes
 #' @param showCounts Logical whether to show legend with number of
 #' differentially expressed genes.
 #' @param useQ Logical whether to convert nominal P values to q values.
@@ -330,9 +434,14 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
 #' @param ... Other arguments passed to [easylabel()].
 #' @seealso [easylabel()]
 #' @importFrom qvalue qvalue
+#' @importFrom Hmisc cut2
 #' @export
 
+<<<<<<< Updated upstream
 volcanoplot <- function(data, x=NULL, y=NULL, fdrcutoff=0.05, fccut=0, scheme=c('darkgrey', 'blue', 'red'),
+=======
+volcanoplot <- function(data, x=NULL, y=NULL, fdrcutoff=0.05, fccut=NULL, scheme=c('darkgrey', 'blue', 'red'),
+>>>>>>> Stashed changes
                         showCounts=TRUE, useQ=FALSE, ...) {
   if (is.null(x)) {
     if ('log2FoldChange' %in% colnames(data)) x='log2FoldChange'  # DESeq2
@@ -358,10 +467,16 @@ volcanoplot <- function(data, x=NULL, y=NULL, fdrcutoff=0.05, fccut=0, scheme=c(
   }
   siggenes[is.na(siggenes)] <- FALSE
   if (sum(siggenes) >0) fdrline <- min(data[siggenes, 'log10P'])
+<<<<<<< Updated upstream
   fccut <- abs(fccut)
   if (showCounts) {
     up <- sum(siggenes & data[, x] > fccut)
     down <- sum(siggenes & data[, x] <= -fccut)
+=======
+  if (showCounts) {
+    up <- sum(siggenes & data[, x] > 0)
+    down <- sum(siggenes & data[, x] < 0)
+>>>>>>> Stashed changes
     total <- nrow(data)
     custom_annotation <- list(list(x=1.18, y=0.02, align='left',
                                    text=paste0(up, ' upregulated<br>',
@@ -370,20 +485,40 @@ volcanoplot <- function(data, x=NULL, y=NULL, fdrcutoff=0.05, fccut=0, scheme=c(
                                    font = list(size=11, color = "black"),
                                    xref='paper', yref='paper', showarrow=F))
   } else custom_annotation=NULL
-  if (fccut==0) {
+
+  if (is.null(fccut)) {
     data$col <- factor(siggenes, levels=c(F, T), labels=c('ns', paste0('FDR<', fdrcutoff)))
+    scheme <- scheme[1:2]
   } else {
-    fc <- abs(data[siggenes, x]) > fccut
-    siggenes <- as.numeric(siggenes)
-    siggenes[siggenes==1] <- as.numeric(fc) + 1
-    data$col <- factor(siggenes, levels=0:2, labels=c('ns', paste0('FDR<', fdrcutoff, ', FC<', fccut),
-                                                      paste0('FDR<', fdrcutoff, ', FC>', fccut)))
+    fccut <- abs(fccut)
+    if (!(length(scheme)-1) %in% ((length(fccut)+1) * 1:2)) stop("Number of colours in 'scheme' does not fit with number of cuts in 'fccut'")
+    if ((length(scheme) - 1 == length(fccut) + 1)) {
+      # symmetric colours
+      fc <- Hmisc::cut2(abs(data[, x]), fccut)
+      siggenes <- as.numeric(siggenes)
+      siggenes[siggenes==1] <- as.numeric(fc[siggenes==1])
+      data$col <- factor(siggenes, levels=0:(length(fccut)+1),
+                         labels=c('ns', paste0('FDR<', fdrcutoff, ', FC<', fccut[1]),
+                                  paste0('FDR<', fdrcutoff, ', FC>', fccut)))
+    } else {
+      # asymmetric colours
+      fccut <- sort(unique(c(fccut, 0, -fccut)))
+      fc <- Hmisc::cut2(data[, x], fccut)
+      siggenes <- as.numeric(siggenes)
+      siggenes[siggenes==1] <- as.numeric(fc[siggenes==1])
+      data$col <- factor(siggenes, levels=0:(length(fccut)+1),
+                         labels=c('ns', paste0('FDR<', fdrcutoff, ', FC<', fccut[1]),
+                                  paste0('FDR<', fdrcutoff, ', ', fccut[-length(fccut)], '<FC<', fccut[-1]),
+                                  paste0('FDR<', fdrcutoff, ', FC>', fccut[length(fccut)])))
+    }
   }
   y <- 'log10P'
   # this line removes a few genes which have P value < FDR cutoff but are excluded by DESeq2
   if (!is.null(fdrline)) data <- data[!(is.na(data[, padj]) & data$log10P > fdrline), ]
-  easylabel(data, x, y, col='col', xlab='log<sub>2</sub> fold change',
-            ylab='-log<sub>10</sub> P', scheme=scheme, zeroline=FALSE, hline=fdrline,
+  easylabel(data, x, y, col='col',
+            xlab=expression("log"[2] ~ " fold change"),
+            ylab=expression("-log"[10] ~ " P"),
+            scheme=scheme, zeroline=FALSE, hline=fdrline,
             custom_annotation=custom_annotation, ...)
 }
 
