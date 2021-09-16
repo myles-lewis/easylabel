@@ -3,7 +3,7 @@
 
 #' Interactive scatter plot labels
 #'
-#' Interactive labelling of scatter plots using shiny and plotly interface.
+#' Interactive labelling of scatter plots using shiny/plotly interface.
 #'
 #' @details
 #' Instructions:
@@ -323,17 +323,17 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
 #' @param fccut Log fold change cut-off. Optional, where 0 means not applied.
 #' @param scheme Colour scheme. If no fold change cut-off is set, 2 colours
 #' need to be specified. With a fold change cut-off, 3 colours are required.
-#' @param show_counts Logical whether to show legend with number of
+#' @param showCounts Logical whether to show legend with number of
 #' differentially expressed genes.
 #' @param useQ Logical whether to convert nominal P values to q values.
 #' Requires the qvalue Bioconductor package.
-#' @param ... other arguments passed to [easylabel()].
+#' @param ... Other arguments passed to [easylabel()].
 #' @seealso [easylabel()]
 #' @importFrom qvalue qvalue
 #' @export
 
 volcanoplot <- function(data, x=NULL, y=NULL, fdrcutoff=0.05, fccut=0, scheme=c('darkgrey', 'blue', 'red'),
-                        show_counts=TRUE, useQ=FALSE, ...) {
+                        showCounts=TRUE, useQ=FALSE, ...) {
   if (is.null(x)) {
     if ('log2FoldChange' %in% colnames(data)) x='log2FoldChange'  # DESeq2
     if ('logFC' %in% colnames(data)) x='logFC'  # limma
@@ -359,7 +359,7 @@ volcanoplot <- function(data, x=NULL, y=NULL, fdrcutoff=0.05, fccut=0, scheme=c(
   siggenes[is.na(siggenes)] <- FALSE
   if (sum(siggenes) >0) fdrline <- min(data[siggenes, 'log10P'])
   fccut <- abs(fccut)
-  if (show_counts) {
+  if (showCounts) {
     up <- sum(siggenes & data[, x] > fccut)
     down <- sum(siggenes & data[, x] <= -fccut)
     total <- nrow(data)
