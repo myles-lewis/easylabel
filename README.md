@@ -35,7 +35,7 @@ easylabel(ymatrix, x = 'x', y = 'y', col = 'col',
           ylab = expression("log"[2] ~ " fold change post-Tocilizumab"),
           showgrid = TRUE, fullname = TRUE)
 ```
-Use the volcanoplot function to quickly plot a volcano plot from DESeq2 or
+Use the `volcanoplot()` function to quickly plot a volcano plot from DESeq2 or
 EdgeR objects.
 ```
 volc1 <- readRDS('/Users/myles/R/R4RA/DESeq2.nociceptive.res.RDS')
