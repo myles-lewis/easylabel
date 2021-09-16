@@ -87,8 +87,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
                       markerSize=8,
                       markerOutline=list(width=outline_lwd, color=outline_col),
                       marker=list(size=markerSize, opacity=alpha, line=markerOutline),
-                      custom_annotation=NULL, ...
-) {
+                      custom_annotation=NULL, ...) {
   data$outlier <- FALSE
   if (!is.null(ylim)) {
     notNA <- !is.na(data[,y])
@@ -162,7 +161,6 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
   server <- function(input, output, session) {
 
     output$plotly <- renderPlotly({
-      # isolate(labs <- input$label)
       labs <- startLabels
       isolate(pt <- as.numeric(input$ptype))
       annot <- annotation(labs, data, x, y)
@@ -212,7 +210,6 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
                hovermode='closest',
                legend = list(font=list(color='black')),
                shapes = shapes) %>%
-        # highlight(on="plotly_selected", opacityDim = 1) %>%
         config(edits = list(annotationTail = TRUE, legendPosition = TRUE),
                plotGlPixelRatio = 6,
                toImageButtonOptions=list(format="svg")) %>%
@@ -220,7 +217,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
 
     })
 
-    # download plot
+    # download plot using base graphics
 
     output$save_plot <- downloadHandler(filename = function()
     {"labelplot.pdf"}, content = function(file) {
@@ -361,6 +358,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
       }
     })
 
+    # Table tab
     output$table <- DT::renderDataTable({
       showCols <- colnames(data)[!colnames(data) %in% c('log10P', 'col', 'outlier')]
       df <- data[data[,col] %in% input$selgroup, showCols]
