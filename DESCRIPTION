@@ -6,7 +6,11 @@ Authors@R:
     c(person(given = "Myles",family = "Lewis",
     role = c("aut", "cre"),
     email = "myles.lewis@qmul.ac.uk",
-    comment = c(ORCID = "0000-0001-9365-5345")))
+    comment = c(ORCID = "0000-0001-9365-5345")),
+    person(given = "Katriona",family = "Goldmann",
+    role = c("aut"),
+    email = "k.goldmann@qmul.ac.uk",
+    comment = c(ORCID = "0000-0002-9073-6323")))
 Maintainer: Myles Lewis <myles.lewis@qmul.ac.uk>
 Description: Interactive labelling of scatter plots and volcano plots using shiny/plotly interface.
 License: MIT + file LICENSE
