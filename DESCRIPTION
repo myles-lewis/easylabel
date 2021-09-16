@@ -12,6 +12,7 @@ Description: Interactive labelling of scatter plots and volcano plots using shin
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+biocViews:
 Imports:
     plotly,
     shiny,
