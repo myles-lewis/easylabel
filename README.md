@@ -43,7 +43,7 @@ volcanoplot(volc1, useQ = TRUE, fullname = TRUE)
 ```
 The `useQ` argument will switch to using q values for FDR. The `fullname`
 argument will use Bioconductor package `AnnotationDbi` and the `org.Hs.eg.db`
-human gene database to expand gene symbols.
+human gene database to expand gene symbols in the Table tab.
 
 The colour scheme system has been expanded to allow multiple fold change
 cut-offs. In this example the colours are symmetrical.
