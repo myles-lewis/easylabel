@@ -1,6 +1,13 @@
 ### easylabel
 
-Install from Github
+Install from local repo
+```
+setwd("/users/.../")
+devtools::install("easylabel")
+library(easylabel)
+```
+
+Install from Github (not working yet)
 ```
 devtools::install_github("myles-lewis/easylabel")
 library(easylabel)
