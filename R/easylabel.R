@@ -419,14 +419,10 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
 #' @param fdrcutoff Cut-off for FDR significance. Defaults to FDR < 0.05
 #' @param fccut Optional vector of log fold change cut-offs.
 #' @param scheme Colour scheme. If no fold change cut-off is set, 2 colours
-<<<<<<< Updated upstream
-#' need to be specified. With a fold change cut-off, 3 colours are required.
-=======
 #' need to be specified. With a single fold change cut-off, 3 or 5 colours are
 #' required, depending on whether the colours are symmetrical about x=0.
-#' Accommodates asymmetric colour schemes with multiple fold
-#' change cut-offs (see examples).
->>>>>>> Stashed changes
+#' Accommodates asymmetric colour schemes with multiple fold change cut-offs
+#' (see examples).
 #' @param showCounts Logical whether to show legend with number of
 #' differentially expressed genes.
 #' @param useQ Logical whether to convert nominal P values to q values.
@@ -437,11 +433,9 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
 #' @importFrom Hmisc cut2
 #' @export
 
-<<<<<<< Updated upstream
-volcanoplot <- function(data, x=NULL, y=NULL, fdrcutoff=0.05, fccut=0, scheme=c('darkgrey', 'blue', 'red'),
-=======
-volcanoplot <- function(data, x=NULL, y=NULL, fdrcutoff=0.05, fccut=NULL, scheme=c('darkgrey', 'blue', 'red'),
->>>>>>> Stashed changes
+
+volcanoplot <- function(data, x=NULL, y=NULL, fdrcutoff=0.05, fccut=NULL,
+                        scheme=c('darkgrey', 'blue', 'red'),
                         showCounts=TRUE, useQ=FALSE, ...) {
   if (is.null(x)) {
     if ('log2FoldChange' %in% colnames(data)) x='log2FoldChange'  # DESeq2
@@ -467,16 +461,9 @@ volcanoplot <- function(data, x=NULL, y=NULL, fdrcutoff=0.05, fccut=NULL, scheme
   }
   siggenes[is.na(siggenes)] <- FALSE
   if (sum(siggenes) >0) fdrline <- min(data[siggenes, 'log10P'])
-<<<<<<< Updated upstream
-  fccut <- abs(fccut)
-  if (showCounts) {
-    up <- sum(siggenes & data[, x] > fccut)
-    down <- sum(siggenes & data[, x] <= -fccut)
-=======
   if (showCounts) {
     up <- sum(siggenes & data[, x] > 0)
     down <- sum(siggenes & data[, x] < 0)
->>>>>>> Stashed changes
     total <- nrow(data)
     custom_annotation <- list(list(x=1.18, y=0.02, align='left',
                                    text=paste0(up, ' upregulated<br>',

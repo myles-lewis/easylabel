@@ -2,10 +2,13 @@
 
 export(easylabel)
 export(volcanoplot)
+importFrom(AnnotationDbi,mapIds)
 importFrom(DT,dataTableOutput)
 importFrom(DT,datatable)
 importFrom(DT,formatSignif)
+importFrom(Hmisc,cut2)
 importFrom(RColorBrewer,brewer.pal)
+importFrom(org.Hs.eg.db,org.Hs.eg.db)
 importFrom(plotly,"%>%")
 importFrom(plotly,add_markers)
 importFrom(plotly,config)

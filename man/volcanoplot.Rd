@@ -9,9 +9,9 @@ volcanoplot(
   x = NULL,
   y = NULL,
   fdrcutoff = 0.05,
-  fccut = 0,
+  fccut = NULL,
   scheme = c("darkgrey", "blue", "red"),
-  show_counts = TRUE,
+  showCounts = TRUE,
   useQ = FALSE,
   ...
 )
@@ -28,18 +28,21 @@ automatically set.}
 
 \item{fdrcutoff}{Cut-off for FDR significance. Defaults to FDR < 0.05}
 
-\item{fccut}{Log fold change cut-off. Optional, where 0 means not applied.}
+\item{fccut}{Optional vector of log fold change cut-offs.}
 
 \item{scheme}{Colour scheme. If no fold change cut-off is set, 2 colours
-need to be specified. With a fold change cut-off, 3 colours are required.}
+need to be specified. With a single fold change cut-off, 3 or 5 colours are
+required, depending on whether the colours are symmetrical about x=0.
+Accommodates asymmetric colour schemes with multiple fold change cut-offs
+(see examples).}
 
-\item{show_counts}{Logical whether to show legend with number of
+\item{showCounts}{Logical whether to show legend with number of
 differentially expressed genes.}
 
 \item{useQ}{Logical whether to convert nominal P values to q values.
 Requires the qvalue Bioconductor package.}
 
-\item{...}{other arguments passed to \code{\link[=easylabel]{easylabel()}}.}
+\item{...}{Other arguments passed to \code{\link[=easylabel]{easylabel()}}.}
 }
 \description{
 Interactive labelling of volcano plots using shiny/plotly interface.

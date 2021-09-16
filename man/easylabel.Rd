@@ -16,7 +16,6 @@ easylabel(
   startLabels = NULL,
   xlim = NULL,
   ylim = NULL,
-  symbols = c("circle", "diamond-open"),
   showOutliers = TRUE,
   width = 800,
   height = 600,
@@ -24,11 +23,20 @@ easylabel(
   zeroline = TRUE,
   hline = NULL,
   vline = NULL,
-  markerSize = 8,
   alpha = 1,
-  markerOutline = list(width = 0.5, color = "white"),
+  pch = 21,
+  outlier_pch = 5,
+  outline_col = "white",
+  outline_lwd = 0.5,
+  mgp = c(2, 0.7, 0),
+  fullname = FALSE,
+  AnnotationDb = org.Hs.eg.db,
+  symbols = c("circle", "diamond-open"),
+  markerSize = 8,
+  markerOutline = list(width = outline_lwd, color = outline_col),
   marker = list(size = markerSize, opacity = alpha, line = markerOutline),
-  custom_annotation = NULL
+  custom_annotation = NULL,
+  ...
 )
 }
 \arguments{
@@ -42,22 +50,19 @@ easylabel(
 to colour points.}
 
 \item{labs}{specifies the column in \code{data} with label names for points.
-If \code{NULL} defaults to use \code{rownames(data)}.}
+If \code{NULL} defaults to \code{rownames(data)}.}
 
 \item{scheme}{vector of colours for points.}
 
-\item{xlab}{x axis title.}
+\item{xlab}{x axis title. Accepts expressions when exporting base graphics.}
 
-\item{ylab}{y axis title.}
+\item{ylab}{y axis title. Accepts expressions when exporting base graphics.}
 
 \item{startLabels}{vector of initial labels.}
 
 \item{xlim}{the x limits (x1, x2) of the plot.}
 
 \item{ylim}{the y limits of the plot.}
-
-\item{symbols}{passed to plotly to specify symbols for normal points and
-outliers.}
 
 \item{showOutliers}{Logical whether to show outliers on the margins of the
 plot.}
@@ -66,7 +71,7 @@ plot.}
 
 \item{height}{Height of the plot in pixels.}
 
-\item{showgrid}{Logical whether to show plotly gridlines.}
+\item{showgrid}{Logical whether to show gridlines.}
 
 \item{zeroline}{Logical whether to show lines at x=0 and y=0.}
 
@@ -74,9 +79,30 @@ plot.}
 
 \item{vline}{Adds vertical lines at values of x.}
 
-\item{markerSize}{Size of markers as per plotly.}
-
 \item{alpha}{Alpha value for transparency of points.}
+
+\item{pch}{Main point symbol. See \code{\link[=points]{points()}}.}
+
+\item{outlier_pch}{Symbol for outliers.}
+
+\item{outline_col}{Colour of symbol outlines. Set to \code{NA} for no outlines.}
+
+\item{outline_lwd}{Line width of symbol outlines.}
+
+\item{mgp}{The margin line for the axis title, axis labels and axis line.
+See \code{\link[=par]{par()}}.}
+
+\item{fullname}{Logical whether to expand gene symbols using Bioconductor
+AnnotationDbi package. With multiple matches, returns first value only.
+See \code{\link[=mapIds]{mapIds()}}.}
+
+\item{AnnotationDb}{Annotation database to use when expanding gene symbols.
+Default database is human gene database \link{org.Hs.eg.db}.}
+
+\item{symbols}{passed to plotly to specify symbols for normal points and
+outliers.}
+
+\item{markerSize}{Size of markers as per plotly.}
 
 \item{markerOutline}{List of plotly arguments to define marker outlines.}
 
@@ -85,7 +111,7 @@ plot.}
 \item{custom_annotation}{List of annotations to be added via \code{\link[plotly:layout]{plotly::layout()}}.}
 }
 \description{
-Interactive labelling of scatter plots using shiny and plotly interface.
+Interactive labelling of scatter plots using shiny/plotly interface.
 }
 \details{
 Instructions:
@@ -101,5 +127,5 @@ editing is very slow).
 }
 }
 \seealso{
-\code{\link[=plot_ly]{plot_ly()}}
+\code{\link[=plot_ly]{plot_ly()}} \code{\link[=par]{par()}}
 }
