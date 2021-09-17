@@ -58,9 +58,10 @@ through to red for upregulated genes.
 volcanoplot(volc1, fccut = 1, fdrcutoff = 0.2, ylim = c(0, 6), xlim=c(-5,5),
             scheme=c('darkgrey', 'blue', 'lightblue', 'orange', 'red'), vline=c(-1,1))
 ```
-The next example shows how to remove the white outlines around points and use
-transparency instead.
+The next example has 6 colours and also shows how to remove the white outlines
+around points and use transparency instead.
 ```
+library(RColorBrewer)
 volcanoplot(volc1, fccut = c(1, 2), fdrcutoff = 0.2, ylim = c(0, 6), xlim=c(-5,5),
-            scheme=c('darkgrey', brewer.pal(9, 'RdYlBu')[-(4:6)]), alpha=0.75, outline_col=NA)
+            scheme=c('darkgrey', rev(brewer.pal(9, 'RdYlBu')[-(4:6)])), alpha=0.75, outline_col=NA)
 ```
