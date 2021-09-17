@@ -20,10 +20,10 @@ volcanoplot(
 \item{data}{The dataset for the plot. Automatically attempts to recognises
 DESeq2 and limma objects.}
 
-\item{x}{column containing log fold change. For DESeq2 and limma objects
+\item{x}{Name of the column containing log fold change. For DESeq2 and limma objects
 this is automatically set.}
 
-\item{y}{column containing p values. For DESeq2 and limma objects this is
+\item{y}{Name of the column containing p values. For DESeq2 and limma objects this is
 automatically set.}
 
 \item{fdrcutoff}{Cut-off for FDR significance. Defaults to FDR < 0.05}

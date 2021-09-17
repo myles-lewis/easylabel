@@ -421,9 +421,9 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
 #'
 #' @param data The dataset for the plot. Automatically attempts to recognises
 #' DESeq2 and limma objects.
-#' @param x column containing log fold change. For DESeq2 and limma objects
+#' @param x Name of the column containing log fold change. For DESeq2 and limma objects
 #' this is automatically set.
-#' @param y column containing p values. For DESeq2 and limma objects this is
+#' @param y Name of the column containing p values. For DESeq2 and limma objects this is
 #' automatically set.
 #' @param fdrcutoff Cut-off for FDR significance. Defaults to FDR < 0.05
 #' @param fccut Optional vector of log fold change cut-offs.
