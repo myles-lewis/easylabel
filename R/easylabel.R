@@ -557,8 +557,8 @@ linerect <- function(df) {
   df$ax2 <- df$ax - df$dx2
   df$ay2 <- df$ay - df$dy2
   # x,y inside rectangle => no line
-  inside <- df$x > df$ax - df$textw & df$x < df$ax + df$textw &
-    df$y > df$ay - df$texth & df$y < df$ay + df$texth
+  inside <- df$x > df$ax - df$textw/2 & df$x < df$ax + df$textw/2 &
+    df$y > df$ay - df$texth/2 & df$y < df$ay + df$texth/2
   df$ax2[inside] <- NA
   for (i in 1:nrow(df)) {
     lines(c(df$x[i], df$ax2[i]), c(df$y[i], df$ay2[i]), xpd=NA)
