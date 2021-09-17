@@ -262,9 +262,9 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
              if (zeroline) abline(h=0, v=0)
            })
       args <- list(...)
-      mtext(Ltitle, LRtitle_side, adj=0, line=ifelse(LRtitle_pos<3, mgp[1], 0.1),
+      mtext(Ltitle, LRtitle_side, adj=0, line=ifelse(LRtitle_side<3, mgp[1], 0.1),
             cex=args$cex.lab)
-      mtext(Rtitle, LRtitle_side, adj=1, line=ifelse(LRtitle_pos<3, mgp[1], 0.1),
+      mtext(Rtitle, LRtitle_side, adj=1, line=ifelse(LRtitle_side<3, mgp[1], 0.1),
             cex=args$cex.lab)
       legtext <- levels(data$col)
       legbg <- scheme2
