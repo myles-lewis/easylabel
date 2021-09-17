@@ -28,9 +28,11 @@ easylabel(
   outlier_pch = 5,
   outline_col = "white",
   outline_lwd = 0.5,
+  cex.text = 0.72,
   mgp = c(2, 0.7, 0),
   fullname = FALSE,
   AnnotationDb = org.Hs.eg.db,
+  panel.last = NULL,
   symbols = c("circle", "diamond-open"),
   markerSize = 8,
   markerOutline = list(width = outline_lwd, color = outline_col),
@@ -89,6 +91,9 @@ plot.}
 
 \item{outline_lwd}{Line width of symbol outlines.}
 
+\item{cex.text}{Font size for labels. Default 0.72 to match plotly font size.
+See \code{\link[=text]{text()}}.}
+
 \item{mgp}{The margin line for the axis title, axis labels and axis line.
 See \code{\link[=par]{par()}}.}
 
@@ -98,6 +103,10 @@ See \code{\link[=mapIds]{mapIds()}}.}
 
 \item{AnnotationDb}{Annotation database to use when expanding gene symbols.
 Default database is human gene database \link{org.Hs.eg.db}.}
+
+\item{panel.last}{an 'expression' to be evaluated after plotting has taken
+place but before the axes and labels are added. This can be useful for
+adding trend lines or legends. See \link{plot.default}.}
 
 \item{symbols}{passed to plotly to specify symbols for normal points and
 outliers.}

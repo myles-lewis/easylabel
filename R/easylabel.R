@@ -44,6 +44,8 @@
 #' @param outlier_pch Symbol for outliers.
 #' @param outline_col Colour of symbol outlines. Set to `NA` for no outlines.
 #' @param outline_lwd Line width of symbol outlines.
+#' @param cex.text Font size for labels. Default 0.72 to match plotly font size.
+#' See [text()].
 #' @param mgp The margin line for the axis title, axis labels and axis line.
 #' See [par()].
 #' @param fullname Logical whether to expand gene symbols using Bioconductor
@@ -51,6 +53,9 @@
 #' See [mapIds()].
 #' @param AnnotationDb Annotation database to use when expanding gene symbols.
 #' Default database is human gene database [org.Hs.eg.db].
+#' @param panel.last an 'expression' to be evaluated after plotting has taken
+#' place but before the axes and labels are added. This can be useful for
+#' adding trend lines or legends. See [plot.default].
 #' @param symbols passed to plotly to specify symbols for normal points and
 #' outliers.
 #' @param markerSize Size of markers as per plotly.
@@ -80,9 +85,11 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
                       alpha=1,
                       pch=21, outlier_pch=5,
                       outline_col='white', outline_lwd=0.5,
+                      cex.text=0.72,
                       mgp=c(2, 0.7, 0),
                       fullname=FALSE,
                       AnnotationDb=org.Hs.eg.db,
+                      panel.last=NULL,
                       symbols=c('circle', 'diamond-open'),
                       markerSize=8,
                       markerOutline=list(width=outline_lwd, color=outline_col),
@@ -239,7 +246,8 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
            panel.first={
              if (showgrid) abline(h=pretty(data[,y]), v=pretty(data[,x]), col='grey80', lwd=0.5)
              if (zeroline) abline(h=0, v=0)
-           })
+           },
+           panel.last=panel.last)
       legtext <- levels(data$col)
       legbg <- scheme2
       col <- outline_col
@@ -263,15 +271,15 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
                               text=unlist(lapply(annot, '[', 'text')))
         annotdf$ax <- annotdf$x + annotdf$ax / (width - 150) * (xrange[2] - xrange[1]) * 1.2
         annotdf$ay <- annotdf$y - annotdf$ay / height * (yrange[2] - yrange[1]) * 1.2
-        annotdf$texth <- strheight(labs, cex=0.72) * 1.6
-        annotdf$textw <- strwidth(labs, cex=0.72) * 1.07
+        annotdf$texth <- strheight(labs, cex=cex.text) * 1.6
+        annotdf$textw <- strwidth(labs, cex=cex.text) * 1.07
         for (i in 1:nrow(annotdf)) {
           lines(c(annotdf$x[i], annotdf$ax[i]), c(annotdf$y[i], annotdf$ay[i]), xpd=NA)
         }
         rect(annotdf$ax - annotdf$textw/2, annotdf$ay - annotdf$texth/2,
              annotdf$ax + annotdf$textw/2, annotdf$ay + annotdf$texth/2,
              col='white', border = NA, xpd = NA)
-        text(annotdf$ax, annotdf$ay, annotdf$text, xpd=NA, cex=0.72)
+        text(annotdf$ax, annotdf$ay, annotdf$text, xpd=NA, cex=cex.text)
       }
       legend(x=xrange[2] + (xrange[2] - xrange[1]) * 0.02, y=yrange[2],
              legend=legtext, pt.bg=legbg,
