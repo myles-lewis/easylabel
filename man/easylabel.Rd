@@ -30,9 +30,11 @@ easylabel(
   outline_lwd = 0.5,
   cex.text = 0.72,
   mgp = c(2, 0.7, 0),
+  Ltitle = "",
+  Rtitle = "",
+  LRtitle_side = 1,
   fullname = FALSE,
   AnnotationDb = org.Hs.eg.db,
-  panel.last = NULL,
   symbols = c("circle", "diamond-open"),
   markerSize = 8,
   markerOutline = list(width = outline_lwd, color = outline_col),
@@ -98,16 +100,21 @@ See \code{\link[=text]{text()}}.}
 \item{mgp}{The margin line for the axis title, axis labels and axis line.
 See \code{\link[=par]{par()}}.}
 
+\item{Ltitle}{a character or expression (see \link{plotmath}) value specifying
+text for left side title. Size of font can be changed using \code{cex.lab}.}
+
+\item{Rtitle}{a character or expression value specifying text for right side
+title. Size of font can be changed using \code{cex.lab}.}
+
+\item{LRtitle_side}{on which side of the plot for \code{Ltitle} and \code{Rtitle}
+(1=bottom, 3=top). See \code{\link[=mtext]{mtext()}}.}
+
 \item{fullname}{Logical whether to expand gene symbols using Bioconductor
 AnnotationDbi package. With multiple matches, returns first value only.
 See \code{\link[=mapIds]{mapIds()}}.}
 
 \item{AnnotationDb}{Annotation database to use when expanding gene symbols.
 Default database is human gene database \link{org.Hs.eg.db}.}
-
-\item{panel.last}{an 'expression' to be evaluated after plotting has taken
-place but before the axes and labels are added. This can be useful for
-adding trend lines or legends. See \link{plot.default}.}
 
 \item{symbols}{passed to plotly to specify symbols for normal points and
 outliers.}
@@ -121,6 +128,15 @@ outliers.}
 \item{labSize}{Font size for plotly labels (default 12).}
 
 \item{custom_annotation}{List of annotations to be added via \code{\link[plotly:layout]{plotly::layout()}}.}
+
+\item{...}{Further graphical parameters passed to \code{plot()} when saving via
+base graphics. The most useful for most users are likely to be \code{cex.lab}
+which alters axis title font size (default 1, see \code{\link[=par]{par()}}), \code{cex.axis} which
+alters axis numbering font size (default 1), and \code{panel.last} which allows
+additional plotting functions to be called after the main plot has been
+plotted but before the labels and label lines are drawn, which will allow the
+addition of trend lines, extra titles or legends for example (see
+\code{\link[=plot.default]{plot.default()}}).}
 }
 \description{
 Interactive labelling of scatter plots using shiny/plotly interface.
@@ -144,5 +160,5 @@ editing is very slow).
 }
 }
 \seealso{
-\code{\link[=plot_ly]{plot_ly()}} \code{\link[=par]{par()}}
+\code{\link[=plot_ly]{plot_ly()}}, \code{\link[=points]{points()}}, \code{\link[=par]{par()}}, \code{\link[=plot.default]{plot.default()}}, \code{\link[=plotmath]{plotmath()}}
 }
