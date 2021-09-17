@@ -368,7 +368,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
 
     # Table tab
     output$table <- DT::renderDataTable({
-      showCols <- colnames(data)[!colnames(data) %in% c('log10P', 'col', 'outlier')]
+      showCols <- colnames(data)[!colnames(data) %in% c('log10P', 'col', 'outlier', 'symbol')]
       df <- data[data[,col] %in% input$selgroup, showCols]
       cols <- colnames(df)[sapply(df, class) == "numeric"]
       rn <- if (is.null(labs)) TRUE else {
