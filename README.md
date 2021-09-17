@@ -45,6 +45,20 @@ The `useQ` argument will switch to using q values for FDR. The `fullname`
 argument will use Bioconductor package `AnnotationDbi` and the `org.Hs.eg.db`
 human gene database to expand gene symbols in the Table tab.
 
+You can add left and right sided titles using `Ltitle` and `Rtitle` to explain
+the direction of effect for up/downregulation. `LRtitle_side = 1` puts these
+titles on the bottom and `= 3` puts them on the top. `cex.lab` controls font
+size for these titles as well as axis titles. `cex.axis` controls font size for
+axis numbering.
+
+```
+volcanoplot(volc1, useQ = TRUE, fullname = TRUE,
+            Ltitle=expression(symbol("\254") ~ "Non-responder"),
+            Rtitle=expression("Responder" ~ symbol("\256")),
+            LRtitle_side=1,
+            cex.lab=0.9, cex.axis=0.8)
+```
+
 The colour scheme system has been expanded to allow multiple fold change
 cut-offs. In this example the colours are symmetrical.
 

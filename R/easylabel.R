@@ -48,6 +48,12 @@
 #' See [text()].
 #' @param mgp The margin line for the axis title, axis labels and axis line.
 #' See [par()].
+#' @param Ltitle a character or expression value specifying text for left side
+#' title. Size of font can be changed using `cex.lab`.
+#' @param Rtitle a character or expression value specifying text for right side
+#' title. Size of font can be changed using `cex.lab`.
+#' @param LRtitle_side on which side of the plot for `Ltitle` and `Rtitle`
+#' (1=bottom, 3=top). See [mtext].
 #' @param fullname Logical whether to expand gene symbols using Bioconductor
 #' AnnotationDbi package. With multiple matches, returns first value only.
 #' See [mapIds()].
@@ -88,6 +94,8 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
                       outline_col='white', outline_lwd=0.5,
                       cex.text=0.72,
                       mgp=c(2, 0.7, 0),
+                      Ltitle="", Rtitle="",
+                      LRtitle_side=1,
                       fullname=FALSE,
                       AnnotationDb=org.Hs.eg.db,
                       panel.last=NULL,
@@ -250,6 +258,11 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
              if (zeroline) abline(h=0, v=0)
            },
            panel.last=panel.last)
+      args <- list(...)
+      mtext(Ltitle, LRtitle_side, adj=0, line=ifelse(LRtitle_pos<3, mgp[1], 0.1),
+            cex=args$cex.lab)
+      mtext(Rtitle, LRtitle_side, adj=1, line=ifelse(LRtitle_pos<3, mgp[1], 0.1),
+            cex=args$cex.lab)
       legtext <- levels(data$col)
       legbg <- scheme2
       col <- outline_col
