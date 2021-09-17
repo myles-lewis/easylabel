@@ -61,6 +61,7 @@
 #' @param markerSize Size of markers as per plotly.
 #' @param markerOutline List of plotly arguments to define marker outlines.
 #' @param marker List of arguments to control plotly markers.
+#' @param labSize Font size for plotly labels (default 12).
 #' @param custom_annotation List of annotations to be added via [plotly::layout()].
 #' @seealso [plot_ly()] [par()]
 #' @importFrom shiny fluidPage tabsetPanel tabPanel fluidRow column
@@ -94,6 +95,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
                       markerSize=8,
                       markerOutline=list(width=outline_lwd, color=outline_col),
                       marker=list(size=markerSize, opacity=alpha, line=markerOutline),
+                      labSize=cex.text / 0.72 * 12,
                       custom_annotation=NULL, ...) {
   data$outlier <- FALSE
   if (!is.null(ylim)) {
@@ -127,7 +129,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
   if (is.null(scheme)) scheme <- brewer.pal(nlevels(data[,col]), "Set1")
   labelchoices <- if (is.null(labs)) rownames(data) else data[, labs]
   startLabels <- startLabels[startLabels %in% labelchoices]
-  start_annot <- annotation(startLabels, data, x, y)
+  start_annot <- annotation(startLabels, data, x, y, labSize = labSize)
   start_xy <- lapply(start_annot, function(i) list(ax=i$ax, ay=i$ay))
   names(start_xy) <- startLabels
   if (is.na(outline_col)) outline_lwd <- 0  # fix plotly no outlines
@@ -170,7 +172,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
     output$plotly <- renderPlotly({
       labs <- startLabels
       isolate(pt <- as.numeric(input$ptype))
-      annot <- annotation(labs, data, x, y)
+      annot <- annotation(labs, data, x, y, labSize = labSize)
       isolate(labels$annot <- annot)
       if (!is.null(hline)) {
         shapes=lapply(hline, function(i) {
@@ -263,7 +265,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
       }
       abline(h=hline, v=vline, col='#AAAAAA', lty=2)
       if (length(labs) > 0) {
-        annot <- annotation(labs, data, x, y, current_xy)
+        annot <- annotation(labs, data, x, y, current_xy, labSize = labSize)
         annotdf <- data.frame(x=unlist(lapply(annot, '[', 'x')),
                               y=unlist(lapply(annot, '[', 'y')),
                               ax=unlist(lapply(annot, '[', 'ax')),
@@ -337,7 +339,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
       labs <- labels$list
       current_xy <- labelsxy$list
       # Annotate gene labels
-      annot <- annotation(labs, data, x, y, current_xy)
+      annot <- annotation(labs, data, x, y, current_xy, labSize = labSize)
       labelsxy$list <- lapply(annot, function(i) list(ax=i$ax, ay=i$ay))
       names(labelsxy$list) <- labs
       plotlyProxy('plotly', session) %>%
@@ -519,7 +521,7 @@ volcanoplot <- function(data, x=NULL, y=NULL, fdrcutoff=0.05, fccut=NULL,
 }
 
 # Annotate gene labels
-annotation <- function(labels, data, x, y, current_xy=NULL) {
+annotation <- function(labels, data, x, y, current_xy=NULL, labSize=12) {
   if (length(labels)!=0) {
     annot <- lapply(1:length(labels), function(j) {
       i <- labels[j]
@@ -537,7 +539,7 @@ annotation <- function(labels, data, x, y, current_xy=NULL) {
       }
       list(x=sx, y=sy, ax=ax, ay=ay,
            text=i, textangle=0,
-           font=list(color="black", size=12),
+           font=list(color="black", size=labSize),
            arrowcolor="black", arrowwidth=1, arrowhead=0, arrowsize=1.5,
            xanchor="auto", yanchor="auto")
     })

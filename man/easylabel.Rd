@@ -37,6 +37,7 @@ easylabel(
   markerSize = 8,
   markerOutline = list(width = outline_lwd, color = outline_col),
   marker = list(size = markerSize, opacity = alpha, line = markerOutline),
+  labSize = cex.text/0.72 * 12,
   custom_annotation = NULL,
   ...
 )
@@ -116,6 +117,8 @@ outliers.}
 \item{markerOutline}{List of plotly arguments to define marker outlines.}
 
 \item{marker}{List of arguments to control plotly markers.}
+
+\item{labSize}{Font size for plotly labels (default 12).}
 
 \item{custom_annotation}{List of annotations to be added via \code{\link[plotly:layout]{plotly::layout()}}.}
 }
