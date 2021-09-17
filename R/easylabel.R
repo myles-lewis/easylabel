@@ -275,12 +275,10 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
         annotdf$ay <- annotdf$y - annotdf$ay / height * (yrange[2] - yrange[1]) * 1.2
         annotdf$texth <- strheight(labs, cex=cex.text) * 1.6
         annotdf$textw <- strwidth(labs, cex=cex.text) * 1.07
-        for (i in 1:nrow(annotdf)) {
-          lines(c(annotdf$x[i], annotdf$ax[i]), c(annotdf$y[i], annotdf$ay[i]), xpd=NA)
-        }
-        rect(annotdf$ax - annotdf$textw/2, annotdf$ay - annotdf$texth/2,
-             annotdf$ax + annotdf$textw/2, annotdf$ay + annotdf$texth/2,
-             col='white', border = NA, xpd = NA)
+        linerect(annotdf)
+        # rect(annotdf$ax - annotdf$textw/2, annotdf$ay - annotdf$texth/2,
+        #      annotdf$ax + annotdf$textw/2, annotdf$ay + annotdf$texth/2,
+        #      col='white', border = NA, xpd = NA)
         text(annotdf$ax, annotdf$ay, annotdf$text, xpd=NA, cex=cex.text)
       }
       legend(x=xrange[2] + (xrange[2] - xrange[1]) * 0.02, y=yrange[2],
@@ -546,3 +544,26 @@ annotation <- function(labels, data, x, y, current_xy=NULL, labSize=12) {
   } else {annot <- list()}
   annot
 }
+
+# Plot shorter label lines that avoid hitting text
+linerect <- function(df) {
+  df$dx <- df$ax - df$x
+  df$dy <- df$ay - df$y
+  df$topbot <- abs(df$dy / df$dx) > df$texth / df$textw
+  df$dx2 <- with(df, ifelse(topbot, abs(0.5 * texth * dx / dy) * sign(dx),
+                            0.5 * textw * sign(dx)))
+  df$dy2 <- with(df, ifelse(topbot, 0.5 * texth * sign(dy),
+                            abs(0.5 * textw * dy / dx) * sign(dy)))
+  df$ax2 <- df$ax - df$dx2
+  df$ay2 <- df$ay - df$dy2
+  # x,y inside rectangle => no line
+  inside <- df$x > df$ax - df$textw & df$x < df$ax + df$textw &
+    df$y > df$ay - df$texth & df$y < df$ay + df$texth
+  df$ax2[inside] <- NA
+  for (i in 1:nrow(df)) {
+    lines(c(df$x[i], df$ax2[i]), c(df$y[i], df$ay2[i]), xpd=NA)
+  }
+}
+
+
+
