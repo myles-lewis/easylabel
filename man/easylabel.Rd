@@ -30,6 +30,9 @@ easylabel(
   outline_lwd = 0.5,
   cex.text = 0.72,
   mgp = c(2, 0.7, 0),
+  Ltitle = "",
+  Rtitle = "",
+  LRtitle_side = 1,
   fullname = FALSE,
   AnnotationDb = org.Hs.eg.db,
   panel.last = NULL,
@@ -97,6 +100,15 @@ See \code{\link[=text]{text()}}.}
 
 \item{mgp}{The margin line for the axis title, axis labels and axis line.
 See \code{\link[=par]{par()}}.}
+
+\item{Ltitle}{a character or expression value specifying text for left side
+title. Size of font can be changed using \code{cex.lab}.}
+
+\item{Rtitle}{a character or expression value specifying text for right side
+title. Size of font can be changed using \code{cex.lab}.}
+
+\item{LRtitle_side}{on which side of the plot for \code{Ltitle} and \code{Rtitle}
+(1=bottom, 3=top). See \link{mtext}.}
 
 \item{fullname}{Logical whether to expand gene symbols using Bioconductor
 AnnotationDbi package. With multiple matches, returns first value only.
