@@ -46,10 +46,11 @@ argument will use Bioconductor package `AnnotationDbi` and the `org.Hs.eg.db`
 human gene database to expand gene symbols in the Table tab.
 
 You can add left and right sided titles using `Ltitle` and `Rtitle` to explain
-the direction of effect for up/downregulation. `LRtitle_side = 1` puts these
-titles on the bottom and `= 3` puts them on the top. `cex.lab` controls font
-size for these titles as well as axis titles. `cex.axis` controls font size for
-axis numbering.
+the direction of effect for up/downregulation. The use of `expression` in the
+example below shows how to add left/right arrow symbols to the titles.
+`LRtitle_side = 1` puts these titles on the bottom while `= 3` puts them on the
+top. `cex.lab` controls font size for these titles as well as axis titles.
+`cex.axis` controls font size for axis numbering.
 
 ```
 volcanoplot(volc1, useQ = TRUE, fullname = TRUE,
