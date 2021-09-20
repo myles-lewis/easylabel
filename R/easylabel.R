@@ -441,6 +441,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
 #' this is automatically set.
 #' @param y Name of the column containing p values. For DESeq2 and limma objects this is
 #' automatically set.
+#' @param padj Name of the column containing adjusted p values. Can not be NULL when y is not NULL.                 
 #' @param fdrcutoff Cut-off for FDR significance. Defaults to FDR < 0.05
 #' @param fccut Optional vector of log fold change cut-offs.
 #' @param scheme Colour scheme. If no fold change cut-off is set, 2 colours
@@ -459,7 +460,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
 #' @export
 
 
-volcanoplot <- function(data, x=NULL, y=NULL, fdrcutoff=0.05, fccut=NULL,
+volcanoplot <- function(data, x=NULL, y=NULL, padj=NULL, fdrcutoff=0.05, fccut=NULL,
                         scheme=c('darkgrey', 'blue', 'red'),
                         showCounts=TRUE, useQ=FALSE, ...) {
   if (is.null(x)) {
