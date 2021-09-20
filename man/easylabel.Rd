@@ -29,7 +29,7 @@ easylabel(
   outline_col = "white",
   outline_lwd = 0.5,
   cex.text = 0.72,
-  mgp = c(2, 0.7, 0),
+  mgp = c(1.8, 0.5, 0),
   Ltitle = "",
   Rtitle = "",
   LRtitle_side = 1,
