@@ -80,10 +80,10 @@ library(RColorBrewer)
 volcanoplot(volc1, fccut = c(1, 2), fdrcutoff = 0.2, ylim = c(0, 6), xlim=c(-5,5),
             scheme=c('darkgrey', rev(brewer.pal(9, 'RdYlBu')[-(4:6)])), alpha=0.75, outline_col=NA)
 ```
-A box around the plot can be added using `bty='o'`. Åxes can be customised by
-first suppressing the initial axis using `xaxt='n'` or `yaxt='n'` and then
-adding an `axis()` call using `panel.last`. A top title can also be added using
-`panel.last` and `mtext()`. 
+A box around the plot can be added using `bty='o'`.
+Axes can be customised by first suppressing the initial axis using `xaxt='n'` or
+`yaxt='n'` and then adding an `axis()` call using `panel.last`.
+A top title can also be added using `mtext()` via `panel.last`. 
 ```
 volcanoplot(volc1, useQ = TRUE, fullname = TRUE,
             xaxt = 'n', yaxt = 'n', bty = 'o', panel.last = {
