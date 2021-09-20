@@ -33,17 +33,23 @@ easylabel(ymatrix, x = 'x', y = 'y', col = 'col',
           scheme = c('darkgrey', 'green3', 'gold3', 'blue'),
           xlab = expression("log"[2] ~ " fold change post-Rituximab"),
           ylab = expression("log"[2] ~ " fold change post-Tocilizumab"),
-          showgrid = TRUE, fullname = TRUE)
+          showgrid = TRUE)
 ```
 Use the `volcanoplot()` function to quickly plot a volcano plot from DESeq2 or
-EdgeR objects.
+EdgeR objects. The `useQ` argument will switch to using q values for FDR.
 ```
 volc1 <- readRDS('/Users/myles/R/R4RA/DESeq2.nociceptive.res.RDS')
-volcanoplot(volc1, useQ = TRUE, fullname = TRUE)
+volcanoplot(volc1, useQ = TRUE)
 ```
-The `useQ` argument will switch to using q values for FDR. The `fullname`
-argument will use Bioconductor package `AnnotationDbi` and the `org.Hs.eg.db`
-human gene database to expand gene symbols in the Table tab.
+The `fullGeneNames` argument will use Bioconductor package `AnnotationDbi` and
+the `org.Hs.eg.db` human gene database to expand gene symbols in the Table tab.
+Both will need to be installed from Bioconductor.
+
+```
+BiocManager::install("AnnotationDbi")
+BiocManager::install("org.Hs.eg.db")
+volcanoplot(volc1, useQ = TRUE, fullGeneNames = TRUE)
+```
 
 You can add left and right sided titles using `Ltitle` and `Rtitle` to explain
 the direction of effect for up/downregulation. The use of `expression` in the
@@ -53,7 +59,7 @@ top. `cex.lab` controls font size for these titles as well as axis titles.
 `cex.axis` controls font size for axis numbering.
 
 ```
-volcanoplot(volc1, useQ = TRUE, fullname = TRUE,
+volcanoplot(volc1, useQ = TRUE, fullGeneNames = TRUE,
             Ltitle=expression(symbol("\254") ~ "Non-responder"),
             Rtitle=expression("Responder" ~ symbol("\256")),
             LRtitle_side=1,
