@@ -54,11 +54,11 @@
 #' title. Size of font can be changed using `cex.lab`.
 #' @param LRtitle_side on which side of the plot for `Ltitle` and `Rtitle`
 #' (1=bottom, 3=top). See [mtext()].
-#' @param fullname Logical whether to expand gene symbols using Bioconductor
+#' @param fullGeneNames Logical whether to expand gene symbols using Bioconductor
 #' AnnotationDbi package. With multiple matches, returns first value only.
 #' See [mapIds()].
 #' @param AnnotationDb Annotation database to use when expanding gene symbols.
-#' Default database is human gene database [org.Hs.eg.db].
+#' Defaults to human gene database `AnnotationDb = org.Hs.eg.db`.
 #' @param symbols passed to plotly to specify symbols for normal points and
 #' outliers.
 #' @param markerSize Size of markers as per plotly.
@@ -101,8 +101,8 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
                       mgp=c(1.8, 0.5, 0),
                       Ltitle="", Rtitle="",
                       LRtitle_side=1,
-                      fullname=FALSE,
-                      AnnotationDb=org.Hs.eg.db::org.Hs.eg.db,
+                      fullGeneNames=FALSE,
+                      AnnotationDb=NULL,
                       symbols=c('circle', 'diamond-open'),
                       markerSize=8,
                       markerOutline=list(width=outline_lwd, color=outline_col),
@@ -146,10 +146,17 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
   start_xy <- lapply(start_annot, function(i) list(ax=i$ax, ay=i$ay))
   names(start_xy) <- startLabels
   if (is.na(outline_col)) outline_lwd <- 0  # fix plotly no outlines
-  if (fullname) {
+  if (fullGeneNames) {
     if (!requireNamespace("AnnotationDbi", quietly = TRUE)) {
       stop('Please install package AnnotationDbi using BiocManager::install("AnnotationDbi")',
            call. = FALSE)
+    }
+    if (is.null(AnnotationDb)) {
+      if (!requireNamespace("org.Hs.eg.db", quietly = TRUE)) {
+        stop('Please install a gene annotation database eg. BiocManager::install("org.Hs.eg.db")',
+             call. = FALSE)
+      }
+      AnnotationDb <- org.Hs.eg.db::org.Hs.eg.db
     }
     data$gene_fullname <- AnnotationDbi::mapIds(AnnotationDb, labelchoices, "GENENAME", "ALIAS", multiVals = 'first')
   }

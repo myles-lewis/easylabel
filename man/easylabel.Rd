@@ -33,8 +33,8 @@ easylabel(
   Ltitle = "",
   Rtitle = "",
   LRtitle_side = 1,
-  fullname = FALSE,
-  AnnotationDb = org.Hs.eg.db::org.Hs.eg.db,
+  fullGeneNames = FALSE,
+  AnnotationDb = NULL,
   symbols = c("circle", "diamond-open"),
   markerSize = 8,
   markerOutline = list(width = outline_lwd, color = outline_col),
@@ -109,12 +109,12 @@ title. Size of font can be changed using \code{cex.lab}.}
 \item{LRtitle_side}{on which side of the plot for \code{Ltitle} and \code{Rtitle}
 (1=bottom, 3=top). See \code{\link[=mtext]{mtext()}}.}
 
-\item{fullname}{Logical whether to expand gene symbols using Bioconductor
+\item{fullGeneNames}{Logical whether to expand gene symbols using Bioconductor
 AnnotationDbi package. With multiple matches, returns first value only.
 See \code{\link[=mapIds]{mapIds()}}.}
 
 \item{AnnotationDb}{Annotation database to use when expanding gene symbols.
-Default database is human gene database \link{org.Hs.eg.db}.}
+Defaults to human gene database \code{AnnotationDb = org.Hs.eg.db}.}
 
 \item{symbols}{passed to plotly to specify symbols for normal points and
 outliers.}
