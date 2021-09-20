@@ -109,6 +109,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
                       marker=list(size=markerSize, opacity=alpha, line=markerOutline),
                       labSize=cex.text / 0.72 * 12,
                       custom_annotation=NULL, ...) {
+  data <- as.data.frame(data)
   data$outlier <- FALSE
   if (!is.null(ylim)) {
     notNA <- !is.na(data[,y])
@@ -484,7 +485,7 @@ volcanoplot <- function(data, x=NULL, y=NULL, fdrcutoff=0.05, fccut=NULL,
     siggenes <- data[, padj] < fdrcutoff
   }
   siggenes[is.na(siggenes)] <- FALSE
-  if (sum(siggenes) >0) fdrline <- min(data[siggenes, 'log10P'])
+  if (sum(siggenes) >0) fdrline <- min(data[siggenes, 'log10P']) else fdrline <- NULL
   if (showCounts) {
     up <- sum(siggenes & data[, x] > 0)
     down <- sum(siggenes & data[, x] < 0)
