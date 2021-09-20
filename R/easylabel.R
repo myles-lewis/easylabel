@@ -98,7 +98,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
                       pch=21, outlier_pch=5,
                       outline_col='white', outline_lwd=0.5,
                       cex.text=0.72,
-                      mgp=c(2, 0.7, 0),
+                      mgp=c(1.8, 0.5, 0),
                       Ltitle="", Rtitle="",
                       LRtitle_side=1,
                       fullname=FALSE,
@@ -252,11 +252,10 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
       legenddist <- max((max(nchar(levels(data$col)), na.rm = TRUE)+3) * 0.37, 6)
 
       pdf(file, width = width/100, height = height/100 + 0.75)
-      op <- par(mgp=mgp, mar=c(4, 4, 2, legenddist))
+      op <- par(mgp=mgp, mar=c(4, 4, 2, legenddist), tcl=-0.3, las=1, bty='l')
       plot(data[!data$outlier, x], data[!data$outlier, y],
            pch=pch, bg=scheme2[data$col[!data$outlier]], col=outline_col, lwd=outline_lwd,
-           xlim=xlim, ylim=ylim, xlab=xlab, ylab=ylab,
-           las=1, bty='l', ...,
+           xlim=xlim, ylim=ylim, xlab=xlab, ylab=ylab, ...,
            panel.first={
              if (showgrid) abline(h=pretty(data[,y]), v=pretty(data[,x]), col='grey80', lwd=0.5)
              if (zeroline) abline(h=0, v=0)
@@ -297,7 +296,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
         #      col='white', border = NA, xpd = NA)
         text(annotdf$ax, annotdf$ay, annotdf$text, xpd=NA, cex=cex.text)
       }
-      legend(x=xrange[2] + (xrange[2] - xrange[1]) * 0.02, y=yrange[2],
+      legend(x=xrange[2] + (xrange[2] - xrange[1]) * 0.04, y=yrange[2],
              legend=legtext, pt.bg=legbg,
              pt.lwd=pt.lwd, pt.cex=0.9,
              col=col, pch=pch, bty='n',
