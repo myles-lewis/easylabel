@@ -17,11 +17,15 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 biocViews:
+Suggests:
+    AnnotationDbi,
+    org.Hs.eg.db
 Imports:
     plotly,
     shiny,
     RColorBrewer,
     DT,
+    Hmisc,
     qvalue
 RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE)

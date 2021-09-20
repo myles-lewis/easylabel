@@ -102,7 +102,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
                       Ltitle="", Rtitle="",
                       LRtitle_side=1,
                       fullname=FALSE,
-                      AnnotationDb=org.Hs.eg.db,
+                      AnnotationDb=org.Hs.eg.db::org.Hs.eg.db,
                       symbols=c('circle', 'diamond-open'),
                       markerSize=8,
                       markerOutline=list(width=outline_lwd, color=outline_col),
@@ -147,7 +147,11 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
   names(start_xy) <- startLabels
   if (is.na(outline_col)) outline_lwd <- 0  # fix plotly no outlines
   if (fullname) {
-    data$gene_fullname <- mapIds(AnnotationDb, labelchoices, "GENENAME", "ALIAS", multiVals = 'first')
+    if (!requireNamespace("AnnotationDbi", quietly = TRUE)) {
+      stop('Please install package AnnotationDbi using BiocManager::install("AnnotationDbi")',
+           call. = FALSE)
+    }
+    data$gene_fullname <- AnnotationDbi::mapIds(AnnotationDb, labelchoices, "GENENAME", "ALIAS", multiVals = 'first')
   }
 
   ui <- fluidPage(
@@ -441,7 +445,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
 #' this is automatically set.
 #' @param y Name of the column containing p values. For DESeq2 and limma objects this is
 #' automatically set.
-#' @param padj Name of the column containing adjusted p values. Can not be NULL when y is not NULL.                 
+#' @param padj Name of the column containing adjusted p values. Can not be NULL when y is not NULL.
 #' @param fdrcutoff Cut-off for FDR significance. Defaults to FDR < 0.05
 #' @param fccut Optional vector of log fold change cut-offs.
 #' @param scheme Colour scheme. If no fold change cut-off is set, 2 colours

@@ -34,7 +34,7 @@ easylabel(
   Rtitle = "",
   LRtitle_side = 1,
   fullname = FALSE,
-  AnnotationDb = org.Hs.eg.db,
+  AnnotationDb = org.Hs.eg.db::org.Hs.eg.db,
   symbols = c("circle", "diamond-open"),
   markerSize = 8,
   markerOutline = list(width = outline_lwd, color = outline_col),
