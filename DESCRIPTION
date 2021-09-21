@@ -19,7 +19,9 @@ LazyData: true
 biocViews:
 Suggests:
     AnnotationDbi,
-    org.Hs.eg.db
+    knitr,
+    org.Hs.eg.db,
+    rmarkdown
 Imports:
     plotly,
     shiny,
@@ -29,3 +31,4 @@ Imports:
     qvalue
 RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE)
+VignetteBuilder: knitr

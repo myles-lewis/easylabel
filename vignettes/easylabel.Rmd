@@ -1,0 +1,152 @@
+---
+title: "easylabel"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{easylabel}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, include = FALSE}
+library(easylabel)
+```
+
+## Installation
+
+Install from Github
+```{r eval = FALSE}
+devtools::install_github("myles-lewis/easylabel", auth_token="...")
+library(easylabel)
+```
+
+## Simple instructions:
+* Hover over and click on/off genes which you want to label.
+* When you have selected all your chosen genes, then drag gene names to move
+  label positions.
+* Click the save button to export a PDF in base graphics.
+
+## To export an SVG from plotly: 
+* You can move the legend as well.
+* Switch to SVG when finalised (only do this at last moment as otherwise
+  editing is very slow).
+* Press camera button in modebar to save image as SVG.
+
+## Examples:
+
+```{r include = FALSE}
+ymatrix <- readRDS('/Users/myles/R/R4RA/ymatrix_drug_time.rds')
+```
+```{r eval = FALSE}
+easylabel(ymatrix, x = 'x', y = 'y', col = 'col',
+          scheme = c('darkgrey', 'green3', 'gold3', 'blue'),
+          xlab = expression("log"[2] ~ " fold change post-Rituximab"),
+          ylab = expression("log"[2] ~ " fold change post-Tocilizumab"),
+          showgrid = TRUE)
+```
+
+```{r plot1, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+knitr::include_graphics("/users/myles/documents/github/easylabel/vignettes/plot1.png")
+```
+
+Use the `volcanoplot()` function to quickly plot a volcano plot from DESeq2 or
+EdgeR objects. The `useQ` argument will switch to using q values for FDR.
+```{r include = FALSE}
+volc1 <- readRDS('/Users/myles/R/R4RA/DESeq2.nociceptive.res.RDS')
+```
+```{r eval = FALSE}
+volcanoplot(volc1, useQ = TRUE)
+```
+
+```{r plot2, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+knitr::include_graphics("/users/myles/documents/github/easylabel/vignettes/plot2.png")
+```
+
+The `fullGeneNames` argument will use Bioconductor package `AnnotationDbi` and
+the `org.Hs.eg.db` human gene database to expand gene symbols in the Table tab.
+Both will need to be installed from Bioconductor.
+
+```{r eval = FALSE}
+BiocManager::install("AnnotationDbi")
+BiocManager::install("org.Hs.eg.db")
+volcanoplot(volc1, useQ = TRUE, fullGeneNames = TRUE)
+```
+
+```{r table1, echo = FALSE, message=FALSE, fig.align='center', out.width='100%', out.extra='style="border: 0;"'}
+knitr::include_graphics("/users/myles/documents/github/easylabel/vignettes/table1.png")
+```
+
+You can add left and right sided titles using `Ltitle` and `Rtitle` to explain
+the direction of effect for up/downregulation. The use of `expression` in the
+example below shows how to add left/right arrow symbols to the titles.
+`LRtitle_side = 1` puts these titles on the bottom while `= 3` puts them on the
+top. `cex.lab` controls font size for these titles as well as axis titles.
+`cex.axis` controls font size for axis numbering.
+
+The colour scheme system has been expanded to allow multiple fold change
+cut-offs. In this example the colours are symmetrical. `xlim` and `ylim` allow
+control over the range of each axis. Outlying points are shown as triangles.
+Outliers can be toggled off using `showOutliers = FALSE`.
+
+```{r eval = FALSE}
+volcanoplot(volc1,
+            useQ = TRUE, fullGeneNames = TRUE,
+            Ltitle=expression(symbol("\254") ~ "Non-responder"),
+            Rtitle=expression("Responder" ~ symbol("\256")),
+            LRtitle_side=1,
+            cex.lab=0.9, cex.axis=0.8,
+            fccut = c(1, 2), fdrcutoff = 0.2,
+            ylim = c(0, 6), xlim=c(-5,5),
+            scheme=c('darkgrey', 'blue', 'orange', 'red'))
+```
+
+```{r plot3, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+knitr::include_graphics("/users/myles/documents/github/easylabel/vignettes/plot3.png")
+```
+
+In the next 2 plots, the colours range from blue for downregulated genes,
+through to red for upregulated genes. Vertical lines can be added using `vline`.
+```{r eval = FALSE}
+volcanoplot(volc1, fccut = 1, fdrcutoff = 0.2, ylim = c(0, 6), xlim=c(-5,5),
+            scheme=c('darkgrey', 'blue', 'lightblue', 'orange', 'red'), vline=c(-1,1))
+```
+
+```{r plot4, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+knitr::include_graphics("/users/myles/documents/github/easylabel/vignettes/plot4.png")
+```
+
+The next example has 6 colours and also shows how to remove the white outlines
+around points using `outline_col = NA` and use transparency instead via `alpha`.
+```{r eval = FALSE}
+library(RColorBrewer)
+volcanoplot(volc1, fccut = c(1, 2), fdrcutoff = 0.2, ylim = c(0, 6), xlim=c(-5,5),
+            scheme=c('darkgrey', rev(brewer.pal(9, 'RdYlBu')[-(4:6)])), alpha=0.75, outline_col=NA)
+```
+
+```{r plot5, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+knitr::include_graphics("/users/myles/documents/github/easylabel/vignettes/plot5.png")
+```
+
+A box around the plot can be added using `bty='o'` (see `par()`).
+Axes can be customised by first suppressing the initial axis using `xaxt='n'` or
+`yaxt='n'` and then adding an `axis()` call using `panel.last`.
+A top title can also be added using `mtext()` via `panel.last`. 
+```{r eval = FALSE}
+volcanoplot(volc1, useQ = TRUE, fullname = TRUE,
+            xaxt = 'n', yaxt = 'n', bty = 'o', panel.last = {
+            axis(side = 1, at = -6:6)
+            axis(side = 2, at = 0:12)
+            mtext("DEG volcano plot", side = 3)
+            })
+```
+
+```{r plot6, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+knitr::include_graphics("/users/myles/documents/github/easylabel/vignettes/plot6.png")
+```
+
