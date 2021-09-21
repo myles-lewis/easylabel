@@ -26,7 +26,7 @@ To export an SVG from plotly:
 * Press camera button in modebar to save image as SVG.
 
 Examples:
-(for more details see the Html vignette in the vignettes folder)
+(see vignette)
 
 ```
 ymatrix <- readRDS('/Users/myles/R/R4RA/ymatrix_drug_time.rds')
