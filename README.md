@@ -42,6 +42,11 @@ EdgeR objects. The `useQ` argument will switch to using q values for FDR.
 volc1 <- readRDS('/Users/myles/R/R4RA/DESeq2.nociceptive.res.RDS')
 volcanoplot(volc1, useQ = TRUE)
 ```
+Use the `MAplot()` function to quickly plot an MA plot from DESeq2 or EdgeR
+objects.
+```
+MAplot(volc1, useQ = TRUE)
+```
 The `fullGeneNames` argument will use Bioconductor package `AnnotationDbi` and
 the `org.Hs.eg.db` human gene database to expand gene symbols in the Table tab.
 Both will need to be installed from Bioconductor.

@@ -68,6 +68,19 @@ volcanoplot(volc1, useQ = TRUE)
 knitr::include_graphics("/users/myles/documents/github/easylabel/vignettes/plot2.png")
 ```
 
+Use the `MAplot()` function to quickly plot an MA plot from DESeq2 or EdgeR
+objects.
+```{r include = FALSE}
+volc2 <- readRDS('/Users/myles/R/R4RA/limma.output.RDS')
+```
+```{r eval = FALSE}
+MAplot(volc2, useQ = TRUE)
+```
+
+```{r maplot1, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+knitr::include_graphics("/users/myles/documents/github/easylabel/vignettes/MAplot1.png")
+```
+
 The `fullGeneNames` argument will use Bioconductor package `AnnotationDbi` and
 the `org.Hs.eg.db` human gene database to expand gene symbols in the Table tab.
 Both will need to be installed from Bioconductor.
@@ -131,6 +144,19 @@ volcanoplot(volc1, fccut = c(1, 2), fdrcutoff = 0.2, ylim = c(0, 6), xlim=c(-5,5
 
 ```{r plot5, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
 knitr::include_graphics("/users/myles/documents/github/easylabel/vignettes/plot5.png")
+```
+
+Similarly 6 colours can be applied to MA plots using 3 levels of cut-off for FDR
+(note the colour scheme is in a slightly different order).
+
+```{r eval = FALSE}
+MAplot(volc2, fdrcut=c(0.05, 0.01, 0.001), cex=0.8, useQ = TRUE,
+       alpha=0.75, outline_col=NA,
+       scheme=c('darkgrey', brewer.pal(9, 'RdYlBu')[c(7:9, 3:1)]))
+```
+
+```{r maplot2, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+knitr::include_graphics("/users/myles/documents/github/easylabel/vignettes/MAplot2.png")
 ```
 
 The size of markers can be changed using `cex` (default 1).
