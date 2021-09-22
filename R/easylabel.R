@@ -469,7 +469,6 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
 #' @param ... Other arguments passed to [easylabel()].
 #' @seealso [easylabel()]
 #' @importFrom qvalue qvalue
-#' @importFrom Hmisc cut2
 #' @export
 
 
@@ -520,7 +519,7 @@ volcanoplot <- function(data, x=NULL, y=NULL, padj=NULL, fdrcutoff=0.05, fccut=N
     if (!(length(scheme)-1) %in% ((length(fccut)+1) * 1:2)) stop("Number of colours in 'scheme' does not fit with number of cuts in 'fccut'")
     if ((length(scheme) - 1 == length(fccut) + 1)) {
       # symmetric colours
-      fc <- Hmisc::cut2(abs(data[, x]), fccut)
+      fc <- cut(abs(data[, x]), c(-1, fccut, Inf))
       siggenes <- as.numeric(siggenes)
       siggenes[siggenes==1] <- as.numeric(fc[siggenes==1])
       data$col <- factor(siggenes, levels=0:(length(fccut)+1),
@@ -529,7 +528,7 @@ volcanoplot <- function(data, x=NULL, y=NULL, padj=NULL, fdrcutoff=0.05, fccut=N
     } else {
       # asymmetric colours
       fccut <- sort(unique(c(fccut, 0, -fccut)))
-      fc <- Hmisc::cut2(data[, x], fccut)
+      fc <- cut(data[,x], c(-Inf, fccut, Inf))
       siggenes <- as.numeric(siggenes)
       siggenes[siggenes==1] <- as.numeric(fc[siggenes==1])
       data$col <- factor(siggenes, levels=0:(length(fccut)+1),
