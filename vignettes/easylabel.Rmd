@@ -133,15 +133,17 @@ volcanoplot(volc1, fccut = c(1, 2), fdrcutoff = 0.2, ylim = c(0, 6), xlim=c(-5,5
 knitr::include_graphics("/users/myles/documents/github/easylabel/vignettes/plot5.png")
 ```
 
+The size of markers can be changed using `cex` (default 1).
 A box around the plot can be added using `bty='o'` (see `par()`).
 Axes can be customised by first suppressing the initial axis using `xaxt='n'` or
 `yaxt='n'` and then adding an `axis()` call using `panel.last`.
 A top title can also be added using `mtext()` via `panel.last`. 
 ```{r eval = FALSE}
-volcanoplot(volc1, useQ = TRUE, fullname = TRUE,
+volcanoplot(volc1, useQ = TRUE, fdrcutoff = 0.2, ylim=c(0,8), xlim=c(-6,6),
+            cex = 0.6,
             xaxt = 'n', yaxt = 'n', bty = 'o', panel.last = {
             axis(side = 1, at = -6:6)
-            axis(side = 2, at = 0:12)
+            axis(side = 2, at = 0:8)
             mtext("DEG volcano plot", side = 3)
             })
 ```

@@ -259,8 +259,8 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
 
       labs <- labels$list
       current_xy <- labelsxy$list
-      xrange <- range(data[, x], na.rm = TRUE)
-      yrange <- range(data[, y], na.rm = TRUE)
+      xrange <- range(c(data[, x], xlim), na.rm = TRUE)
+      yrange <- range(c(data[, y], ylim), na.rm = TRUE)
       scheme2 <- adjustcolor(scheme, alpha.f = alpha)
       data <- data[order(data$col), ]
       legenddist <- max((max(nchar(levels(data$col)), na.rm = TRUE)+3) * 0.37, 6)
