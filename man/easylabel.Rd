@@ -28,6 +28,7 @@ easylabel(
   outlier_pch = 5,
   outline_col = "white",
   outline_lwd = 0.5,
+  cex = 1,
   cex.text = 0.72,
   mgp = c(1.8, 0.5, 0),
   Ltitle = "",
@@ -36,7 +37,7 @@ easylabel(
   fullGeneNames = FALSE,
   AnnotationDb = NULL,
   symbols = c("circle", "diamond-open"),
-  markerSize = 8,
+  markerSize = cex * 8,
   markerOutline = list(width = outline_lwd, color = outline_col),
   marker = list(size = markerSize, opacity = alpha, line = markerOutline),
   labSize = cex.text/0.72 * 12,
@@ -93,6 +94,8 @@ plot.}
 \item{outline_col}{Colour of symbol outlines. Set to \code{NA} for no outlines.}
 
 \item{outline_lwd}{Line width of symbol outlines.}
+
+\item{cex}{Size of points. Default 1.}
 
 \item{cex.text}{Font size for labels. Default 0.72 to match plotly font size.
 See \code{\link[=text]{text()}}.}

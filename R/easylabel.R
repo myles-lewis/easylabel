@@ -44,6 +44,7 @@
 #' @param outlier_pch Symbol for outliers.
 #' @param outline_col Colour of symbol outlines. Set to `NA` for no outlines.
 #' @param outline_lwd Line width of symbol outlines.
+#' @param cex Size of points. Default 1.
 #' @param cex.text Font size for labels. Default 0.72 to match plotly font size.
 #' See [text()].
 #' @param mgp The margin line for the axis title, axis labels and axis line.
@@ -97,6 +98,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
                       alpha=1,
                       pch=21, outlier_pch=5,
                       outline_col='white', outline_lwd=0.5,
+                      cex=1,
                       cex.text=0.72,
                       mgp=c(1.8, 0.5, 0),
                       Ltitle="", Rtitle="",
@@ -104,7 +106,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
                       fullGeneNames=FALSE,
                       AnnotationDb=NULL,
                       symbols=c('circle', 'diamond-open'),
-                      markerSize=8,
+                      markerSize=cex * 8,
                       markerOutline=list(width=outline_lwd, color=outline_col),
                       marker=list(size=markerSize, opacity=alpha, line=markerOutline),
                       labSize=cex.text / 0.72 * 12,
@@ -267,15 +269,15 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
       op <- par(mgp=mgp, mar=c(4, 4, 2, legenddist), tcl=-0.3, las=1, bty='l')
       plot(data[!data$outlier, x], data[!data$outlier, y],
            pch=pch, bg=scheme2[data$col[!data$outlier]], col=outline_col, lwd=outline_lwd,
-           xlim=xlim, ylim=ylim, xlab=xlab, ylab=ylab, ...,
+           xlim=xlim, ylim=ylim, xlab=xlab, ylab=ylab, cex=cex, ...,
            panel.first={
-             if (showgrid) abline(h=pretty(data[,y]), v=pretty(data[,x]), col='grey80', lwd=0.5)
+             if (showgrid) abline(h=pretty(data[, y]), v=pretty(data[, x]), col='grey80', lwd=0.5)
              if (zeroline) abline(h=0, v=0)
            })
       args <- list(...)
-      mtext(Ltitle, LRtitle_side, adj=0, line=ifelse(LRtitle_side<3, mgp[1], 0.1),
+      mtext(Ltitle, LRtitle_side, adj=0, line=ifelse(LRtitle_side <= 2, mgp[1], 0.1),
             cex=args$cex.lab)
-      mtext(Rtitle, LRtitle_side, adj=1, line=ifelse(LRtitle_side<3, mgp[1], 0.1),
+      mtext(Rtitle, LRtitle_side, adj=1, line=ifelse(LRtitle_side <= 2, mgp[1], 0.1),
             cex=args$cex.lab)
       legtext <- levels(data$col)
       legbg <- scheme2
@@ -283,7 +285,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
       pt.lwd <- outline_lwd
       if (any(data$outlier)) {
         points(data[data$outlier, x], data[data$outlier, y], pch=outlier_pch,
-               col=scheme2[data$col[data$outlier]])
+               col=scheme2[data$col[data$outlier]], cex=cex)
         pch <- c(rep(pch, length(legtext)), outlier_pch)
         col <- c(rep(outline_col, length(legtext)), 'black')
         pt.lwd <- c(rep(pt.lwd, length(legtext)), 1)
