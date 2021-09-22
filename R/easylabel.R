@@ -292,7 +292,9 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
         legtext <- c(legtext, 'Outlier')
         legbg <- c(legbg, 'black')
       }
-      abline(h=hline, v=vline, col='#AAAAAA', lty=2)
+      abline(h=hline[hline != 0], v=vline[vline != 0], col='#AAAAAA', lty=2)
+      abline(h=hline[hline == 0], v=vline[vline == 0])
+
       if (length(labs) > 0) {
         annot <- annotation(labs, data, x, y, current_xy, labSize = labSize)
         annotdf <- data.frame(x=unlist(lapply(annot, '[', 'x')),
@@ -454,7 +456,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
 #' this is automatically set.
 #' @param y Name of the column containing p values. For DESeq2 and limma objects this is
 #' automatically set.
-#' @param padj Name of the column containing adjusted p values. Can not be NULL when y is not NULL.
+#' @param padj Name of the column containing adjusted p values. Cannot be NULL when y is not NULL.
 #' @param fdrcutoff Cut-off for FDR significance. Defaults to FDR < 0.05
 #' @param fccut Optional vector of log fold change cut-offs.
 #' @param scheme Colour scheme. If no fold change cut-off is set, 2 colours
@@ -550,6 +552,109 @@ volcanoplot <- function(data, x=NULL, y=NULL, padj=NULL, fdrcutoff=0.05, fccut=N
 }
 
 
+#' Interactive MA plot labels
+#'
+#' Interactive labelling of MA plots using shiny/plotly interface.
+#'
+#' @param data The dataset for the plot. Automatically attempts to recognises
+#' DESeq2 and limma objects.
+#' @param x Name of the column containing mean expression. For DESeq2 and limma objects
+#' this is automatically set.
+#' @param y Name of the column containing log fold change. For DESeq2 and limma objects this is
+#' automatically set.
+#' @param padj Name of the column containing adjusted p values. For DESeq2 and limma objects this is
+#' automatically set.
+#' @param fdrcutoff Cut-off for FDR significance. Defaults to FDR < 0.05. Can
+#' be vector with multiple cut-offs.
+#' @param scheme Colour scheme. Length must match either length(fdrcutoff) + 1
+#' to allow for non-significant genes, or match length(fdrcutoff) * 2 + 1 to
+#' accommodates asymmetric colour schemes for positive & negative fold change.
+#' (see examples).
+#' @param hline Vector of horizontal lines (default is y=0).
+#' @param showCounts Logical whether to show legend with number of
+#' differentially expressed genes.
+#' @param useQ Logical whether to convert nominal P values to q values.
+#' Requires the qvalue Bioconductor package.
+#' @param ... Other arguments passed to [easylabel()].
+#' @seealso [easylabel()]
+#' @importFrom qvalue qvalue
+#' @export
+
+
+MAplot <- function(data, x=NULL, y=NULL, padj=NULL, fdrcutoff=0.05,
+                   scheme=c('darkgrey', 'blue', 'red'),
+                   hline=0,
+                   showCounts=TRUE, useQ=FALSE, ...) {
+  if (is.null(y)) {
+    if ('log2FoldChange' %in% colnames(data)) y='log2FoldChange'  # DESeq2
+    if ('logFC' %in% colnames(data)) y='logFC'  # limma
+  }
+  if (is.null(padj)) {
+    if ('pvalue' %in% colnames(data)) {
+      pv='pvalue'  # DESeq2
+      padj='padj'
+    }
+    if ('P.Value' %in% colnames(data)) {
+      pv='P.Value'  # limma
+      padj='adj.P.Val'
+    }
+  }
+  if (is.null(x)) {
+    if ('baseMean' %in% colnames(data)) {
+      data[, 'logmean'] <- log2(data[, 'baseMean'])  # DESeq2
+      x <- 'logmean'
+    }
+    if ('AveExpr' %in% colnames(data))
+      x <- 'AveExpr'  # limma
+  }
+
+  if (useQ) {
+    data$qvalue <- NA
+    q <- try(qvalue::qvalue(data[!is.na(data[, padj]), pv])$qvalues, silent = TRUE)
+    if (inherits(q, 'try-error')) q <- p.adjust(data[!is.na(data[, padj]), pv])
+    data$qvalue[!is.na(data[, padj])] <- q
+    siggenes <- data$qvalue < fdrcutoff[1]
+  } else {
+    siggenes <- data[, padj] < fdrcutoff[1]
+  }
+  siggenes[is.na(siggenes)] <- FALSE
+  if (showCounts) {
+    up <- sum(siggenes & data[, y] > 0)
+    down <- sum(siggenes & data[, y] < 0)
+    total <- nrow(data)
+    custom_annotation <- list(list(x=1.18, y=0.02, align='left',
+                                   text=paste0(up, ' upregulated<br>',
+                                               down, ' downregulated<br>',
+                                               total, ' total genes'),
+                                   font = list(size=11, color = "black"),
+                                   xref='paper', yref='paper', showarrow=F))
+  } else custom_annotation=NULL
+
+  if (!(length(scheme) - 1) %in% (length(fdrcutoff) * 1:2)) stop("Number of colours in 'scheme' does not fit with number of cuts in 'fdrcut'")
+  fdrcuts <- cut(data[, padj], c(-1, fdrcutoff, Inf))
+  siggenes <- length(fdrcutoff) + 1 - as.numeric(fdrcuts)
+  siggenes[is.na(siggenes)] <- 0
+  if ((length(scheme) - 1 == length(fdrcutoff))) {
+    # symmetric colours
+    data$col <- factor(siggenes, levels=0:length(fdrcutoff),
+                       labels=c('ns', paste0('FDR<', fdrcutoff)))
+  } else {
+    # asymmetric colours
+    fc <- data[, y] > 0
+    siggenes[fc & siggenes != 0] <- siggenes[fc & siggenes != 0] + length(fdrcutoff)
+    data$col <- factor(siggenes, levels=0:(length(fdrcutoff) * 2),
+                       labels=c('ns', paste0('FC<0, FDR<', fdrcutoff),
+                                paste0('FC>0, FDR<', fdrcutoff)))
+  }
+
+  easylabel(data, x, y, col='col',
+            ylab=expression("log"[2] ~ " fold change"),
+            xlab=expression("log"[2] ~ " mean expression"),
+            scheme=scheme, zeroline=FALSE, hline=hline,
+            custom_annotation=custom_annotation, ...)
+}
+
+
 # Annotate gene labels
 annotation <- function(labels, data, x, y, current_xy=NULL, labSize=12) {
   if (length(labels)!=0) {
@@ -596,6 +701,4 @@ linerect <- function(df) {
     lines(c(df$x[i], df$ax2[i]), c(df$y[i], df$ay2[i]), xpd=NA)
   }
 }
-
-
 
