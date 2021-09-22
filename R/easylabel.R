@@ -492,7 +492,9 @@ volcanoplot <- function(data, x=NULL, y=NULL, padj=NULL, fdrcutoff=0.05, fccut=N
   data[, 'log10P'] <- -log10(data[, y])
   if (useQ) {
     data$qvalue <- NA
-    data$qvalue[!is.na(data[, padj])] <- qvalue::qvalue(data[!is.na(data[, padj]), y])$qvalues
+    q <- try(qvalue::qvalue(data[!is.na(data[, padj]), y])$qvalues, silent = TRUE)
+    if (inherits(q, 'try-error')) q <- p.adjust(data[!is.na(data[, padj]), y])
+    data$qvalue[!is.na(data[, padj])] <- q
     siggenes <- data$qvalue < fdrcutoff
   } else {
     siggenes <- data[, padj] < fdrcutoff
@@ -546,6 +548,7 @@ volcanoplot <- function(data, x=NULL, y=NULL, padj=NULL, fdrcutoff=0.05, fccut=N
             scheme=scheme, zeroline=FALSE, hline=fdrline,
             custom_annotation=custom_annotation, ...)
 }
+
 
 # Annotate gene labels
 annotation <- function(labels, data, x, y, current_xy=NULL, labSize=12) {
