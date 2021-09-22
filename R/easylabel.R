@@ -55,6 +55,8 @@
 #' title. Size of font can be changed using `cex.lab`.
 #' @param LRtitle_side on which side of the plot for `Ltitle` and `Rtitle`
 #' (1=bottom, 3=top). See [mtext()].
+#' @param labelDir Initial label direction. Options include 'radial' (default),
+#' 'horiz' for horizontal and 'vert' for vertical.
 #' @param fullGeneNames Logical whether to expand gene symbols using Bioconductor
 #' AnnotationDbi package. With multiple matches, returns first value only.
 #' See [mapIds()].
@@ -652,6 +654,7 @@ MAplot <- function(data, x=NULL, y=NULL, padj=NULL, fdrcutoff=0.05,
             ylab=expression("log"[2] ~ " fold change"),
             xlab=expression("log"[2] ~ " mean expression"),
             scheme=scheme, zeroline=FALSE, hline=hline,
+            labelDir='vert',
             custom_annotation=custom_annotation, ...)
 }
 
