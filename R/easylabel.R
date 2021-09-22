@@ -103,6 +103,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
                       mgp=c(1.8, 0.5, 0),
                       Ltitle="", Rtitle="",
                       LRtitle_side=1,
+                      labelDir="radial",
                       fullGeneNames=FALSE,
                       AnnotationDb=NULL,
                       symbols=c('circle', 'diamond-open'),
@@ -144,7 +145,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
   if (is.null(scheme)) scheme <- brewer.pal(nlevels(data[,col]), "Set1")
   labelchoices <- if (is.null(labs)) rownames(data) else data[, labs]
   startLabels <- startLabels[startLabels %in% labelchoices]
-  start_annot <- annotation(startLabels, data, x, y, labSize = labSize)
+  start_annot <- annotation(startLabels, data, x, y, labSize = labSize, labelDir = labelDir)
   start_xy <- lapply(start_annot, function(i) list(ax=i$ax, ay=i$ay))
   names(start_xy) <- startLabels
   if (is.na(outline_col)) outline_lwd <- 0  # fix plotly no outlines
@@ -198,7 +199,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
     output$plotly <- renderPlotly({
       labs <- startLabels
       isolate(pt <- as.numeric(input$ptype))
-      annot <- annotation(labs, data, x, y, labSize = labSize)
+      annot <- annotation(labs, data, x, y, labSize = labSize, labelDir = labelDir)
       isolate(labels$annot <- annot)
       if (!is.null(hline)) {
         shapes=lapply(hline, function(i) {
@@ -296,7 +297,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
       abline(h=hline[hline == 0], v=vline[vline == 0])
 
       if (length(labs) > 0) {
-        annot <- annotation(labs, data, x, y, current_xy, labSize = labSize)
+        annot <- annotation(labs, data, x, y, current_xy, labSize = labSize, labelDir = labelDir)
         annotdf <- data.frame(x=unlist(lapply(annot, '[', 'x')),
                               y=unlist(lapply(annot, '[', 'y')),
                               ax=unlist(lapply(annot, '[', 'ax')),
@@ -368,7 +369,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
       labs <- labels$list
       current_xy <- labelsxy$list
       # Annotate gene labels
-      annot <- annotation(labs, data, x, y, current_xy, labSize = labSize)
+      annot <- annotation(labs, data, x, y, current_xy, labSize = labSize, labelDir = labelDir)
       labelsxy$list <- lapply(annot, function(i) list(ax=i$ax, ay=i$ay))
       names(labelsxy$list) <- labs
       plotlyProxy('plotly', session) %>%
@@ -656,16 +657,24 @@ MAplot <- function(data, x=NULL, y=NULL, padj=NULL, fdrcutoff=0.05,
 
 
 # Annotate gene labels
-annotation <- function(labels, data, x, y, current_xy=NULL, labSize=12) {
+annotation <- function(labels, data, x, y, current_xy=NULL, labSize=12, labelDir="radial") {
   if (length(labels)!=0) {
     annot <- lapply(1:length(labels), function(j) {
       i <- labels[j]
       row <- data[i, ]
       sx <- row[, x]
       sy <- row[, y]
+      if (labelDir=='radial') {
       z <- sqrt(sx^2 + sy^2)
-      ax <-sx/z*75
+      ax <- sx/z*75
       ay <- -sy/z*75
+      } else if (labelDir=='horiz') {
+        ax <- sign(sx) * 75
+        ay <- 0
+      } else if (labelDir=='vert') {
+        ax <- 0
+        ay <- -sign(sy) * 75
+      }
       if (j <= length(current_xy)) {
         if (!is.null(current_xy[[j]])) {
           ax=current_xy[[j]]$ax
