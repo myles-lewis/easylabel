@@ -27,7 +27,7 @@ this is automatically set.}
 \item{y}{Name of the column containing p values. For DESeq2 and limma objects this is
 automatically set.}
 
-\item{padj}{Name of the column containing adjusted p values. Can not be NULL when y is not NULL.}
+\item{padj}{Name of the column containing adjusted p values. Cannot be NULL when y is not NULL.}
 
 \item{fdrcutoff}{Cut-off for FDR significance. Defaults to FDR < 0.05}
 
