@@ -55,8 +55,15 @@
 #' title. Size of font can be changed using `cex.lab`.
 #' @param LRtitle_side on which side of the plot for `Ltitle` and `Rtitle`
 #' (1=bottom, 3=top). See [mtext()].
-#' @param labelDir Initial label direction. Options include 'radial' (default),
-#' 'horiz' for horizontal and 'vert' for vertical.
+#' @param labelDir Initial label line directions. Options include 'radial'
+#' (default) for radial lines around the centre of the plot,
+#' 'origin' for radial lines around the origin,
+#' 'horiz' for horizontal and 'vert' for vertical,
+#' 'xellipse' and 'yellipse' for near-horizontal and near-vertical lines
+#' arranged in an elliptical way around the centre,
+#' 'rect' for rectilinear lines (a mix of horizontal and vertical),
+#' 'x' for diagonal lines,
+#' 'oct' for lines in 8 directions around the centre.
 #' @param fullGeneNames Logical whether to expand gene symbols using Bioconductor
 #' AnnotationDbi package. With multiple matches, returns first value only.
 #' See [mapIds()].
@@ -82,7 +89,7 @@
 #' radioButtons selectizeInput actionButton checkboxGroupInput observe
 #' updateSelectizeInput reactiveValues isolate reactive debounce
 #' observeEvent modalDialog textAreaInput tagList modalButton showModal
-#' removeModal h5 shinyApp downloadButton
+#' removeModal h5 shinyApp downloadButton selectInput
 #' @importFrom plotly plot_ly layout plotlyOutput renderPlotly event_data
 #' event_register config plotlyProxy plotlyProxyInvoke add_markers %>%
 #' @importFrom RColorBrewer brewer.pal
@@ -622,6 +629,7 @@ volcanoplot <- function(data, x=NULL, y=NULL, padj=NULL, fdrcutoff=0.05, fccut=N
 MAplot <- function(data, x=NULL, y=NULL, padj=NULL, fdrcutoff=0.05,
                    scheme=c('darkgrey', 'blue', 'red'),
                    hline=0,
+                   labelDir='yellipse',
                    showCounts=TRUE, useQ=FALSE, ...) {
   if (is.null(y)) {
     if ('log2FoldChange' %in% colnames(data)) y='log2FoldChange'  # DESeq2
@@ -689,7 +697,7 @@ MAplot <- function(data, x=NULL, y=NULL, padj=NULL, fdrcutoff=0.05,
             ylab=expression("log"[2] ~ " fold change"),
             xlab=expression("log"[2] ~ " mean expression"),
             scheme=scheme, zeroline=FALSE, hline=hline,
-            labelDir='vert',
+            labelDir=labelDir,
             custom_annotation=custom_annotation, ...)
 }
 
@@ -716,7 +724,7 @@ annotation <- function(labels, data, x, y, current_xy=NULL,
         ax <- ox/z*75
         ay <- -oy/z*75
       } else if (labelDir=='xellipse') {
-        dy <- dy / 5
+        dy <- dy / 4
         z <- sqrt(dx^2 + dy^2)
         ax <- dx/z*75
         ay <- -dy/z*75

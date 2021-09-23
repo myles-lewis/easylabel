@@ -35,6 +35,7 @@ easylabel(
   Rtitle = "",
   LRtitle_side = 1,
   labelDir = "radial",
+  labCentre = NULL,
   fullGeneNames = FALSE,
   AnnotationDb = NULL,
   symbols = c("circle", "diamond-open"),
@@ -113,8 +114,15 @@ title. Size of font can be changed using \code{cex.lab}.}
 \item{LRtitle_side}{on which side of the plot for \code{Ltitle} and \code{Rtitle}
 (1=bottom, 3=top). See \code{\link[=mtext]{mtext()}}.}
 
-\item{labelDir}{Initial label direction. Options include 'radial' (default),
-'horiz' for horizontal and 'vert' for vertical.}
+\item{labelDir}{Initial label line directions. Options include 'radial'
+(default) for radial lines around the centre of the plot,
+'origin' for radial lines around the origin,
+'horiz' for horizontal and 'vert' for vertical,
+'xellipse' and 'yellipse' for near-horizontal and near-vertical lines
+arranged in an elliptical way around the centre,
+'rect' for rectilinear lines (a mix of horizontal and vertical),
+'x' for diagonal lines,
+'oct' for lines in 8 directions around the centre.}
 
 \item{fullGeneNames}{Logical whether to expand gene symbols using Bioconductor
 AnnotationDbi package. With multiple matches, returns first value only.
