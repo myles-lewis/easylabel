@@ -144,6 +144,16 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
     } else showOutliers <- 1
   }
 
+  labCentre <- list(c(0, 0),
+                    c(mean(range(data[, x], na.rm = TRUE)),
+                      mean(range(data[, y], na.rm = TRUE))))
+  if (min(data[, x], na.rm = TRUE) > 0 | max(data[, x], na.rm = TRUE) < 0) {
+    labCentre[[1]][1] <- labCentre[[2]][1])
+  }
+  if (min(data[, y], na.rm = TRUE) > 0 | max(data[, y], na.rm = TRUE) < 0) {
+    labCentre[[1]][2] <- labCentre[[2]][2])
+  }
+
   if (is.null(scheme)) scheme <- brewer.pal(nlevels(data[,col]), "Set1")
   labelchoices <- if (is.null(labs)) rownames(data) else data[, labs]
   startLabels <- startLabels[startLabels %in% labelchoices]
@@ -165,6 +175,10 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
     }
     data$gene_fullname <- AnnotationDbi::mapIds(AnnotationDb, labelchoices, "GENENAME", "ALIAS", multiVals = 'first')
   }
+  labDir_choices <- c('radial', 'horiz', 'vert', 'xellipse', 'yellipse', 'rect', 'x', 'oct')
+  names(labDir_choices) <- c('Radial', 'Horizontal', 'Vertical',
+                             'Horizontal ellipse', 'Vertical ellipse',
+                             'Rectilinear', 'Diagonal', 'Octagonal')
 
   ui <- fluidPage(
     tabsetPanel(
@@ -172,7 +186,10 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
                fluidRow(
                  plotlyOutput("plotly", height=paste0(height, "px"))),
                fluidRow(column(3,
-                               radioButtons("ptype", label=h5("Plot type"), choices=c("WebGL (fast)"=1, "SVG (slow)"=2), selected=1)),
+                               radioButtons("ptype", label=h5("Plot type"), choices=c("WebGL (fast)"=1, "SVG (slow)"=2), selected=1),
+                               radioButtons("labCen", label=h5("Label centre"), choices=c("Origin"=1, "Centre"=2), selected=1),
+                               selectInput("labDir", label=h5("Label direction"), choices=labDir_choices, selected=labelDir)
+                               ),
                         column(4,
                                selectizeInput('label', h5('Select labels'), choices=NULL,
                                               options=list(onInitialize = I('function() { this.setValue(""); }')),
@@ -201,7 +218,8 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
     output$plotly <- renderPlotly({
       labs <- startLabels
       isolate(pt <- as.numeric(input$ptype))
-      annot <- annotation(labs, data, x, y, labSize = labSize, labelDir = labelDir)
+      isolate(ldir <- input$labDir)
+      annot <- annotation(labs, data, x, y, labSize = labSize, labelDir = ldir)
       isolate(labels$annot <- annot)
       if (!is.null(hline)) {
         shapes=lapply(hline, function(i) {
@@ -299,7 +317,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
       abline(h=hline[hline == 0], v=vline[vline == 0])
 
       if (length(labs) > 0) {
-        annot <- annotation(labs, data, x, y, current_xy, labSize = labSize, labelDir = labelDir)
+        annot <- annotation(labs, data, x, y, current_xy, labSize = labSize)
         annotdf <- data.frame(x=unlist(lapply(annot, '[', 'x')),
                               y=unlist(lapply(annot, '[', 'y')),
                               ax=unlist(lapply(annot, '[', 'ax')),
@@ -371,7 +389,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
       labs <- labels$list
       current_xy <- labelsxy$list
       # Annotate gene labels
-      annot <- annotation(labs, data, x, y, current_xy, labSize = labSize, labelDir = labelDir)
+      annot <- annotation(labs, data, x, y, current_xy, labSize = labSize, labelDir = input$labDir)
       labelsxy$list <- lapply(annot, function(i) list(ax=i$ax, ay=i$ay))
       names(labelsxy$list) <- labs
       plotlyProxy('plotly', session) %>%
@@ -660,24 +678,43 @@ MAplot <- function(data, x=NULL, y=NULL, padj=NULL, fdrcutoff=0.05,
 
 
 # Annotate gene labels
-annotation <- function(labels, data, x, y, current_xy=NULL, labSize=12, labelDir="radial") {
+annotation <- function(labels, data, x, y, current_xy=NULL,
+                       labSize=12, labelDir="radial", labCentre=c(0,0)) {
   if (length(labels)!=0) {
     annot <- lapply(1:length(labels), function(j) {
       i <- labels[j]
       row <- data[i, ]
-      sx <- row[, x]
-      sy <- row[, y]
-      if (labelDir=='radial') {
+      sx <- row[, x] - labCentre[1]
+      sy <- row[, y] - labCentre[2]
       z <- sqrt(sx^2 + sy^2)
-      ax <- sx/z*75
-      ay <- -sy/z*75
+      if (labelDir=='radial') {
+        ax <- sx/z*75
+        ay <- -sy/z*75
+      } else if (labelDir=='xellipse') {
+        ax <- sx/z*15
+        ay <- -sy/z*75
+      } else if (labelDir=='yellipse') {
+        ax <- sx/z*75
+        ay <- -sy/z*15
       } else if (labelDir=='horiz') {
         ax <- sign(sx) * 75
         ay <- 0
       } else if (labelDir=='vert') {
         ax <- 0
         ay <- -sign(sy) * 75
+      } else if (labelDir=='x') {
+        ax <- sign(sx) * 75
+        ay <- -sign(sy) * 75
+      } else if (labelDir=='rect') {
+        if (abs(sx) > abs(sy)) {
+          ax <- sign(sx) * 75
+          ay <- 0
+        } else {
+          ax <- 0
+          ay <- -sign(sy) * 75
+        }
       }
+
       if (j <= length(current_xy)) {
         if (!is.null(current_xy[[j]])) {
           ax=current_xy[[j]]$ax
