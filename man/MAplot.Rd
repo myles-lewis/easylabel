@@ -22,14 +22,14 @@ MAplot(
 \item{data}{The dataset for the plot. Automatically attempts to recognises
 DESeq2 and limma objects.}
 
-\item{x}{Name of the column containing mean expression. For DESeq2 and limma objects
-this is automatically set.}
+\item{x}{Name of the column containing mean expression. For DESeq2 and limma
+objects this is automatically set.}
 
-\item{y}{Name of the column containing log fold change. For DESeq2 and limma objects this is
-automatically set.}
+\item{y}{Name of the column containing log fold change. For DESeq2 and limma
+objects this is automatically set.}
 
-\item{padj}{Name of the column containing adjusted p values. For DESeq2 and limma objects this is
-automatically set.}
+\item{padj}{Name of the column containing adjusted p values. For DESeq2 and
+limma objects this is automatically set.}
 
 \item{fdrcutoff}{Cut-off for FDR significance. Defaults to FDR < 0.05. Can
 be vector with multiple cut-offs.}
@@ -39,7 +39,7 @@ to allow for non-significant genes, or match length(fdrcutoff) * 2 + 1 to
 accommodates asymmetric colour schemes for positive & negative fold change.
 (see examples).}
 
-\item{hline}{Vector of horizontal lines (default is y=0).}
+\item{hline}{Vector of horizontal lines (default is y = 0).}
 
 \item{showCounts}{Logical whether to show legend with number of
 differentially expressed genes.}

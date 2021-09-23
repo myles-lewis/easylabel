@@ -21,13 +21,14 @@ volcanoplot(
 \item{data}{The dataset for the plot. Automatically attempts to recognises
 DESeq2 and limma objects.}
 
-\item{x}{Name of the column containing log fold change. For DESeq2 and limma objects
+\item{x}{Name of the column containing log fold change. For DESeq2 and limma
+objects this is automatically set.}
+
+\item{y}{Name of the column containing p values. For DESeq2 and limma objects
 this is automatically set.}
 
-\item{y}{Name of the column containing p values. For DESeq2 and limma objects this is
-automatically set.}
-
-\item{padj}{Name of the column containing adjusted p values. Cannot be NULL when y is not NULL.}
+\item{padj}{Name of the column containing adjusted p values. Cannot be NULL
+when y is not NULL.}
 
 \item{fdrcutoff}{Cut-off for FDR significance. Defaults to FDR < 0.05}
 
@@ -35,7 +36,7 @@ automatically set.}
 
 \item{scheme}{Colour scheme. If no fold change cut-off is set, 2 colours
 need to be specified. With a single fold change cut-off, 3 or 5 colours are
-required, depending on whether the colours are symmetrical about x=0.
+required, depending on whether the colours are symmetrical about x = 0.
 Accommodates asymmetric colour schemes with multiple fold change cut-offs
 (see examples).}
 
