@@ -12,6 +12,7 @@ MAplot(
   fdrcutoff = 0.05,
   scheme = c("darkgrey", "blue", "red"),
   hline = 0,
+  labelDir = "yellipse",
   showCounts = TRUE,
   useQ = FALSE,
   ...

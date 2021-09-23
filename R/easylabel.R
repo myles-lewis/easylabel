@@ -55,8 +55,15 @@
 #' title. Size of font can be changed using `cex.lab`.
 #' @param LRtitle_side on which side of the plot for `Ltitle` and `Rtitle`
 #' (1=bottom, 3=top). See [mtext()].
-#' @param labelDir Initial label direction. Options include 'radial' (default),
-#' 'horiz' for horizontal and 'vert' for vertical.
+#' @param labelDir Initial label line directions. Options include 'radial'
+#' (default) for radial lines around the centre of the plot,
+#' 'origin' for radial lines around the origin,
+#' 'horiz' for horizontal and 'vert' for vertical,
+#' 'xellipse' and 'yellipse' for near-horizontal and near-vertical lines
+#' arranged in an elliptical way around the centre,
+#' 'rect' for rectilinear lines (a mix of horizontal and vertical),
+#' 'x' for diagonal lines,
+#' 'oct' for lines in 8 directions around the centre.
 #' @param fullGeneNames Logical whether to expand gene symbols using Bioconductor
 #' AnnotationDbi package. With multiple matches, returns first value only.
 #' See [mapIds()].
@@ -82,7 +89,7 @@
 #' radioButtons selectizeInput actionButton checkboxGroupInput observe
 #' updateSelectizeInput reactiveValues isolate reactive debounce
 #' observeEvent modalDialog textAreaInput tagList modalButton showModal
-#' removeModal h5 shinyApp downloadButton
+#' removeModal h5 shinyApp downloadButton selectInput
 #' @importFrom plotly plot_ly layout plotlyOutput renderPlotly event_data
 #' event_register config plotlyProxy plotlyProxyInvoke add_markers %>%
 #' @importFrom RColorBrewer brewer.pal
@@ -106,6 +113,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
                       Ltitle="", Rtitle="",
                       LRtitle_side=1,
                       labelDir="radial",
+                      labCentre=NULL,
                       fullGeneNames=FALSE,
                       AnnotationDb=NULL,
                       symbols=c('circle', 'diamond-open'),
@@ -116,23 +124,25 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
                       custom_annotation=NULL, ...) {
   data <- as.data.frame(data)
   data$outlier <- FALSE
+  xyspan <- c(max(data[, x], na.rm = TRUE) - min(data[, x], na.rm = TRUE),
+            max(data[, y], na.rm = TRUE) - min(data[, y], na.rm = TRUE))
   if (!is.null(ylim)) {
     notNA <- !is.na(data[,y])
     data$outlier[notNA & (data[, y] < ylim[1] | data[, y] > ylim[2])] <- TRUE
     data[notNA & data[, y] < ylim[1], y] <- ylim[1]
     data[notNA & data[, y] > ylim[2], y] <- ylim[2]
-    yspan <- ylim[2] - ylim[1]
-    ylim[1] <- ylim[1] - yspan * 0.025
-    ylim[2] <- ylim[2] + yspan * 0.025
+    xyspan[2] <- ylim[2] - ylim[1]
+    ylim[1] <- ylim[1] - xyspan[2] * 0.025
+    ylim[2] <- ylim[2] + xyspan[2] * 0.025
   }
   if (!is.null(xlim)) {
     notNA <- !is.na(data[,x])
     data$outlier[notNA & (data[, x] < xlim[1] | data[, x] > xlim[2])] <- TRUE
     data[notNA & data[, x] < xlim[1], x] <- xlim[1]
     data[notNA & data[, x] > xlim[2], x] <- xlim[2]
-    xspan <- xlim[2] - xlim[1]
-    xlim[1] <- xlim[1] - xspan * 0.025
-    xlim[2] <- xlim[2] + xspan * 0.025
+    xyspan[1] <- xlim[2] - xlim[1]
+    xlim[1] <- xlim[1] - xyspan[1] * 0.025
+    xlim[2] <- xlim[2] + xyspan[1] * 0.025
   }
   if (!showOutliers) {
     data <- data[!data$outlier, ]
@@ -143,11 +153,21 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
       data$symbol <- factor(as.numeric(data$outlier) +1, labels=c(" ", "Outlier"))
     } else showOutliers <- 1
   }
+  if (is.null(labCentre)) {
+    labCentre <- c(0, 0)
+    #if (min(data[, x], na.rm = TRUE) > 0 | max(data[, x], na.rm = TRUE) < 0) {
+      labCentre[1] <- mean(range(data[, x], na.rm = TRUE))
+    #}
+    #if (min(data[, y], na.rm = TRUE) > 0 | max(data[, y], na.rm = TRUE) < 0) {
+      labCentre[2] <- mean(range(data[, y], na.rm = TRUE))
+    #}
+  }
 
   if (is.null(scheme)) scheme <- brewer.pal(nlevels(data[,col]), "Set1")
   labelchoices <- if (is.null(labs)) rownames(data) else data[, labs]
   startLabels <- startLabels[startLabels %in% labelchoices]
-  start_annot <- annotation(startLabels, data, x, y, labSize = labSize, labelDir = labelDir)
+  start_annot <- annotation(startLabels, data, x, y, labSize = labSize,
+                            labelDir = labelDir, labCentre = labCentre, xyspan = xyspan)
   start_xy <- lapply(start_annot, function(i) list(ax=i$ax, ay=i$ay))
   names(start_xy) <- startLabels
   if (is.na(outline_col)) outline_lwd <- 0  # fix plotly no outlines
@@ -165,6 +185,10 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
     }
     data$gene_fullname <- AnnotationDbi::mapIds(AnnotationDb, labelchoices, "GENENAME", "ALIAS", multiVals = 'first')
   }
+  labDir_choices <- c('radial', 'origin', 'horiz', 'vert', 'xellipse', 'yellipse', 'rect', 'x', 'oct')
+  names(labDir_choices) <- c('Radial centre', 'Radial origin', 'Horizontal', 'Vertical',
+                             'Horizontal ellipse', 'Vertical ellipse',
+                             'Rectilinear', 'Diagonal', 'Octagonal')
 
   ui <- fluidPage(
     tabsetPanel(
@@ -172,7 +196,9 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
                fluidRow(
                  plotlyOutput("plotly", height=paste0(height, "px"))),
                fluidRow(column(3,
-                               radioButtons("ptype", label=h5("Plot type"), choices=c("WebGL (fast)"=1, "SVG (slow)"=2), selected=1)),
+                               radioButtons("ptype", label=h5("Plot type"), choices=c("WebGL (fast)"=1, "SVG (slow)"=2), selected=1),
+                               selectInput("labDir", label=h5("Label direction"), choices=labDir_choices, selected=labelDir)
+                               ),
                         column(4,
                                selectizeInput('label', h5('Select labels'), choices=NULL,
                                               options=list(onInitialize = I('function() { this.setValue(""); }')),
@@ -201,7 +227,9 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
     output$plotly <- renderPlotly({
       labs <- startLabels
       isolate(pt <- as.numeric(input$ptype))
-      annot <- annotation(labs, data, x, y, labSize = labSize, labelDir = labelDir)
+      isolate(ldir <- input$labDir)
+      annot <- annotation(labs, data, x, y, labSize = labSize, labelDir = ldir,
+                          labCentre = labCentre, xyspan = xyspan)
       isolate(labels$annot <- annot)
       if (!is.null(hline)) {
         shapes=lapply(hline, function(i) {
@@ -299,7 +327,7 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
       abline(h=hline[hline == 0], v=vline[vline == 0])
 
       if (length(labs) > 0) {
-        annot <- annotation(labs, data, x, y, current_xy, labSize = labSize, labelDir = labelDir)
+        annot <- annotation(labs, data, x, y, current_xy, labSize = labSize)
         annotdf <- data.frame(x=unlist(lapply(annot, '[', 'x')),
                               y=unlist(lapply(annot, '[', 'y')),
                               ax=unlist(lapply(annot, '[', 'ax')),
@@ -371,7 +399,8 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
       labs <- labels$list
       current_xy <- labelsxy$list
       # Annotate gene labels
-      annot <- annotation(labs, data, x, y, current_xy, labSize = labSize, labelDir = labelDir)
+      annot <- annotation(labs, data, x, y, current_xy, labSize = labSize,
+                          labelDir = input$labDir, labCentre = labCentre, xyspan = xyspan)
       labelsxy$list <- lapply(annot, function(i) list(ax=i$ax, ay=i$ay))
       names(labelsxy$list) <- labs
       plotlyProxy('plotly', session) %>%
@@ -441,6 +470,19 @@ easylabel <- function(data, x, y, col, labs=NULL, scheme=NULL, xlab=x, ylab=y, s
         removeModal()
       }
     })
+
+    # update label direction
+    observeEvent(input$labDir, {
+      labs <- labels$list
+      # Redraw gene labels
+      annot <- annotation(labs, data, x, y, current_xy = NULL, labSize = labSize,
+                          labelDir = input$labDir, labCentre = labCentre, xyspan = xyspan)
+      labelsxy$list <- lapply(annot, function(i) list(ax=i$ax, ay=i$ay))
+      names(labelsxy$list) <- labs
+      plotlyProxy('plotly', session) %>%
+        plotlyProxyInvoke("relayout", list(annotations=append(annot, custom_annotation)))
+    })
+
 
   }
 
@@ -587,6 +629,7 @@ volcanoplot <- function(data, x=NULL, y=NULL, padj=NULL, fdrcutoff=0.05, fccut=N
 MAplot <- function(data, x=NULL, y=NULL, padj=NULL, fdrcutoff=0.05,
                    scheme=c('darkgrey', 'blue', 'red'),
                    hline=0,
+                   labelDir='yellipse',
                    showCounts=TRUE, useQ=FALSE, ...) {
   if (is.null(y)) {
     if ('log2FoldChange' %in% colnames(data)) y='log2FoldChange'  # DESeq2
@@ -654,30 +697,66 @@ MAplot <- function(data, x=NULL, y=NULL, padj=NULL, fdrcutoff=0.05,
             ylab=expression("log"[2] ~ " fold change"),
             xlab=expression("log"[2] ~ " mean expression"),
             scheme=scheme, zeroline=FALSE, hline=hline,
-            labelDir='vert',
+            labelDir=labelDir,
             custom_annotation=custom_annotation, ...)
 }
 
 
 # Annotate gene labels
-annotation <- function(labels, data, x, y, current_xy=NULL, labSize=12, labelDir="radial") {
+annotation <- function(labels, data, x, y, current_xy=NULL,
+                       labSize=12, labelDir="radial", labCentre=c(0,0), xyspan=c(1,1)) {
   if (length(labels)!=0) {
     annot <- lapply(1:length(labels), function(j) {
       i <- labels[j]
       row <- data[i, ]
       sx <- row[, x]
       sy <- row[, y]
+      dx <- (sx - labCentre[1]) / xyspan[1]
+      dy <- (sy - labCentre[2]) / xyspan[2]
+      z <- sqrt(dx^2 + dy^2)
       if (labelDir=='radial') {
-      z <- sqrt(sx^2 + sy^2)
-      ax <- sx/z*75
-      ay <- -sy/z*75
+        ax <- dx/z*75
+        ay <- -dy/z*75
+      } else if (labelDir=='origin') {
+        ox <- sx / xyspan[1]
+        oy <- sy / xyspan[2]
+        z <- sqrt(ox^2 + oy^2)
+        ax <- ox/z*75
+        ay <- -oy/z*75
+      } else if (labelDir=='xellipse') {
+        dy <- dy / 4
+        z <- sqrt(dx^2 + dy^2)
+        ax <- dx/z*75
+        ay <- -dy/z*75
+      } else if (labelDir=='yellipse') {
+        dx <- dx / 5
+        z <- sqrt(dx^2 + dy^2)
+        ax <- dx/z*75
+        ay <- -dy/z*75
       } else if (labelDir=='horiz') {
-        ax <- sign(sx) * 75
+        ax <- sign(dx) * 75
         ay <- 0
       } else if (labelDir=='vert') {
         ax <- 0
-        ay <- -sign(sy) * 75
+        ay <- -sign(dy) * 75
+      } else if (labelDir=='x') {
+        ax <- sign(dx) * 75
+        ay <- -sign(dy) * 75
+      } else if (labelDir=='rect') {
+        if (abs(dx) > abs(dy)) {
+          ax <- sign(dx) * 75
+          ay <- 0
+        } else {
+          ax <- 0
+          ay <- -sign(dy) * 75
+        }
+      } else if (labelDir=='oct') {
+        ang <- atan2(dy, dx)
+        ang <- round(ang * 4 / pi)
+        ax <- cospi(ang / 4) * 75
+        ay <- -sinpi(ang / 4) * 75
       }
+
       if (j <= length(current_xy)) {
         if (!is.null(current_xy[[j]])) {
           ax=current_xy[[j]]$ax
