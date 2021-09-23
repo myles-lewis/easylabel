@@ -31,7 +31,6 @@ Imports:
     shiny,
     RColorBrewer,
     DT,
-    Hmisc,
     qvalue
 RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE)
