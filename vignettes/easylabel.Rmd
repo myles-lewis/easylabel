@@ -178,3 +178,41 @@ volcanoplot(volc1, useQ = TRUE, fdrcutoff = 0.2, ylim=c(0,8), xlim=c(-6,6),
 knitr::include_graphics("/users/myles/documents/github/easylabel/vignettes/plot6.png")
 ```
 
+Label lines can be altered using the argument `labelDir` or by selecting the
+Label direction pulldown menu in the shiny app. Options are shown below:
+
+```{r eval = FALSE}
+volcanoplot(volc1, labelDir = "radial")
+volcanoplot(volc1, labelDir = "origin")
+```
+
+```{r labdirs1, echo = FALSE, message=FALSE, fig.show='hold', out.width='48%', out.extra='style="border: 0;"'}
+knitr::include_graphics(c("labdir radial.png", "labdir origin.png"))
+```
+
+```{r eval = FALSE}
+volcanoplot(volc1, labelDir = "horiz")
+volcanoplot(volc1, labelDir = "vert")
+```
+
+```{r labdirs2, echo = FALSE, message=FALSE, fig.show='hold', out.width='48%', out.extra='style="border: 0;"'}
+knitr::include_graphics(c("labdir horiz.png","labdir vert.png"))
+```
+
+```{r eval = FALSE}
+volcanoplot(volc1, labelDir = "xellipse")
+volcanoplot(volc1, labelDir = "yellipse")
+```
+
+```{r labdirs3, echo = FALSE, message=FALSE, fig.show='hold', out.width='48%', out.extra='style="border: 0;"'}
+knitr::include_graphics(c("labdir xellipse.png", "labdir yellipse.png"))
+```
+
+```{r eval = FALSE}
+volcanoplot(volc1, labelDir = "rect")
+volcanoplot(volc1, labelDir = "oct")
+```
+
+```{r labdirs4, echo = FALSE, message=FALSE, fig.show='hold', out.width='48%', out.extra='style="border: 0;"'}
+knitr::include_graphics(c("labdir rect.png", "labdir oct.png"))
+```
