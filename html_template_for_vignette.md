@@ -58,7 +58,7 @@ library(easylabel)
 </pre>
    
 Plots:
-<img src="img_chania.jpg" alt="Flowers in Chania" width="460" height="345">
+<img src="myvolcano.png" alt="My first volcanoplot" width="460" height="345">
 
    
 <div id="publications" class="section level2">  
