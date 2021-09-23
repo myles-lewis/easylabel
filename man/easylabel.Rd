@@ -81,7 +81,7 @@ plot.}
 
 \item{showgrid}{Logical whether to show gridlines.}
 
-\item{zeroline}{Logical whether to show lines at x=0 and y=0.}
+\item{zeroline}{Logical whether to show lines at x = 0 and y = 0.}
 
 \item{hline}{Adds horizontal lines at values of y.}
 
@@ -112,7 +112,7 @@ text for left side title. Size of font can be changed using \code{cex.lab}.}
 title. Size of font can be changed using \code{cex.lab}.}
 
 \item{LRtitle_side}{on which side of the plot for \code{Ltitle} and \code{Rtitle}
-(1=bottom, 3=top). See \code{\link[=mtext]{mtext()}}.}
+(1 = bottom, 3 = top). See \code{\link[=mtext]{mtext()}}.}
 
 \item{labelDir}{Initial label line directions. Options include 'radial'
 (default) for radial lines around the centre of the plot,
@@ -124,8 +124,9 @@ arranged in an elliptical way around the centre,
 'x' for diagonal lines,
 'oct' for lines in 8 directions around the centre.}
 
-\item{fullGeneNames}{Logical whether to expand gene symbols using Bioconductor
-AnnotationDbi package. With multiple matches, returns first value only.
+\item{fullGeneNames}{Logical whether to expand gene symbols using
+Bioconductor AnnotationDbi package. With multiple matches, returns first
+value only.
 See \code{\link[=mapIds]{mapIds()}}.}
 
 \item{AnnotationDb}{Annotation database to use when expanding gene symbols.
@@ -142,7 +143,8 @@ outliers.}
 
 \item{labSize}{Font size for plotly labels (default 12).}
 
-\item{custom_annotation}{List of annotations to be added via \code{\link[plotly:layout]{plotly::layout()}}.}
+\item{custom_annotation}{List of annotations to be added via
+\code{\link[plotly:layout]{plotly::layout()}}.}
 
 \item{...}{Further graphical parameters passed to \code{plot()} when saving via
 base graphics. The most useful for most users are likely to be \code{cex.lab}
