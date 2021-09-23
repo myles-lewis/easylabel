@@ -84,7 +84,8 @@
 #' plotted but before the labels and label lines are drawn, which will allow the
 #' addition of trend lines, extra titles or legends for example (see
 #' [plot.default()]).
-#' @seealso [plot_ly()], [points()], [par()], [plot.default()], [plotmath()]
+#' @seealso [volcanoplot()], [MAplot()],
+#' [plot_ly()], [points()], [par()], [plot.default()], [plotmath()]
 #' @importFrom shiny fluidPage tabsetPanel tabPanel fluidRow column
 #' radioButtons selectizeInput actionButton checkboxGroupInput observe
 #' updateSelectizeInput reactiveValues isolate reactive debounce
