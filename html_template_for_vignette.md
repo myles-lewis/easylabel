@@ -19,10 +19,7 @@
   </code>
 </pre>
 
- <a href="#Specify_a_Hyperlink_Target_href">This first anchor element</a> links back to the heading of this section of the tutorial by linking to an <code>id</code> we assigned to the section heading element. We can use the <code>mailto</code> protocol to create a link that will try to launch the default email program on your computer. Let's give it a try! We'd love for you to <a href="mailto:contact@html.com"> get in touch</a> with us! Lastly, if you click the link below a complimentary JavaScript alert window will appear. <a> Click the link to see what happens</a>.
 
-Read more: https://html.com/anchors-links/#ixzz77HcBAYOD
- 
   <li><a href="#quick-start">Quick start</a></li>
   <li><a href="#input-data">Input data</a></li>
   <li><a href="#examples-volcano">Examples Volcanoplot</a></li>
