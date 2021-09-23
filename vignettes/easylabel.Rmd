@@ -123,6 +123,16 @@ volcanoplot(volc1,
 knitr::include_graphics("/users/myles/documents/github/easylabel/vignettes/plot3.png")
 ```
 
+The FDR cutoff is set using `fdrcutoff` (volcano plots allow a single value,
+while MA plots allow multiple values). In order to force significant
+genes to be shown based on unadjusted P values, this can be achieved by a
+workaround setting both `y` and `padj` manually to the unadjusted p value
+column. Note this does mean the legend incorrectly states 'FDR < ' etc.
+
+```{r eval = FALSE}
+volcanoplot(volc1, y='pvalue', padj='pvalue', fdrcutoff = 0.01)
+```
+
 In the next 2 plots, the colours range from blue for downregulated genes,
 through to red for upregulated genes. Vertical lines can be added using `vline`.
 ```{r eval = FALSE}
@@ -150,7 +160,7 @@ Similarly 6 colours can be applied to MA plots using 3 levels of cut-off for FDR
 (note the colour scheme is in a slightly different order).
 
 ```{r eval = FALSE}
-MAplot(volc2, fdrcut=c(0.05, 0.01, 0.001), cex=0.8, useQ = TRUE,
+MAplot(volc2, fdrcutoff=c(0.05, 0.01, 0.001), cex=0.8, useQ = TRUE,
        alpha=0.75, outline_col=NA,
        scheme=c('darkgrey', brewer.pal(9, 'RdYlBu')[c(7:9, 3:1)]))
 ```
@@ -216,3 +226,4 @@ volcanoplot(volc1, labelDir = "oct")
 ```{r labdirs4, echo = FALSE, message=FALSE, fig.show='hold', out.width='48%', out.extra='style="border: 0;"'}
 knitr::include_graphics(c("labdir rect.png", "labdir oct.png"))
 ```
+
