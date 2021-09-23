@@ -57,7 +57,7 @@ library(easylabel)
   </code>
 </pre>
    
-Plots:
+<p><u>Plots:</u></p>
 <img src="myvolcano.png" alt="My first volcanoplot" width="460" height="345">
 
    
