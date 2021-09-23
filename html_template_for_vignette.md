@@ -57,6 +57,10 @@ library(easylabel)
   </code>
 </pre>
    
+Plots:
+<img src="img_chania.jpg" alt="Flowers in Chania" width="460" height="345">
+
+   
 <div id="publications" class="section level2">  
 <h2>Publications</h2>
 <p> Articles are gven in the table below</p>
