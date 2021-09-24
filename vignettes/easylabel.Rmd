@@ -229,8 +229,11 @@ knitr::include_graphics(c("labdir rect.png", "labdir oct.png"))
 
 ## Known issues
 
-Currently easylabel() relies on plotly for the interactive scatter plot
-and uses webGL for speed as a scattergl trace. A known bug in the current
-version 4.9.4.1 of plotly for R is still using plotly.js version 2.0.
-This version of plotly.js has a problem with pixelltion of scatter
-plots particularly on highDPI (retina) displays.
+* Currently easylabel() relies on plotly for the interactive scatter plot
+  and uses webGL for speed as a scattergl trace. A known bug in the current
+  version 4.9.4.1 of plotly for R is still using plotly.js version 2.0.
+  This version of plotly.js has a problem with pixelltion of scatter
+  plots particularly on highDPI (retina) displays. Awaiting fix for 
+  `plotGlPixelRatio` from plotly.js to be passed on to plotly/r.
+  
+* Ltitle and Rtitle are only shown with base grpahics and not shown by plotly.
