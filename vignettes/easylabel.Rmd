@@ -52,7 +52,7 @@ easylabel(ymatrix, x = 'x', y = 'y', col = 'col',
 ```
 
 ```{r plot1, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
-knitr::include_graphics("/users/myles/documents/github/easylabel/vignettes/plot1.png")
+knitr::include_graphics("plot1.png")
 ```
 
 Use the `volcanoplot()` function to quickly plot a volcano plot from DESeq2 or
@@ -65,7 +65,7 @@ volcanoplot(volc1, useQ = TRUE)
 ```
 
 ```{r plot2, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
-knitr::include_graphics("/users/myles/documents/github/easylabel/vignettes/plot2.png")
+knitr::include_graphics("plot2.png")
 ```
 
 Use the `MAplot()` function to quickly plot an MA plot from DESeq2 or EdgeR
@@ -78,7 +78,7 @@ MAplot(volc2, useQ = TRUE)
 ```
 
 ```{r maplot1, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
-knitr::include_graphics("/users/myles/documents/github/easylabel/vignettes/MAplot1.png")
+knitr::include_graphics("MAplot1.png")
 ```
 
 The `fullGeneNames` argument will use Bioconductor package `AnnotationDbi` and
@@ -92,7 +92,7 @@ volcanoplot(volc1, useQ = TRUE, fullGeneNames = TRUE)
 ```
 
 ```{r table1, echo = FALSE, message=FALSE, fig.align='center', out.width='100%', out.extra='style="border: 0;"'}
-knitr::include_graphics("/users/myles/documents/github/easylabel/vignettes/table1.png")
+knitr::include_graphics("table1.png")
 ```
 
 You can add left and right sided titles using `Ltitle` and `Rtitle` to explain
@@ -120,7 +120,7 @@ volcanoplot(volc1,
 ```
 
 ```{r plot3, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
-knitr::include_graphics("/users/myles/documents/github/easylabel/vignettes/plot3.png")
+knitr::include_graphics("plot3.png")
 ```
 
 The FDR cutoff is set using `fdrcutoff` (volcano plots allow a single value,
@@ -141,7 +141,7 @@ volcanoplot(volc1, fccut = 1, fdrcutoff = 0.2, ylim = c(0, 6), xlim=c(-5,5),
 ```
 
 ```{r plot4, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
-knitr::include_graphics("/users/myles/documents/github/easylabel/vignettes/plot4.png")
+knitr::include_graphics("plot4.png")
 ```
 
 The next example has 6 colours and also shows how to remove the white outlines
@@ -153,7 +153,7 @@ volcanoplot(volc1, fccut = c(1, 2), fdrcutoff = 0.2, ylim = c(0, 6), xlim=c(-5,5
 ```
 
 ```{r plot5, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
-knitr::include_graphics("/users/myles/documents/github/easylabel/vignettes/plot5.png")
+knitr::include_graphics("plot5.png")
 ```
 
 Similarly 6 colours can be applied to MA plots using 3 levels of cut-off for FDR
@@ -166,7 +166,7 @@ MAplot(volc2, fdrcutoff=c(0.05, 0.01, 0.001), cex=0.8, useQ = TRUE,
 ```
 
 ```{r maplot2, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
-knitr::include_graphics("/users/myles/documents/github/easylabel/vignettes/MAplot2.png")
+knitr::include_graphics("MAplot2.png")
 ```
 
 The size of markers can be changed using `cex` (default 1).
@@ -185,7 +185,7 @@ volcanoplot(volc1, useQ = TRUE, fdrcutoff = 0.2, ylim=c(0,8), xlim=c(-6,6),
 ```
 
 ```{r plot6, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
-knitr::include_graphics("/users/myles/documents/github/easylabel/vignettes/plot6.png")
+knitr::include_graphics("plot6.png")
 ```
 
 Label lines can be altered using the argument `labelDir` or by selecting the
@@ -227,3 +227,10 @@ volcanoplot(volc1, labelDir = "oct")
 knitr::include_graphics(c("labdir rect.png", "labdir oct.png"))
 ```
 
+## Known issues
+
+Currently easylabel() relies on plotly for the interactive scatter plot
+and uses webGL for speed as a scattergl trace. A known bug in the current
+version 4.9.4.1 of plotly for R is still using plotly.js version 2.0.
+This version of plotly.js has a problem with pixelltion of scatter
+plots particularly on highDPI (retina) displays.
