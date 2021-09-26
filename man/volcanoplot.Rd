@@ -12,6 +12,8 @@ volcanoplot(
   fdrcutoff = 0.05,
   fccut = NULL,
   scheme = c("darkgrey", "blue", "red"),
+  xlab = expression("log"[2] ~ " fold change"),
+  ylab = expression("-log"[10] ~ " P"),
   showCounts = TRUE,
   useQ = FALSE,
   ...
@@ -39,6 +41,10 @@ need to be specified. With a single fold change cut-off, 3 or 5 colours are
 required, depending on whether the colours are symmetrical about x = 0.
 Accommodates asymmetric colour schemes with multiple fold change cut-offs
 (see examples).}
+
+\item{xlab}{x axis title. Accepts expressions.}
+
+\item{ylab}{y axis title. Accepts expressions.}
 
 \item{showCounts}{Logical whether to show legend with number of
 differentially expressed genes.}
