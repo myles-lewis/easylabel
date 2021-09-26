@@ -92,7 +92,7 @@
 #' radioButtons selectizeInput actionButton checkboxGroupInput observe
 #' updateSelectizeInput reactiveValues isolate reactive debounce
 #' observeEvent modalDialog textAreaInput tagList modalButton showModal
-#' removeModal h5 shinyApp downloadButton selectInput
+#' removeModal h5 shinyApp downloadButton selectInput br
 #' @importFrom plotly plot_ly layout plotlyOutput renderPlotly event_data
 #' event_register config plotlyProxy plotlyProxyInvoke add_markers %>%
 #' @importFrom RColorBrewer brewer.pal
@@ -205,6 +205,7 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
     tabsetPanel(
       tabPanel("Plot",
                fluidRow(
+                 br(),
                  plotlyOutput("plotly", height = paste0(height, "px"))),
                fluidRow(
                  column(3,
