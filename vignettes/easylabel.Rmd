@@ -36,7 +36,7 @@ library(easylabel)
 * You can move the legend as well.
 * Switch to SVG when finalised (only do this at last moment as otherwise
   editing is very slow).
-* Press camera button in modebar to save image as SVG.
+* Press camera button in the plotly modebar to save image as SVG.
 
 ## Examples:
 
@@ -173,14 +173,16 @@ The size of markers can be changed using `cex` (default 1).
 A box around the plot can be added using `bty='o'` (see `par()`).
 Axes can be customised by first suppressing the initial axis using `xaxt='n'` or
 `yaxt='n'` and then adding an `axis()` call using `panel.last`.
-A top title can also be added using `mtext()` via `panel.last`. 
+A top title can also be added using `main`.
+
 ```{r eval = FALSE}
-volcanoplot(volc1, useQ = TRUE, fdrcutoff = 0.2, ylim=c(0,8), xlim=c(-6,6),
+volcanoplot(volc1, useQ = TRUE, fdrcutoff = 0.2, ylim = c(0,8), xlim = c(-6,6),
             cex = 0.6,
-            xaxt = 'n', yaxt = 'n', bty = 'o', panel.last = {
-            axis(side = 1, at = -6:6)
-            axis(side = 2, at = 0:8)
-            mtext("DEG volcano plot", side = 3)
+            xaxt = 'n', yaxt = 'n', bty = 'o',
+            main = "DEG volcano plot",
+            panel.last = {
+              axis(side = 1, at = -6:6)
+              axis(side = 2, at = 0:8)
             })
 ```
 
@@ -236,4 +238,3 @@ knitr::include_graphics(c("labdir rect.png", "labdir oct.png"))
   plots particularly on highDPI (retina) displays. Awaiting fix for 
   `plotGlPixelRatio` from plotly.js to be passed on to plotly/r.
   
-* Ltitle and Rtitle are only shown with base grpahics and not shown by plotly.
