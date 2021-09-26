@@ -13,6 +13,8 @@ MAplot(
   scheme = c("darkgrey", "blue", "red"),
   hline = 0,
   labelDir = "yellipse",
+  xlab = expression("log"[2] ~ " mean expression"),
+  ylab = expression("log"[2] ~ " fold change"),
   showCounts = TRUE,
   useQ = FALSE,
   ...
@@ -40,6 +42,12 @@ accommodates asymmetric colour schemes for positive & negative fold change.
 (see examples).}
 
 \item{hline}{Vector of horizontal lines (default is y = 0).}
+
+\item{labelDir}{Option for label lines. See \code{\link[=easylabel]{easylabel()}}.}
+
+\item{xlab}{x axis title. Accepts expressions.}
+
+\item{ylab}{y axis title. Accepts expressions.}
 
 \item{showCounts}{Logical whether to show legend with number of
 differentially expressed genes.}

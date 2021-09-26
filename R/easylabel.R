@@ -92,13 +92,11 @@
 #' radioButtons selectizeInput actionButton checkboxGroupInput observe
 #' updateSelectizeInput reactiveValues isolate reactive debounce
 #' observeEvent modalDialog textAreaInput tagList modalButton showModal
-#' removeModal h5 shinyApp downloadButton selectInput
+#' removeModal h5 shinyApp downloadButton selectInput br
 #' @importFrom plotly plot_ly layout plotlyOutput renderPlotly event_data
 #' event_register config plotlyProxy plotlyProxyInvoke add_markers %>%
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom DT dataTableOutput datatable formatSignif
-#' @importFrom AnnotationDbi mapIds
-#' @importFrom org.Hs.eg.db org.Hs.eg.db
 #' @export
 
 
@@ -131,6 +129,7 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                                     line = markerOutline),
                       labSize = cex.text / 0.72 * 12,
                       custom_annotation = NULL, ...) {
+  args <- list(...)
   data <- as.data.frame(data)
   data$outlier <- FALSE
   xyspan <- c(max(data[, x], na.rm = TRUE) - min(data[, x], na.rm = TRUE),
@@ -206,6 +205,7 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
     tabsetPanel(
       tabPanel("Plot",
                fluidRow(
+                 br(),
                  plotlyOutput("plotly", height = paste0(height, "px"))),
                fluidRow(
                  column(3,
@@ -282,12 +282,16 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                      text = labelchoices, hoverinfo = 'text',
                      key = labelchoices, source = 'lab_plotly',
                      width = width, height = height) %>%
-               layout(xaxis = list(title = xlab, showgrid = showgrid,
-                                   color = 'black', ticklen = 5,
-                                   showline = TRUE, zeroline = zeroline),
-                      yaxis = list(title = ylab, showgrid = showgrid,
-                                   color = 'black', ticklen = 5,
-                                   showline = TRUE, zeroline = zeroline)),
+               layout(
+                 title = args$main,
+                 xaxis = list(title = exprToHtml(xlab),
+                              showgrid = showgrid,
+                              color = 'black', ticklen = 5,
+                              showline = TRUE, zeroline = zeroline),
+                 yaxis = list(title = exprToHtml(ylab),
+                              showgrid = showgrid,
+                              color = 'black', ticklen = 5,
+                              showline = TRUE, zeroline = zeroline)),
              # with outliers
              plot_ly(data = data[!data$outlier,],
                      x = as.formula(paste0('~', x)),
@@ -313,11 +317,14 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                            key = labelchoices[data$outlier],
                            legendgroup = 'outlier', name = 'outlier') %>%
                layout(
-                 xaxis = list(range = as.list(xlim), title = xlab,
+                 title = args$main,
+                 xaxis = list(range = as.list(xlim),
+                              title = exprToHtml(xlab),
                               showgrid = showgrid, color = 'black',
                               ticklen = 5, showline = TRUE,
                               zeroline = zeroline),
-                 yaxis = list(range = as.list(ylim), title = ylab,
+                 yaxis = list(range = as.list(ylim),
+                              title = exprToHtml(ylab),
                               showgrid = showgrid, color = 'black',
                               ticklen = 5, showline = TRUE,
                               zeroline = zeroline))
@@ -348,7 +355,8 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
 
       pdf(file, width = width/100, height = height/100 + 0.75)
       op <- par(mgp = mgp, mar = c(4, 4, 2, legenddist), tcl = -0.3,
-                las = 1, bty = 'l')
+                las = 1, bty = 'l',
+                font.main = 1)
       plot(data[!data$outlier, x], data[!data$outlier, y],
            pch = pch, bg = scheme2[data$col[!data$outlier]], col = outline_col,
            lwd = outline_lwd,
@@ -360,7 +368,6 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                }
              if (zeroline) abline(h = 0, v = 0)
            })
-      args <- list(...)
       mtext(Ltitle, LRtitle_side, adj = 0,
             line = ifelse(LRtitle_side <= 2, mgp[1], 0.1),
             cex = args$cex.lab)
@@ -581,6 +588,8 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
 #' required, depending on whether the colours are symmetrical about x = 0.
 #' Accommodates asymmetric colour schemes with multiple fold change cut-offs
 #' (see examples).
+#' @param xlab x axis title. Accepts expressions.
+#' @param ylab y axis title. Accepts expressions.
 #' @param showCounts Logical whether to show legend with number of
 #' differentially expressed genes.
 #' @param useQ Logical whether to convert nominal P values to q values.
@@ -594,6 +603,8 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
 volcanoplot <- function(data, x = NULL, y = NULL, padj = NULL,
                         fdrcutoff = 0.05, fccut = NULL,
                         scheme = c('darkgrey', 'blue', 'red'),
+                        xlab = expression("log"[2] ~ " fold change"),
+                        ylab = expression("-log"[10] ~ " P"),
                         showCounts = TRUE, useQ = FALSE, ...) {
   if (is.null(x)) {
     if ('log2FoldChange' %in% colnames(data)) x = 'log2FoldChange'  # DESeq2
@@ -680,8 +691,8 @@ volcanoplot <- function(data, x = NULL, y = NULL, padj = NULL,
     data <- data[!(is.na(data[, padj]) & data$log10P > fdrline), ]
   }
   easylabel(data, x, y, col = 'col',
-            xlab = expression("log"[2] ~ " fold change"),
-            ylab = expression("-log"[10] ~ " P"),
+            xlab = xlab,
+            ylab = ylab,
             scheme = scheme, zeroline = FALSE, hline = fdrline,
             custom_annotation = custom_annotation, ...)
 }
@@ -706,6 +717,9 @@ volcanoplot <- function(data, x = NULL, y = NULL, padj = NULL,
 #' accommodates asymmetric colour schemes for positive & negative fold change.
 #' (see examples).
 #' @param hline Vector of horizontal lines (default is y = 0).
+#' @param labelDir Option for label lines. See [easylabel()].
+#' @param xlab x axis title. Accepts expressions.
+#' @param ylab y axis title. Accepts expressions.
 #' @param showCounts Logical whether to show legend with number of
 #' differentially expressed genes.
 #' @param useQ Logical whether to convert nominal P values to q values.
@@ -720,6 +734,8 @@ MAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
                    scheme = c('darkgrey', 'blue', 'red'),
                    hline = 0,
                    labelDir = 'yellipse',
+                   xlab = expression("log"[2] ~ " mean expression"),
+                   ylab = expression("log"[2] ~ " fold change"),
                    showCounts = TRUE, useQ = FALSE, ...) {
   if (is.null(y)) {
     if ('log2FoldChange' %in% colnames(data)) y = 'log2FoldChange'  # DESeq2
@@ -788,8 +804,8 @@ MAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
   }
 
   easylabel(data, x, y, col = 'col',
-            ylab = expression("log"[2] ~ " fold change"),
-            xlab = expression("log"[2] ~ " mean expression"),
+            ylab = ylab,
+            xlab = xlab,
             scheme = scheme, zeroline = FALSE, hline = hline,
             labelDir = labelDir,
             custom_annotation = custom_annotation, ...)
@@ -888,3 +904,12 @@ linerect <- function(df) {
   }
 }
 
+# Allow plotly to show expressions as axis titles
+exprToHtml <- function(x) {
+  x <- as.character(x)
+  x <- gsub("\"|~", "", x)
+  x <- gsub("\\[", "<sub>", x)
+  x <- gsub("\\]", "</sub>", x)
+  x <- gsub(" +", " ", x)
+  x
+}
