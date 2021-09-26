@@ -64,6 +64,12 @@
 #' 'rect' for rectilinear lines (a mix of horizontal and vertical),
 #' 'x' for diagonal lines,
 #' 'oct' for lines in 8 directions around the centre.
+#' @param labCentre Coordinates of the central point around which radial labels
+#' converge towards. Defaults to the centre of the plot.
+#' @param panel.last An expression to be evaluated after plotting has taken
+#' place but before the axes, title and box are added. This can be useful for
+#' adding extra titles, legends or trend lines. Currently only works when saving
+#' plots using base graphics and does not work with plotly. See [plot.default]
 #' @param fullGeneNames Logical whether to expand gene symbols using
 #' Bioconductor AnnotationDbi package. With multiple matches, returns first
 #' value only.
@@ -118,6 +124,7 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                       LRtitle_side = 1,
                       labelDir = "radial",
                       labCentre = NULL,
+                      panel.last = NULL,
                       fullGeneNames = FALSE,
                       AnnotationDb = NULL,
                       symbols = c('circle', 'diamond-open'),
@@ -367,7 +374,8 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                       col = 'grey80', lwd = 0.5)
                }
              if (zeroline) abline(h = 0, v = 0)
-           })
+           },
+           panel.last = panel.last)
       mtext(Ltitle, LRtitle_side, adj = 0,
             line = ifelse(LRtitle_side <= 2, mgp[1], 0.1),
             cex = args$cex.lab)
