@@ -349,7 +349,7 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                               ticklen = 5, showline = TRUE,
                               zeroline = zeroline))
       ) %>%
-        layout(annotations = append(annot, LRtitles, custom_annotation),
+        layout(annotations = c(annot, LRtitles, custom_annotation),
                hovermode = 'closest',
                legend = list(font = list(color = 'black')),
                shapes = shapes) %>%
@@ -660,7 +660,7 @@ volcanoplot <- function(data, x = NULL, y = NULL, padj = NULL,
     up <- sum(siggenes & data[, x] > 0)
     down <- sum(siggenes & data[, x] < 0)
     total <- nrow(data)
-    custom_annotation <- list(list(x = 1.18, y = 0.02, align = 'left',
+    custom_annotation <- list(list(x = 1.2, y = 0.02, align = 'left',
                                    text = paste0(up, ' upregulated<br>',
                                                down, ' downregulated<br>',
                                                total, ' total genes'),
@@ -796,7 +796,7 @@ MAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
     up <- sum(siggenes & data[, y] > 0)
     down <- sum(siggenes & data[, y] < 0)
     total <- nrow(data)
-    custom_annotation <- list(list(x = 1.18, y = 0.02, align = 'left',
+    custom_annotation <- list(list(x = 1.2, y = 0.02, align = 'left',
                                    text = paste0(up, ' upregulated<br>',
                                                down, ' downregulated<br>',
                                                total, ' total genes'),
@@ -931,6 +931,7 @@ exprToHtml <- function(x) {
   x <- gsub("\"|~", "", x)
   x <- gsub("\\[", "<sub>", x)
   x <- gsub("\\]", "</sub>", x)
+  x <- gsub("symbol\\(.*?\\)", "", x)
   x <- gsub(" +", " ", x)
   x
 }
