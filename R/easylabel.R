@@ -182,6 +182,19 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                             xyspan = xyspan)
   start_xy <- lapply(start_annot, function(i) list(ax = i$ax, ay = i$ay))
   names(start_xy) <- startLabels
+  LRtitles <- list(
+    list(x=0, y=0,
+         align='left',
+         text=exprToHtml(Ltitle),
+         font = list(color = "black"),
+         xref='paper', yref='paper',
+         showarrow=F),
+    list(x=1, y=0,
+         align='right',
+         text=exprToHtml(Rtitle),
+         font = list(color = "black"),
+         xref='paper', yref='paper',
+         showarrow=F))
   if (is.na(outline_col)) outline_lwd <- 0  # fix plotly no outlines
   if (fullGeneNames) {
     if (!requireNamespace("AnnotationDbi", quietly = TRUE)) {
@@ -336,7 +349,7 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                               ticklen = 5, showline = TRUE,
                               zeroline = zeroline))
       ) %>%
-        layout(annotations = append(annot, custom_annotation),
+        layout(annotations = append(annot, LRtitles, custom_annotation),
                hovermode = 'closest',
                legend = list(font = list(color = 'black')),
                shapes = shapes) %>%
