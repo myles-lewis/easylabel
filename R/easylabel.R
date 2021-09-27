@@ -183,18 +183,20 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
   start_xy <- lapply(start_annot, function(i) list(ax = i$ax, ay = i$ay))
   names(start_xy) <- startLabels
   LRtitles <- list(
-    list(x=0, y=0,
-         align='left',
-         text=exprToHtml(Ltitle),
+    list(x = 0,
+         y = ifelse(LRtitle_side == 3, 1, 0),
+         align = 'left',
+         text = exprToHtml(Ltitle),
          font = list(color = "black"),
-         xref='paper', yref='paper',
-         showarrow=F),
-    list(x=1, y=0,
-         align='right',
-         text=exprToHtml(Rtitle),
+         xref = 'paper', yref = 'paper',
+         showarrow = F),
+    list(x = 1,
+         y = ifelse(LRtitle_side == 3, 1, 0),
+         align = 'right',
+         text = exprToHtml(Rtitle),
          font = list(color = "black"),
-         xref='paper', yref='paper',
-         showarrow=F))
+         xref = 'paper', yref = 'paper',
+         showarrow = F))
   if (is.na(outline_col)) outline_lwd <- 0  # fix plotly no outlines
   if (fullGeneNames) {
     if (!requireNamespace("AnnotationDbi", quietly = TRUE)) {
@@ -238,12 +240,13 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                                     selected = labelDir)
                  ),
                  column(4,
-                        selectizeInput('label', h5('Select labels'),
-                                       choices = NULL,
-                                       options = list(
-                                         onInitialize = I('function() { this.setValue(""); }')
-                                         ),
-                                       multiple = T)),
+                        selectizeInput(
+                          'label', h5('Select labels'),
+                          choices = NULL,
+                          options = list(
+                            onInitialize = I('function() { this.setValue(""); }')
+                          ),
+                          multiple = T)),
                  column(4,
                         actionButton("add_batch", "Add batch"),
                         actionButton("clear", "Clear all"),
@@ -324,7 +327,7 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                      key = labelchoices[!data$outlier], source = 'lab_plotly',
                      legendgroup = 'Main',
                      width = width, height = height) %>%
-               add_markers(data = data[data$outlier,],
+               add_markers(data = data[data$outlier, ],
                            x = as.formula(paste0('~', x)),
                            y = as.formula(paste0('~', y)),
                            type = switch(pt, 'scattergl', 'scatter'),
