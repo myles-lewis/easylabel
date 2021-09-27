@@ -198,6 +198,7 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
          xref = 'paper', yref = 'paper',
          showarrow = F))
   if (is.na(outline_col)) outline_lwd <- 0  # fix plotly no outlines
+  hovertext <- labelchoices
   if (fullGeneNames) {
     if (!requireNamespace("AnnotationDbi", quietly = TRUE)) {
       stop("Can't find package AnnotationDbi.
@@ -215,6 +216,7 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
     data$gene_fullname <- AnnotationDbi::mapIds(AnnotationDb, labelchoices,
                                                 "GENENAME", "ALIAS",
                                                 multiVals = 'first')
+    hovertext <- paste0(labelchoices, "\n", data$gene_fullname)
   }
   labDir_choices <- c('radial', 'origin', 'horiz', 'vert', 'xellipse',
                       'yellipse', 'rect', 'x', 'oct')
@@ -302,7 +304,7 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                      mode = 'markers',
                      color = as.formula(paste0('~', col)), colors = scheme,
                      marker = marker,
-                     text = labelchoices, hoverinfo = 'text',
+                     text = hovertext, hoverinfo = 'text',
                      key = labelchoices, source = 'lab_plotly',
                      width = width, height = height) %>%
                layout(
@@ -323,7 +325,7 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                      mode = 'markers',
                      color = as.formula(paste0('~', col)), colors = scheme,
                      marker = marker,
-                     text = labelchoices[!data$outlier], hoverinfo = 'text',
+                     text = hovertext[!data$outlier], hoverinfo = 'text',
                      key = labelchoices[!data$outlier], source = 'lab_plotly',
                      legendgroup = 'Main',
                      width = width, height = height) %>%
@@ -335,7 +337,7 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                            colors = scheme,
                            marker = marker,
                            symbol = I(symbols[2]),
-                           text = labelchoices[data$outlier],
+                           text = hovertext[data$outlier],
                            hoverinfo = 'text',
                            key = labelchoices[data$outlier],
                            legendgroup = 'outlier', name = 'outlier') %>%
