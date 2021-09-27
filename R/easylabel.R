@@ -683,7 +683,7 @@ volcanoplot <- function(data, x = NULL, y = NULL, padj = NULL,
     }
     siggenes <- as.numeric(siggenes)
     if (length(fccut) == 1 & fccut == 0) {
-      # simple 3 colour version (grey, blue=FC<0, red=FC>0)
+      # simple 3 colour version (grey: ns, blue: FC<0, red: FC>0)
       fc <- cut(data[,x], c(-Inf, 0, Inf))
       siggenes[siggenes == 1] <- as.numeric(fc[siggenes == 1])
       data$col <- factor(siggenes, levels = 0:(length(fccut) + 1),
