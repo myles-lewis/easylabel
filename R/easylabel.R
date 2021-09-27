@@ -681,12 +681,20 @@ volcanoplot <- function(data, x = NULL, y = NULL, padj = NULL,
     if (!(length(scheme)-1) %in% ((length(fccut)+1) * 1:2)) {
       stop("Number of colours in 'scheme' does not fit with number of cuts in 'fccut'")
     }
-    if ((length(scheme) - 1 == length(fccut) + 1)) {
+    siggenes <- as.numeric(siggenes)
+    if (length(fccut) == 1 & fccut == 0) {
+      # simple 3 colour version (grey, blue=FC<0, red=FC>0)
+      fc <- cut(data[,x], c(-Inf, 0, Inf))
+      siggenes[siggenes == 1] <- as.numeric(fc[siggenes == 1])
+      data$col <- factor(siggenes, levels = 0:(length(fccut) + 1),
+                         labels = c('ns',
+                                    paste0('FDR<', fdrcutoff, ', FC<0'),
+                                    paste0('FDR<', fdrcutoff, ', FC>0')))
+    } else if (length(scheme) - 1 == length(fccut) + 1) {
       # symmetric colours
       fc <- cut(abs(data[, x]), c(-1, fccut, Inf))
-      siggenes <- as.numeric(siggenes)
       siggenes[siggenes == 1] <- as.numeric(fc[siggenes == 1])
-      data$col <- factor(siggenes, levels = 0:(length(fccut)+1),
+      data$col <- factor(siggenes, levels = 0:(length(fccut) + 1),
                          labels = c('ns',
                                     paste0('FDR<', fdrcutoff,
                                            ', FC<', fccut[1]),
@@ -695,7 +703,6 @@ volcanoplot <- function(data, x = NULL, y = NULL, padj = NULL,
       # asymmetric colours
       fccut <- sort(unique(c(fccut, 0, -fccut)))
       fc <- cut(data[,x], c(-Inf, fccut, Inf))
-      siggenes <- as.numeric(siggenes)
       siggenes[siggenes == 1] <- as.numeric(fc[siggenes == 1])
       data$col <- factor(siggenes, levels = 0:(length(fccut)+1),
                          labels = c('ns',
