@@ -95,6 +95,21 @@ volcanoplot(volc1, useQ = TRUE, fullGeneNames = TRUE)
 knitr::include_graphics("table1.png")
 ```
 
+For volcano plots a simple colour scheme with downregulated genes in blue and
+upregulated genes in red can be rendered by setting `fccut = 0`. A title can be
+added using `main`.
+
+```{r eval = FALSE}
+volcanoplot(volc2,
+            useQ = TRUE,
+            fccut = 0,
+            main = "Volcano title")
+```
+
+```{r plot7, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+knitr::include_graphics("plot7.png")
+```
+
 You can add left and right sided titles using `Ltitle` and `Rtitle` to explain
 the direction of effect for up/downregulation. The use of `expression` in the
 example below shows how to add left/right arrow symbols to the titles.
