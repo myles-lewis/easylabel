@@ -357,7 +357,7 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                legend = list(font = list(color = 'black')),
                shapes = shapes) %>%
         config(edits = list(annotationTail = TRUE, legendPosition = TRUE),
-               plotGlPixelRatio = 6,
+               # plotGlPixelRatio = 6,
                toImageButtonOptions = list(format = "svg")) %>%
         event_register(event = 'plotly_click')
 
