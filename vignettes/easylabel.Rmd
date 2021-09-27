@@ -110,13 +110,13 @@ Outliers can be toggled off using `showOutliers = FALSE`.
 ```{r eval = FALSE}
 volcanoplot(volc1,
             useQ = TRUE, fullGeneNames = TRUE,
-            Ltitle=expression(symbol("\254") ~ "Non-responder"),
-            Rtitle=expression("Responder" ~ symbol("\256")),
-            LRtitle_side=1,
-            cex.lab=0.9, cex.axis=0.8,
+            Ltitle = expression(symbol("\254") ~ "Non-responder"),
+            Rtitle = expression("Responder" ~ symbol("\256")),
+            LRtitle_side = 1,
+            cex.lab = 0.9, cex.axis = 0.8,
             fccut = c(1, 2), fdrcutoff = 0.2,
-            ylim = c(0, 6), xlim=c(-5,5),
-            scheme=c('darkgrey', 'blue', 'orange', 'red'))
+            ylim = c(0, 6), xlim = c(-5, 5),
+            scheme = c('darkgrey', 'blue', 'orange', 'red'))
 ```
 
 ```{r plot3, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
@@ -137,7 +137,8 @@ In the next 2 plots, the colours range from blue for downregulated genes,
 through to red for upregulated genes. Vertical lines can be added using `vline`.
 ```{r eval = FALSE}
 volcanoplot(volc1, fccut = 1, fdrcutoff = 0.2, ylim = c(0, 6), xlim=c(-5,5),
-            scheme=c('darkgrey', 'blue', 'lightblue', 'orange', 'red'), vline=c(-1,1))
+            scheme=c('darkgrey', 'blue', 'lightblue', 'orange', 'red'), 
+            vline=c(-1,1))
 ```
 
 ```{r plot4, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
@@ -148,8 +149,10 @@ The next example has 6 colours and also shows how to remove the white outlines
 around points using `outline_col = NA` and use transparency instead via `alpha`.
 ```{r eval = FALSE}
 library(RColorBrewer)
-volcanoplot(volc1, fccut = c(1, 2), fdrcutoff = 0.2, ylim = c(0, 6), xlim=c(-5,5),
-            scheme=c('darkgrey', rev(brewer.pal(9, 'RdYlBu')[-(4:6)])), alpha=0.75, outline_col=NA)
+volcanoplot(volc1, fccut = c(1, 2), fdrcutoff = 0.2, 
+            ylim = c(0, 6), xlim = c(-5, 5),
+            scheme = c('darkgrey', rev(brewer.pal(9, 'RdYlBu')[-(4:6)])), 
+            alpha = 0.75, outline_col = NA)
 ```
 
 ```{r plot5, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
@@ -160,9 +163,9 @@ Similarly 6 colours can be applied to MA plots using 3 levels of cut-off for FDR
 (note the colour scheme is in a slightly different order).
 
 ```{r eval = FALSE}
-MAplot(volc2, fdrcutoff=c(0.05, 0.01, 0.001), cex=0.8, useQ = TRUE,
-       alpha=0.75, outline_col=NA,
-       scheme=c('darkgrey', brewer.pal(9, 'RdYlBu')[c(7:9, 3:1)]))
+MAplot(volc2, fdrcutoff = c(0.05, 0.01, 0.001), cex = 0.8, useQ = TRUE,
+       alpha = 0.75, outline_col = NA,
+       scheme = c('darkgrey', brewer.pal(9, 'RdYlBu')[c(7:9, 3:1)]))
 ```
 
 ```{r maplot2, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
@@ -231,10 +234,10 @@ knitr::include_graphics(c("labdir rect.png", "labdir oct.png"))
 
 ## Known issues
 
-* Currently easylabel() relies on plotly for the interactive scatter plot
-  and uses webGL for speed as a scattergl trace. A known bug in the current
-  version 4.9.4.1 of plotly for R is still using plotly.js version 2.0.
-  This version of plotly.js has a problem with pixelltion of scatter
-  plots particularly on highDPI (retina) displays. Awaiting fix for 
-  `plotGlPixelRatio` from plotly.js to be passed on to plotly/r.
+* Currently `easylabel()` relies on plotly for the interactive scatter plot
+  and uses webGL for speed as a plotly scattergl trace. A known bug exists in 
+  the current version 4.9.4.1 of plotly for R which is still using plotly.js 
+  version 2.0. This version of plotly.js has a problem with poor pixellation of 
+  scatter plots, particularly on highDPI (retina) displays. This issue awaits a 
+  fix for `plotGlPixelRatio` within plotly.js to be passed on to plotly/r.
   
