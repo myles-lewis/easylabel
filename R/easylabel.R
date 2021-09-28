@@ -72,15 +72,16 @@
 #' place but before the axes, title and box are added. This can be useful for
 #' adding extra titles, legends or trend lines. Currently only works when saving
 #' plots using base graphics and does not work with plotly. See [plot.default]
-#' @param text_col Colour of label text.
-#' @param line_col Colour of label lines.
+#' @param text_col Colour of label text. (Not supported by plotly.)
+#' @param line_col Colour of label lines. (Not supported by plotly.)
 #' @param rectangles Logical whether to show rectangles around labels.
-#' @param rect_col Colour for filling rectangles.
+#' (Not supported by plotly.)
+#' @param rect_col Colour for filling rectangles. (Not supported by plotly.)
 #' @param border_col Colour of rectangle borders. Use `border_col = NA` to omit
-#' borders.
+#' borders. (Not supported by plotly.)
 #' @param padding Amount of padding in pixels around label text.
 #' @param border_radius Amount of roundedness in pixels to apply to label
-#' rectangles.
+#' rectangles. (Not supported by plotly.)
 #' @param fullGeneNames Logical whether to expand gene symbols using
 #' Bioconductor AnnotationDbi package. With multiple matches, returns first
 #' value only.
@@ -103,7 +104,7 @@
 #' radioButtons selectizeInput actionButton checkboxGroupInput observe
 #' updateSelectizeInput reactiveValues isolate reactive debounce
 #' observeEvent modalDialog textAreaInput tagList modalButton showModal
-#' removeModal h5 shinyApp downloadButton selectInput br
+#' removeModal h5 shinyApp downloadButton selectInput br textInput
 #' @importFrom plotly plot_ly layout plotlyOutput renderPlotly event_data
 #' event_register config plotlyProxy plotlyProxyInvoke add_markers %>%
 #' @importFrom RColorBrewer brewer.pal
@@ -648,7 +649,7 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
 #' @param useQ Logical whether to convert nominal P values to q values.
 #' Requires the qvalue Bioconductor package.
 #' @param ... Other arguments passed to [easylabel()].
-#' @seealso [easylabel()]
+#' @seealso [easylabel()] [MAplot()]
 #' @importFrom qvalue qvalue
 #' @export
 
@@ -791,7 +792,7 @@ volcanoplot <- function(data, x = NULL, y = NULL, padj = NULL,
 #' @param useQ Logical whether to convert nominal P values to q values.
 #' Requires the qvalue Bioconductor package.
 #' @param ... Other arguments passed to [easylabel()].
-#' @seealso [easylabel()]
+#' @seealso [easylabel()] [volcanoplot()]
 #' @importFrom qvalue qvalue
 #' @export
 

@@ -13,6 +13,7 @@ easylabel(
   scheme = NULL,
   xlab = x,
   ylab = y,
+  filename = NULL,
   startLabels = NULL,
   xlim = NULL,
   ylim = NULL,
@@ -37,13 +38,15 @@ easylabel(
   labelDir = "radial",
   labCentre = NULL,
   panel.last = NULL,
+  text_col = "black",
+  line_col = "black",
+  rectangles = FALSE,
+  rect_col = "white",
+  border_col = "black",
+  padding = 3,
+  border_radius = 5,
   fullGeneNames = FALSE,
   AnnotationDb = NULL,
-  symbols = c("circle", "diamond-open"),
-  markerSize = cex * 8,
-  markerOutline = list(width = outline_lwd, color = outline_col),
-  marker = list(size = markerSize, opacity = alpha, line = markerOutline),
-  labSize = cex.text/0.72 * 12,
   custom_annotation = NULL,
   ...
 )
@@ -67,6 +70,8 @@ If \code{NULL} defaults to \code{rownames(data)}.}
 
 \item{ylab}{y axis title. Accepts expressions when exporting base graphics.}
 
+\item{filename}{Filename for saving plots to pdf.}
+
 \item{startLabels}{vector of initial labels.}
 
 \item{xlim}{the x limits (x1, x2) of the plot.}
@@ -76,7 +81,8 @@ If \code{NULL} defaults to \code{rownames(data)}.}
 \item{showOutliers}{Logical whether to show outliers on the margins of the
 plot.}
 
-\item{width}{Width of the plot in pixels.}
+\item{width}{Width of the plot in pixels. Saving to pdf scales 100 pixels to
+1 inch.}
 
 \item{height}{Height of the plot in pixels.}
 
@@ -133,6 +139,23 @@ place but before the axes, title and box are added. This can be useful for
 adding extra titles, legends or trend lines. Currently only works when saving
 plots using base graphics and does not work with plotly. See \link{plot.default}}
 
+\item{text_col}{Colour of label text. (Not supported by plotly.)}
+
+\item{line_col}{Colour of label lines. (Not supported by plotly.)}
+
+\item{rectangles}{Logical whether to show rectangles around labels.
+(Not supported by plotly.)}
+
+\item{rect_col}{Colour for filling rectangles. (Not supported by plotly.)}
+
+\item{border_col}{Colour of rectangle borders. Use \code{border_col = NA} to omit
+borders. (Not supported by plotly.)}
+
+\item{padding}{Amount of padding in pixels around label text.}
+
+\item{border_radius}{Amount of roundedness in pixels to apply to label
+rectangles. (Not supported by plotly.)}
+
 \item{fullGeneNames}{Logical whether to expand gene symbols using
 Bioconductor AnnotationDbi package. With multiple matches, returns first
 value only.
@@ -140,17 +163,6 @@ See \code{\link[=mapIds]{mapIds()}}.}
 
 \item{AnnotationDb}{Annotation database to use when expanding gene symbols.
 Defaults to human gene database \code{AnnotationDb = org.Hs.eg.db}.}
-
-\item{symbols}{passed to plotly to specify symbols for normal points and
-outliers.}
-
-\item{markerSize}{Size of markers as per plotly.}
-
-\item{markerOutline}{List of plotly arguments to define marker outlines.}
-
-\item{marker}{List of arguments to control plotly markers.}
-
-\item{labSize}{Font size for plotly labels (default 12).}
 
 \item{custom_annotation}{List of annotations to be added via
 \code{\link[plotly:layout]{plotly::layout()}}.}

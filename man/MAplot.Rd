@@ -15,6 +15,7 @@ MAplot(
   labelDir = "yellipse",
   xlab = expression("log"[2] ~ " mean expression"),
   ylab = expression("log"[2] ~ " fold change"),
+  filename = NULL,
   showCounts = TRUE,
   useQ = FALSE,
   ...
@@ -49,6 +50,8 @@ accommodates asymmetric colour schemes for positive & negative fold change.
 
 \item{ylab}{y axis title. Accepts expressions.}
 
+\item{filename}{Filename for saving to pdf.}
+
 \item{showCounts}{Logical whether to show legend with number of
 differentially expressed genes.}
 
@@ -61,5 +64,5 @@ Requires the qvalue Bioconductor package.}
 Interactive labelling of MA plots using shiny/plotly interface.
 }
 \seealso{
-\code{\link[=easylabel]{easylabel()}}
+\code{\link[=easylabel]{easylabel()}} \code{\link[=volcanoplot]{volcanoplot()}}
 }
