@@ -254,8 +254,8 @@ knitr::include_graphics(c("labdir rect.png", "labdir oct.png"))
 Rectangles can be drawn around the label text, using `rectangles = TRUE`.
 
 ```{r eval = FALSE}
-# simple outlines
-volcanoplot(volc2, useQ = TRUE, fccut=0,
+# Simple outlines
+volcanoplot(volc2, useQ = TRUE, fccut = 0,
             rectangles = TRUE)
 ```
 
@@ -264,14 +264,14 @@ knitr::include_graphics("rect simple.png")
 ```
 
 ```{r eval = FALSE}
-# red outlined labels, rounded ends
-volcanoplot(volc2, useQ = TRUE, fullGeneNames =TRUE,
+# Red outlined labels, rounded ends
+volcanoplot(volc2, useQ = TRUE, fullGeneNames = TRUE,
             rectangles = TRUE,
-            padding=5,
-            border_radius=10,
-            line_col='red',
-            border_col='red',
-            text_col='red')
+            padding = 5,
+            border_radius = 10,
+            line_col = 'red',
+            border_col = 'red',
+            text_col = 'red')
 ```
 
 ```{r labrect2, echo = FALSE, message=FALSE, fig.show='hold', out.width='80%', out.extra='style="border: 0;"'}
@@ -279,16 +279,16 @@ knitr::include_graphics("rect red outline.png")
 ```
 
 ```{r eval = FALSE}
-# transparent grey rectangles, rounded ends
-MAplot(volc2, fdrcut=c(0.05, 0.01, 0.001), cex=0.8, useQ = TRUE,
-       alpha=0.75, outline_col=NA,
+# Transparent grey rectangles, rounded ends
+MAplot(volc2, fdrcut = c(0.05, 0.01, 0.001), cex = 0.8, useQ = TRUE,
+       alpha = 0.75, outline_col = NA,
        fullGeneNames = TRUE,
-       scheme=c('darkgrey', brewer.pal(9, 'RdYlBu')[c(7:9, 3:1)]),
+       scheme = c('darkgrey', brewer.pal(9, 'RdYlBu')[c(7:9, 3:1)]),
        rectangles = TRUE,
-       border_col=NA,
-       padding=5,
-       rect_col=adjustcolor('grey', alpha.f = 0.6),
-       border_radius=20)
+       border_col = NA,
+       padding = 5,
+       rect_col = adjustcolor('grey', alpha.f = 0.6),
+       border_radius = 20)
 ```
 
 ```{r labrect3, echo = FALSE, message=FALSE, fig.show='hold', out.width='80%', out.extra='style="border: 0;"'}
@@ -296,15 +296,15 @@ knitr::include_graphics("rect grey.png")
 ```
 
 ```{r eval = FALSE}
-# white text on black background, no rounding
-volcanoplot(volc2, useQ = TRUE, fullGeneNames =TRUE,
-            fccut=0,
+# White text on black background, no rounding
+volcanoplot(volc2, useQ = TRUE, fullGeneNames = TRUE,
+            fccut = 0,
             rectangles = TRUE,
-            padding=4,
-            border_radius=0,
-            rect_col='black',
-            text_col='white',
-            border_col=NA)
+            padding = 4,
+            border_radius = 0,
+            rect_col = 'black',
+            text_col = 'white',
+            border_col = NA)
 ```
 
 ```{r labrect4, echo = FALSE, message=FALSE, fig.show='hold', out.width='80%', out.extra='style="border: 0;"'}
