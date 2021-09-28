@@ -113,7 +113,7 @@
 
 easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                       xlab = x, ylab = y,
-                      filename = "label_plot",
+                      filename = NULL,
                       startLabels = NULL,
                       xlim = NULL, ylim = NULL,
                       showOutliers = TRUE,
@@ -138,6 +138,8 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                       fullGeneNames = FALSE,
                       AnnotationDb = NULL,
                       custom_annotation = NULL, ...) {
+  if (is.null(filename)) filename <- paste0("label_",
+                                            deparse(substitute(data)))
   args <- list(...)
   data <- as.data.frame(data)
   # determine outliers
@@ -263,7 +265,7 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                           ),
                           multiple = T)),
                  column(5,
-                        textInput("filename", h5("Save filename"), filename),
+                        textInput("filename", h5("Save pdf filename"), filename),
                         br(),
                         actionButton("add_batch", "Add batch"),
                         actionButton("clear", "Clear all"),
@@ -656,8 +658,10 @@ volcanoplot <- function(data, x = NULL, y = NULL, padj = NULL,
                         scheme = c('darkgrey', 'blue', 'red'),
                         xlab = expression("log"[2] ~ " fold change"),
                         ylab = expression("-log"[10] ~ " P"),
-                        filename = "volcano",
+                        filename = NULL,
                         showCounts = TRUE, useQ = FALSE, ...) {
+  if (is.null(filename)) filename <- paste0("volcano_",
+                                            deparse(substitute(data)))
   if (is.null(x)) {
     if ('log2FoldChange' %in% colnames(data)) x = 'log2FoldChange'  # DESeq2
     if ('logFC' %in% colnames(data)) x = 'logFC'  # limma
@@ -749,6 +753,7 @@ volcanoplot <- function(data, x = NULL, y = NULL, padj = NULL,
   if (!is.null(fdrline)) {
     data <- data[!(is.na(data[, padj]) & data$log10P > fdrline), ]
   }
+
   easylabel(data, x, y, col = 'col',
             xlab = xlab,
             ylab = ylab,
@@ -797,8 +802,10 @@ MAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
                    labelDir = 'yellipse',
                    xlab = expression("log"[2] ~ " mean expression"),
                    ylab = expression("log"[2] ~ " fold change"),
-                   filename = "MA_plot",
+                   filename = NULL,
                    showCounts = TRUE, useQ = FALSE, ...) {
+  if (is.null(filename)) filename <- paste0("MAplot_",
+                                            deparse(substitute(data)))
   if (is.null(y)) {
     if ('log2FoldChange' %in% colnames(data)) y = 'log2FoldChange'  # DESeq2
     if ('logFC' %in% colnames(data)) y = 'logFC'  # limma
