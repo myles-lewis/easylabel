@@ -231,7 +231,9 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
     data$gene_fullname <- AnnotationDbi::mapIds(AnnotationDb, labelchoices,
                                                 "GENENAME", "ALIAS",
                                                 multiVals = 'first')
-    hovertext <- paste0(labelchoices, "\n", data$gene_fullname)
+    notNA <- !is.na(data$gene_fullname)
+    hovertext[notNA] <- paste0(labelchoices[notNA], "\n",
+                               data$gene_fullname[notNA])
   }
   labDir_choices <- c('radial', 'origin', 'horiz', 'vert', 'xellipse',
                       'yellipse', 'rect', 'x', 'oct')
