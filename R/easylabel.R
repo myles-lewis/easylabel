@@ -28,12 +28,14 @@
 #' @param scheme vector of colours for points.
 #' @param xlab x axis title. Accepts expressions when exporting base graphics.
 #' @param ylab y axis title. Accepts expressions when exporting base graphics.
+#' @param filename Filename for saving plots to pdf.
 #' @param startLabels vector of initial labels.
 #' @param xlim the x limits (x1, x2) of the plot.
 #' @param ylim the y limits of the plot.
 #' @param showOutliers Logical whether to show outliers on the margins of the
 #' plot.
-#' @param width Width of the plot in pixels.
+#' @param width Width of the plot in pixels. Saving to pdf scales 100 pixels to
+#' 1 inch.
 #' @param height Height of the plot in pixels.
 #' @param showgrid Logical whether to show gridlines.
 #' @param zeroline Logical whether to show lines at x = 0 and y = 0.
@@ -70,18 +72,21 @@
 #' place but before the axes, title and box are added. This can be useful for
 #' adding extra titles, legends or trend lines. Currently only works when saving
 #' plots using base graphics and does not work with plotly. See [plot.default]
+#' @param text_col Colour of label text.
+#' @param line_col Colour of label lines.
+#' @param rectangles Logical whether to show rectangles around labels.
+#' @param rect_col Colour for filling rectangles.
+#' @param border_col Colour of rectangle borders. Use `border_col = NA` to omit
+#' borders.
+#' @param padding Amount of padding in pixels around label text.
+#' @param border_radius Amount of roundedness in pixels to apply to label
+#' rectangles.
 #' @param fullGeneNames Logical whether to expand gene symbols using
 #' Bioconductor AnnotationDbi package. With multiple matches, returns first
 #' value only.
 #' See [mapIds()].
 #' @param AnnotationDb Annotation database to use when expanding gene symbols.
 #' Defaults to human gene database `AnnotationDb = org.Hs.eg.db`.
-#' @param symbols passed to plotly to specify symbols for normal points and
-#' outliers.
-#' @param markerSize Size of markers as per plotly.
-#' @param markerOutline List of plotly arguments to define marker outlines.
-#' @param marker List of arguments to control plotly markers.
-#' @param labSize Font size for plotly labels (default 12).
 #' @param custom_annotation List of annotations to be added via
 #' [plotly::layout()].
 #' @param ... Further graphical parameters passed to `plot()` when saving via
@@ -108,6 +113,7 @@
 
 easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                       xlab = x, ylab = y,
+                      filename = "label_plot",
                       startLabels = NULL,
                       xlim = NULL, ylim = NULL,
                       showOutliers = TRUE,
@@ -125,19 +131,16 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                       labelDir = "radial",
                       labCentre = NULL,
                       panel.last = NULL,
+                      text_col = 'black', line_col = 'black',
+                      rectangles = FALSE,
+                      rect_col = 'white', border_col = 'black',
+                      padding = 3, border_radius = 5,
                       fullGeneNames = FALSE,
                       AnnotationDb = NULL,
-                      symbols = c('circle', 'diamond-open'),
-                      markerSize = cex * 8,
-                      markerOutline = list(width = outline_lwd,
-                                           color = outline_col),
-                      marker = list(size = markerSize,
-                                    opacity = alpha,
-                                    line = markerOutline),
-                      labSize = cex.text / 0.72 * 12,
                       custom_annotation = NULL, ...) {
   args <- list(...)
   data <- as.data.frame(data)
+  # determine outliers
   data$outlier <- FALSE
   xyspan <- c(max(data[, x], na.rm = TRUE) - min(data[, x], na.rm = TRUE),
               max(data[, y], na.rm = TRUE) - min(data[, y], na.rm = TRUE))
@@ -182,6 +185,16 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                             xyspan = xyspan)
   start_xy <- lapply(start_annot, function(i) list(ax = i$ax, ay = i$ay))
   names(start_xy) <- startLabels
+  # plotly arguments
+  symbols <- c('circle', 'diamond-open')
+  markerSize <- cex * 8
+  if (is.na(outline_col)) outline_lwd <- 0  # fix plotly no outlines
+  markerOutline <- list(width = outline_lwd,
+                        color = outline_col)
+  marker <- list(size = markerSize,
+                 opacity = alpha,
+                 line = markerOutline)
+  labSize <- cex.text / 0.72 * 12
   LRtitles <- list(
     list(x = 0,
          y = ifelse(LRtitle_side == 3, 1, 0),
@@ -197,7 +210,6 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
          font = list(color = "black"),
          xref = 'paper', yref = 'paper',
          showarrow = F))
-  if (is.na(outline_col)) outline_lwd <- 0  # fix plotly no outlines
   hovertext <- labelchoices
   if (fullGeneNames) {
     if (!requireNamespace("AnnotationDbi", quietly = TRUE)) {
@@ -230,16 +242,17 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
       tabPanel("Plot",
                fluidRow(
                  br(),
-                 plotlyOutput("plotly", height = paste0(height, "px"))),
+                 plotlyOutput("plotly", height = paste0(height, "px")),
+                 br()),
                fluidRow(
                  column(3,
+                        selectInput("labDir", label = h5("Label direction"),
+                                    choices = labDir_choices,
+                                    selected = labelDir),
                         radioButtons("ptype", label = h5("Plot type"),
                                      choices = c("WebGL (fast)" = 1,
                                                  "SVG (slow)" = 2),
-                                     selected = 1),
-                        selectInput("labDir", label = h5("Label direction"),
-                                    choices = labDir_choices,
-                                    selected = labelDir)
+                                     selected = 1)
                  ),
                  column(4,
                         selectizeInput(
@@ -249,10 +262,13 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                             onInitialize = I('function() { this.setValue(""); }')
                           ),
                           multiple = T)),
-                 column(4,
+                 column(5,
+                        textInput("filename", h5("Save filename"), filename),
+                        br(),
                         actionButton("add_batch", "Add batch"),
                         actionButton("clear", "Clear all"),
-                        downloadButton("save_plot", "Save"))
+                        downloadButton("save_plot", "Save pdf")
+                 )
                )
       ),
       tabPanel("Table",
@@ -368,7 +384,7 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
     # download plot using base graphics
 
     output$save_plot <- downloadHandler(filename = function()
-    {"labelplot.pdf"}, content = function(file) {
+    {paste0(input$filename, ".pdf")}, content = function(file) {
 
       labs <- labels$list
       current_xy <- labelsxy$list
@@ -417,7 +433,7 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
       abline(h = hline[hline != 0], v = vline[vline != 0],
              col = '#AAAAAA', lty = 2)
       abline(h = hline[hline == 0], v = vline[vline == 0])
-
+      # add labels
       if (length(labs) > 0) {
         annot <- annotation(labs, data, x, y, current_xy, labSize = labSize)
         annotdf <- data.frame(x = unlist(lapply(annot, '[', 'x')),
@@ -425,17 +441,25 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                               ax = unlist(lapply(annot, '[', 'ax')),
                               ay = unlist(lapply(annot, '[', 'ay')),
                               text = unlist(lapply(annot, '[', 'text')))
+        # convert plotly ax,ay to x,y coords
         annotdf$ax <- annotdf$x +
           annotdf$ax / (width - 150) * (xrange[2] - xrange[1]) * 1.2
         annotdf$ay <- annotdf$y -
           annotdf$ay / height * (yrange[2] - yrange[1]) * 1.2
-        annotdf$texth <- strheight(labs, cex = cex.text) * 1.6
-        annotdf$textw <- strwidth(labs, cex = cex.text) * 1.07
-        linerect(annotdf)
-        # rect(annotdf$ax - annotdf$textw/2, annotdf$ay - annotdf$texth/2,
-        #      annotdf$ax + annotdf$textw/2, annotdf$ay + annotdf$texth/2,
-        #      col = 'white', border = NA, xpd = NA)
-        text(annotdf$ax, annotdf$ay, annotdf$text, xpd = NA, cex = cex.text)
+        # padding
+        pxy <- pixelToXY(padding)
+        annotdf$texth <- strheight(labs, cex = cex.text) + 2 * pxy[2]
+        annotdf$textw <- strwidth(labs, cex = cex.text) + 2 * pxy[1]
+        # plot label line
+        linerect(annotdf, line_col)
+        if (rectangles) {
+          roundRect(annotdf$ax - annotdf$textw/2, annotdf$ay - annotdf$texth/2,
+                    annotdf$ax + annotdf$textw/2, annotdf$ay + annotdf$texth/2,
+                    col = rect_col, border = border_col,
+                    border_radius = border_radius, xpd = NA)
+        }
+        text(annotdf$ax, annotdf$ay, annotdf$text,
+             col = text_col, xpd = NA, cex = cex.text)
       }
       legend(x = xrange[2] + (xrange[2] - xrange[1]) * 0.04, y = yrange[2],
              legend = legtext, pt.bg = legbg,
@@ -616,6 +640,7 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
 #' (see examples).
 #' @param xlab x axis title. Accepts expressions.
 #' @param ylab y axis title. Accepts expressions.
+#' @param filename Filename for saving to pdf.
 #' @param showCounts Logical whether to show legend with number of
 #' differentially expressed genes.
 #' @param useQ Logical whether to convert nominal P values to q values.
@@ -631,6 +656,7 @@ volcanoplot <- function(data, x = NULL, y = NULL, padj = NULL,
                         scheme = c('darkgrey', 'blue', 'red'),
                         xlab = expression("log"[2] ~ " fold change"),
                         ylab = expression("-log"[10] ~ " P"),
+                        filename = "volcano",
                         showCounts = TRUE, useQ = FALSE, ...) {
   if (is.null(x)) {
     if ('log2FoldChange' %in% colnames(data)) x = 'log2FoldChange'  # DESeq2
@@ -726,6 +752,7 @@ volcanoplot <- function(data, x = NULL, y = NULL, padj = NULL,
   easylabel(data, x, y, col = 'col',
             xlab = xlab,
             ylab = ylab,
+            filename = filename,
             scheme = scheme, zeroline = FALSE, hline = fdrline,
             custom_annotation = custom_annotation, ...)
 }
@@ -753,6 +780,7 @@ volcanoplot <- function(data, x = NULL, y = NULL, padj = NULL,
 #' @param labelDir Option for label lines. See [easylabel()].
 #' @param xlab x axis title. Accepts expressions.
 #' @param ylab y axis title. Accepts expressions.
+#' @param filename Filename for saving to pdf.
 #' @param showCounts Logical whether to show legend with number of
 #' differentially expressed genes.
 #' @param useQ Logical whether to convert nominal P values to q values.
@@ -769,6 +797,7 @@ MAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
                    labelDir = 'yellipse',
                    xlab = expression("log"[2] ~ " mean expression"),
                    ylab = expression("log"[2] ~ " fold change"),
+                   filename = "MA_plot",
                    showCounts = TRUE, useQ = FALSE, ...) {
   if (is.null(y)) {
     if ('log2FoldChange' %in% colnames(data)) y = 'log2FoldChange'  # DESeq2
@@ -839,6 +868,7 @@ MAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
   easylabel(data, x, y, col = 'col',
             ylab = ylab,
             xlab = xlab,
+            filename = filename,
             scheme = scheme, zeroline = FALSE, hline = hline,
             labelDir = labelDir,
             custom_annotation = custom_annotation, ...)
@@ -918,7 +948,7 @@ annotation <- function(labels, data, x, y, current_xy = NULL,
 }
 
 # Plot shorter label lines that avoid hitting text
-linerect <- function(df) {
+linerect <- function(df, line_col = 'black') {
   df$dx <- df$ax - df$x
   df$dy <- df$ay - df$y
   df$topbot <- abs(df$dy / df$dx) > df$texth / df$textw
@@ -933,7 +963,8 @@ linerect <- function(df) {
     df$y >= df$ay - df$texth/2 & df$y <= df$ay + df$texth/2
   df$ax2[inside] <- NA
   for (i in 1:nrow(df)) {
-    lines(c(df$x[i], df$ax2[i]), c(df$y[i], df$ay2[i]), xpd = NA)
+    lines(c(df$x[i], df$ax2[i]), c(df$y[i], df$ay2[i]),
+          col = line_col, xpd = NA)
   }
 }
 
@@ -946,4 +977,45 @@ exprToHtml <- function(x) {
   x <- gsub("symbol\\(.*?\\)", "", x)
   x <- gsub(" +", " ", x)
   x
+}
+
+# Plots rounded rectangles for labels
+roundRect <- function(xleft, ybottom, xright, ytop,
+                      border_radius = 8, n = 20, ...) {
+  if (border_radius == 0) {
+    return(rect(xleft, ybottom, xright, ytop, ...))
+  }
+  # convert pixels to y axis units
+  figheight <- (par("din")[2] - sum(par("mai")[c(1, 3)]))  # inches
+  border_radius <- border_radius * diff(par("usr")[3:4]) / (figheight * 100)
+  # assumes textbox, i.e. width > height
+  yheight <- abs(ytop - ybottom)
+  border_radius <- min(c(border_radius, yheight / 2))
+  yi <- border_radius
+  xi <- border_radius * diff(par("usr")[1:2]) / diff(par("usr")[3:4])
+  xi <- xi * figheight / (par("din")[1] - sum(par("mai")[c(2, 4)]))
+  for (i in 1:length(xleft)) {
+    x <- c(xright[i] - xi + xi * cx(0, pi/2, n),        # corner TR
+           xleft[i] + xi + xi * cx(pi/2, pi, n),        # corner TL
+           xleft[i] + xi + xi * cx(pi, 3*pi/2, n),      # corner BL
+           xright[i] - xi + xi * cx(3*pi/2, 2*pi, n))   # corner BR
+    y <- c(ytop[i] - yi + yi * cy(0, pi/2, n),          # corner TR
+           ytop[i] - yi + yi * cy(pi/2, pi, n),         # corner TL
+           ybottom[i] + yi + yi * cy(pi, 3*pi/2, n),    # corner BL
+           ybottom[i] + yi + yi * cy(3*pi/2, 2*pi, n))  # corner BR
+    polygon(x, y, ...)
+  }
+}
+
+# corner arc functions
+cx <- function(from, to, n) cos(seq(from, to, length.out = n))
+cy <- function(from, to, n) sin(seq(from, to, length.out = n))
+
+# convert pixels to xy axis units
+pixelToXY <- function(pix) {
+  figheight <- (par("din")[2] - sum(par("mai")[c(1, 3)]))  # inches
+  yi <- pix * diff(par("usr")[3:4]) / (figheight * 100)
+  xi <- yi * diff(par("usr")[1:2]) / diff(par("usr")[3:4])
+  xi <- xi * figheight / (par("din")[1] - sum(par("mai")[c(2, 4)]))
+  c(xi, yi)
 }
