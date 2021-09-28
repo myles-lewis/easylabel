@@ -14,6 +14,7 @@ volcanoplot(
   scheme = c("darkgrey", "blue", "red"),
   xlab = expression("log"[2] ~ " fold change"),
   ylab = expression("-log"[10] ~ " P"),
+  filename = NULL,
   showCounts = TRUE,
   useQ = FALSE,
   ...
@@ -46,6 +47,8 @@ Accommodates asymmetric colour schemes with multiple fold change cut-offs
 
 \item{ylab}{y axis title. Accepts expressions.}
 
+\item{filename}{Filename for saving to pdf.}
+
 \item{showCounts}{Logical whether to show legend with number of
 differentially expressed genes.}
 
@@ -58,5 +61,5 @@ Requires the qvalue Bioconductor package.}
 Interactive labelling of volcano plots using shiny/plotly interface.
 }
 \seealso{
-\code{\link[=easylabel]{easylabel()}}
+\code{\link[=easylabel]{easylabel()}} \code{\link[=MAplot]{MAplot()}}
 }
