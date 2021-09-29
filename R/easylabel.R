@@ -112,7 +112,9 @@
 #' @export
 
 
-easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
+easylabel <- function(data, x, y,
+                      labs = NULL,
+                      col = NULL, scheme = NULL,
                       xlab = x, ylab = y,
                       filename = NULL,
                       startLabels = NULL,
@@ -122,7 +124,9 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                       showgrid = FALSE, zeroline = TRUE,
                       hline = NULL, vline = NULL,
                       alpha = 1,
-                      pch = 21, outlier_pch = 5,
+                      aes_pch = NULL,
+                      pch = 21,
+                      outlier_pch = 5,
                       outline_col = 'white',
                       outline_lwd = 0.5,
                       cex = 1,
@@ -166,22 +170,33 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
     xlim[1] <- xlim[1] - xyspan[1] * 0.025
     xlim[2] <- xlim[2] + xyspan[1] * 0.025
   }
+
+  # combine symbols & outlier symbol
   if (!showOutliers) {
     data <- data[!data$outlier, ]
     showOutliers <- 1
   } else {
     if (any(data$outlier)) {
       showOutliers <- 2
-      data$symbol <- factor(as.numeric(data$outlier) + 1,
-                            labels = c(" ", "Outlier"))
+      if (!is.null(aes_pch)) {
+        data$comb_symbol <- factor(data[, aes_pch])
+        levels(data$comb_symbol) <- c(levels(data$comb_symbol), "Outlier")
+        data$comb_symbol[data$outlier] <- "Outlier"
+        pch <- c(pch, outlier_pch)
+      }
     } else showOutliers <- 1
   }
+
   if (is.null(labCentre)) {
     labCentre <- c(mean(range(data[, x], na.rm = TRUE)),
                    mean(range(data[, y], na.rm = TRUE)))
   }
 
-  if (is.null(scheme)) scheme <- brewer.pal(nlevels(data[,col]), "Set1")
+  if (is.null(scheme)) {
+    scheme <- if (!is.null(col)) {
+      brewer.pal(nlevels(data[,col]), "Set1")
+    } else 'black'
+  }
   labelchoices <- if (is.null(labs)) rownames(data) else data[, labs]
   startLabels <- startLabels[startLabels %in% labelchoices]
   start_annot <- annotation(startLabels, data, x, y, labSize = labSize,
@@ -194,7 +209,7 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
   outlier_symbol <- pch2symbol[outlier_pch + 1]
   markerSize <- cex * 8
   if (is.na(outline_col)) outline_lwd <- 0  # fix plotly no outlines
-  if (pch < 15) outline_lwd <- 1
+  if (all(pch < 15)) outline_lwd <- 1
   markerOutline <- list(width = outline_lwd,
                         color = outline_col)
   marker <- list(size = markerSize,
@@ -326,9 +341,15 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                      y = as.formula(paste0('~', y)),
                      type = switch(pt, 'scattergl', 'scatter'),
                      mode = 'markers',
-                     color = as.formula(paste0('~', col)), colors = scheme,
+                     color = if (!is.null(col)) {
+                       as.formula(paste0('~', col))
+                     } else I(scheme),
+                     colors = scheme,
                      marker = marker,
-                     symbol = I(symbols),
+                     symbol = if (!is.null(aes_pch)) {
+                       as.formula(paste0('~', aes_pch))
+                     } else I(symbols),
+                     symbols = symbols,
                      text = hovertext, hoverinfo = 'text',
                      key = labelchoices, source = 'lab_plotly',
                      width = width, height = height) %>%
@@ -348,9 +369,15 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                      y = as.formula(paste0('~', y)),
                      type = switch(pt, 'scattergl', 'scatter'),
                      mode = 'markers',
-                     color = as.formula(paste0('~', col)), colors = scheme,
+                     color = if (!is.null(col)) {
+                       as.formula(paste0('~', col))
+                     } else I(scheme),
+                     colors = scheme,
                      marker = marker,
-                     symbol = I(symbols),
+                     symbol = if (!is.null(aes_pch)) {
+                       ~comb_symbol
+                     } else I(symbols),
+                     symbols = symbols,
                      text = hovertext[!data$outlier], hoverinfo = 'text',
                      key = labelchoices[!data$outlier], source = 'lab_plotly',
                      legendgroup = 'Main',
@@ -362,7 +389,11 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                            color = as.formula(paste0('~', col)),
                            colors = scheme,
                            marker = marker,
-                           symbol = I(outlier_symbol),
+                           symbol = if (!is.null(aes_pch)) {
+                             ~comb_symbol
+                           } else I(outlier_symbol),
+                           symbols = symbols,
+                           inherit = F,
                            text = hovertext[data$outlier],
                            hoverinfo = 'text',
                            key = labelchoices[data$outlier],
