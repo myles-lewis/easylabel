@@ -432,16 +432,25 @@ easylabel <- function(data, x, y,
       xrange <- range(c(data[, x], xlim), na.rm = TRUE)
       yrange <- range(c(data[, y], ylim), na.rm = TRUE)
       scheme2 <- adjustcolor(scheme, alpha.f = alpha)
-      data <- data[order(data$col), ]
-      legenddist <- max((max(nchar(levels(data$col)), na.rm = TRUE) + 3) * 0.37, 6)
+      if (!is.null(col)) data <- data[order(data[, col]), ]
+      legenddist <- max(
+        (max(nchar(c(levels(data[, col]), levels(data[, aes_pch]))), na.rm = TRUE)
+         + 3) * 0.37, 6)
 
       pdf(file, width = width/100, height = height/100 + 0.75)
       op <- par(mgp = mgp, mar = c(4, 4, 2, legenddist), tcl = -0.3,
                 las = 1, bty = 'l',
                 font.main = 1)
       plot(data[!data$outlier, x], data[!data$outlier, y],
-           pch = pch, bg = scheme2[data$col[!data$outlier]],
-           col = if (pch < 21) scheme2[data$col[!data$outlier]] else outline_col,
+           pch = if (is.null(aes_pch)) pch else pch[data[!data$outlier, aes_pch]],
+           bg = if (is.null(col)) scheme2 else scheme2[data[!data$outlier, col]],
+           col = if (!is.null(col)) {
+             if (all(pch > 20)) {
+               outline_col
+             } else {
+               scheme2[data[!data$outlier, col]]
+             }
+           } else {scheme2},
            lwd = outline_lwd,
            xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, cex = cex, ...,
            panel.first = {
@@ -458,19 +467,42 @@ easylabel <- function(data, x, y,
       mtext(Rtitle, LRtitle_side, adj = 1,
             line = ifelse(LRtitle_side <= 2, mgp[1], 0.1),
             cex = args$cex.lab)
-      legtext <- levels(data$col)
-      legbg <- scheme2
-      col <- if (pch < 21) scheme2 else outline_col
+      # arrange legend features
+      legtext <- legcol <- legpch <- legbg <- NULL
+      if (!is.null(col)) {
+        legtext <- levels(data[, col])
+        legbg <- scheme2
+        legpch <- rep(pch[1], length(scheme2))
+        legcol <- if (any(pch < 21)) scheme2 else rep(outline_col, length(scheme2))
+      }
+      if (!is.null(aes_pch)) {
+        legtext <- c(legtext, levels(data[, aes_pch]))
+        legpch <- c(legpch, pch)
+        legbg <- c(legbg, rep(scheme2[1], length(pch)))
+        legcol <- c(legcol, rep(scheme2[1], length(pch)))
+      }
+      # special case of col == aes_pch
+      if (length(col) > 0 & length(aes_pch) > 0) {
+        if (aes_pch == col) {
+          legtext <- levels(data[, col])
+          legbg <- scheme2
+          legcol <- if (any(pch < 21)) scheme2 else outline_col
+          legpch <- pch
+        }
+      }
+
       pt.lwd <- outline_lwd
       if (any(data$outlier)) {
         points(data[data$outlier, x], data[data$outlier, y],
                pch = outlier_pch,
-               col = scheme2[data$col[data$outlier]], cex = cex)
-        pch <- c(rep(pch, length(legtext)), outlier_pch)
-        col <- c(rep(outline_col, length(legtext)), 'black')
-        pt.lwd <- c(rep(pt.lwd, length(legtext)), 1)
-        legtext <- c(legtext, 'Outlier')
+               col = if (!is.null(col)) {
+                 scheme2[data[data$outlier, col]]} else scheme2,
+               cex = cex)
+        legpch <- c(legpch, outlier_pch)
+        legcol <- c(legcol, 'black')
         legbg <- c(legbg, 'black')
+        pt.lwd <- c(rep(pt.lwd, length(legtext)), 1)
+        legtext <- c(legtext, 'outlier')
       }
       abline(h = hline[hline != 0], v = vline[vline != 0],
              col = '#AAAAAA', lty = 2)
@@ -503,11 +535,13 @@ easylabel <- function(data, x, y,
         text(annotdf$ax, annotdf$ay, annotdf$text,
              col = text_col, xpd = NA, cex = cex.text)
       }
-      legend(x = xrange[2] + (xrange[2] - xrange[1]) * 0.04, y = yrange[2],
-             legend = legtext, pt.bg = legbg,
-             pt.lwd = pt.lwd, pt.cex = 0.9,
-             col = col, pch = pch, bty = 'n',
-             cex = 0.75, xjust = 0, yjust = 0.5, xpd = NA)
+      if (!is.null(c(col, aes_pch))) {
+        legend(x = xrange[2] + (xrange[2] - xrange[1]) * 0.04, y = yrange[2],
+               legend = legtext, pt.bg = legbg,
+               pt.lwd = pt.lwd, pt.cex = 0.9,
+               col = legcol, pch = legpch, bty = 'n',
+               cex = 0.75, xjust = 0, yjust = 0.5, xpd = NA)
+      }
       if (!is.null(custom_annotation)) {
         custtext <- custom_annotation[[1]]$text
         custtext <- gsub("<br>", "\n", custtext)
@@ -517,6 +551,10 @@ easylabel <- function(data, x, y,
       }
       par(op)
       dev.off()
+      # print(legtext)
+      # print(legcol)
+      # print(legbg)
+      # print(legpch)
 
     }, contentType = 'application/pdf')
 
