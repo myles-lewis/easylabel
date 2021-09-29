@@ -55,29 +55,29 @@ easylabel(ymatrix, x = 'x', y = 'y', col = 'col',
 knitr::include_graphics("plot1.png")
 ```
 
-Use the `volcanoplot()` function to quickly plot a volcano plot from DESeq2 or
+Use the `easyVolcano()` function to quickly plot a volcano plot from DESeq2 or
 EdgeR objects. The `useQ` argument will switch to using q values for FDR.
 ```{r include = FALSE}
 volc1 <- readRDS('/Users/myles/R/R4RA/DESeq2.nociceptive.res.RDS')
 ```
 ```{r eval = FALSE}
-volcanoplot(volc1, useQ = TRUE)
+easyVolcano(volc1, useQ = TRUE)
 ```
 
 ```{r plot2, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
 knitr::include_graphics("plot2.png")
 ```
 
-Use the `MAplot()` function to quickly plot an MA plot from DESeq2 or EdgeR
+Use the `easyMAplot()` function to quickly plot an MA plot from DESeq2 or EdgeR
 objects.
 ```{r include = FALSE}
 volc2 <- readRDS('/Users/myles/R/R4RA/limma.output.RDS')
 ```
 ```{r eval = FALSE}
-MAplot(volc2, useQ = TRUE)
+easyMAplot(volc2, useQ = TRUE)
 ```
 
-```{r maplot1, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+```{r easyMAplot1, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
 knitr::include_graphics("MAplot1.png")
 ```
 
@@ -88,7 +88,7 @@ Both will need to be installed from Bioconductor.
 ```{r eval = FALSE}
 BiocManager::install("AnnotationDbi")
 BiocManager::install("org.Hs.eg.db")
-volcanoplot(volc1, useQ = TRUE, fullGeneNames = TRUE)
+easyVolcano(volc1, useQ = TRUE, fullGeneNames = TRUE)
 ```
 
 ```{r table1, echo = FALSE, message=FALSE, fig.align='center', out.width='100%', out.extra='style="border: 0;"'}
@@ -100,7 +100,7 @@ upregulated genes in red can be rendered by setting `fccut = 0`. A title can be
 added using `main`.
 
 ```{r eval = FALSE}
-volcanoplot(volc2,
+easyVolcano(volc2,
             useQ = TRUE,
             fccut = 0,
             main = "Volcano title")
@@ -112,9 +112,13 @@ knitr::include_graphics("plot7.png")
 
 You can add left and right sided titles using `Ltitle` and `Rtitle` to explain
 the direction of effect for up/downregulation. The use of `expression` in the
-example below shows how to add left/right arrow symbols to the titles.
-`LRtitle_side = 1` puts these titles on the bottom while `= 3` puts them on the
-top. `cex.lab` controls font size for these titles as well as axis titles.
+example below shows how to add left/right arrow symbols to the titles. The 
+symbols only appear in the saved pdf - they are not compatible with plotly.
+
+`LRtitle_side = 1` puts these titles on the bottom while `LRtitle_side = 3` puts
+them on the top.
+
+`cex.lab` controls font size for these titles as well as axis titles.
 `cex.axis` controls font size for axis numbering.
 
 The colour scheme system has been expanded to allow multiple fold change
@@ -123,7 +127,7 @@ control over the range of each axis. Outlying points are shown as triangles.
 Outliers can be toggled off using `showOutliers = FALSE`.
 
 ```{r eval = FALSE}
-volcanoplot(volc1,
+easyVolcano(volc1,
             useQ = TRUE, fullGeneNames = TRUE,
             Ltitle = expression(symbol("\254") ~ "Non-responder"),
             Rtitle = expression("Responder" ~ symbol("\256")),
@@ -145,14 +149,14 @@ workaround setting both `y` and `padj` manually to the unadjusted p value
 column. Note this does mean the legend incorrectly states 'FDR < ' etc.
 
 ```{r eval = FALSE}
-volcanoplot(volc1, y = 'pvalue', padj = 'pvalue', fdrcutoff = 0.01)
+easyVolcano(volc1, y = 'pvalue', padj = 'pvalue', fdrcutoff = 0.01)
 ```
 
 In the next 2 plots, the colours range from blue for downregulated genes,
 through to red for upregulated genes. Vertical lines can be added using `vline`.
 ```{r eval = FALSE}
 scheme <- c('darkgrey', 'blue', 'lightblue', 'orange', 'red')
-volcanoplot(volc1, fccut = 1, fdrcutoff = 0.2,
+easyVolcano(volc1, fccut = 1, fdrcutoff = 0.2,
             ylim = c(0, 6), xlim = c(-5, 5),
             scheme = scheme, 
             vline = c(-1, 1))
@@ -167,7 +171,7 @@ around points using `outline_col = NA` and use transparency instead via `alpha`.
 ```{r eval = FALSE}
 library(RColorBrewer)
 scheme <- c('darkgrey', brewer.pal(9, 'RdYlBu')[c(9:7, 3:1)])
-volcanoplot(volc1, fccut = c(1, 2), fdrcutoff = 0.2, 
+easyVolcano(volc1, fccut = c(1, 2), fdrcutoff = 0.2, 
             ylim = c(0, 6), xlim = c(-5, 5),
             scheme = scheme, 
             alpha = 0.75, outline_col = NA)
@@ -182,12 +186,12 @@ Similarly 6 colours can be applied to MA plots using 3 levels of cut-off for FDR
 
 ```{r eval = FALSE}
 scheme <- c('darkgrey', brewer.pal(9, 'RdYlBu')[c(7:9, 3:1)])
-MAplot(volc2, fdrcutoff = c(0.05, 0.01, 0.001), cex = 0.8, useQ = TRUE,
+easyMAplot(volc2, fdrcutoff = c(0.05, 0.01, 0.001), cex = 0.8, useQ = TRUE,
        alpha = 0.75, outline_col = NA,
        scheme = scheme)
 ```
 
-```{r maplot2, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+```{r easyMAplot2, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
 knitr::include_graphics("MAplot2.png")
 ```
 
@@ -198,7 +202,7 @@ Axes can be customised by first suppressing the initial axis using `xaxt='n'` or
 A top title can also be added using `main`.
 
 ```{r eval = FALSE}
-volcanoplot(volc1, useQ = TRUE, fdrcutoff = 0.2, ylim = c(0,8), xlim = c(-6,6),
+easyVolcano(volc1, useQ = TRUE, fdrcutoff = 0.2, ylim = c(0,8), xlim = c(-6,6),
             cex = 0.6,
             xaxt = 'n', yaxt = 'n', bty = 'o',
             main = "DEG volcano plot",
@@ -216,8 +220,8 @@ Label lines can be altered using the argument `labelDir` or by selecting the
 Label direction pulldown menu in the shiny app. Options are shown below:
 
 ```{r eval = FALSE}
-volcanoplot(volc1, labelDir = "radial")
-volcanoplot(volc1, labelDir = "origin")
+easyVolcano(volc1, labelDir = "radial")
+easyVolcano(volc1, labelDir = "origin")
 ```
 
 ```{r labdirs1, echo = FALSE, message=FALSE, fig.show='hold', out.width='48%', out.extra='style="border: 0;"'}
@@ -225,8 +229,8 @@ knitr::include_graphics(c("labdir radial.png", "labdir origin.png"))
 ```
 
 ```{r eval = FALSE}
-volcanoplot(volc1, labelDir = "horiz")
-MAplot(volc1, labelDir = "vert")
+easyVolcano(volc1, labelDir = "horiz")
+easyMAplot(volc1, labelDir = "vert")
 ```
 
 ```{r labdirs2, echo = FALSE, message=FALSE, fig.show='hold', out.width='48%', out.extra='style="border: 0;"'}
@@ -234,8 +238,8 @@ knitr::include_graphics(c("labdir horiz.png","labdir vert.png"))
 ```
 
 ```{r eval = FALSE}
-volcanoplot(volc1, labelDir = "xellipse")
-MAplot(volc1, labelDir = "yellipse")
+easyVolcano(volc1, labelDir = "xellipse")
+easyMAplot(volc1, labelDir = "yellipse")
 ```
 
 ```{r labdirs3, echo = FALSE, message=FALSE, fig.show='hold', out.width='48%', out.extra='style="border: 0;"'}
@@ -243,8 +247,8 @@ knitr::include_graphics(c("labdir xellipse.png", "labdir yellipse.png"))
 ```
 
 ```{r eval = FALSE}
-volcanoplot(volc1, labelDir = "rect")
-volcanoplot(volc1, labelDir = "oct")
+easyVolcano(volc1, labelDir = "rect")
+easyVolcano(volc1, labelDir = "oct")
 ```
 
 ```{r labdirs4, echo = FALSE, message=FALSE, fig.show='hold', out.width='48%', out.extra='style="border: 0;"'}
@@ -255,7 +259,7 @@ Rectangles can be drawn around the label text, using `rectangles = TRUE`.
 
 ```{r eval = FALSE}
 # Simple outlines
-volcanoplot(volc2, useQ = TRUE, fccut = 0,
+easyVolcano(volc2, useQ = TRUE, fccut = 0,
             rectangles = TRUE)
 ```
 
@@ -265,7 +269,7 @@ knitr::include_graphics("rect simple.png")
 
 ```{r eval = FALSE}
 # Red outlined labels, rounded ends
-volcanoplot(volc2, useQ = TRUE, fullGeneNames = TRUE,
+easyVolcano(volc2, useQ = TRUE, fullGeneNames = TRUE,
             rectangles = TRUE,
             padding = 5,
             border_radius = 10,
@@ -280,7 +284,7 @@ knitr::include_graphics("rect red outline.png")
 
 ```{r eval = FALSE}
 # Transparent grey rectangles, rounded ends
-MAplot(volc2, fdrcut = c(0.05, 0.01, 0.001), cex = 0.8, useQ = TRUE,
+easyMAplot(volc2, fdrcut = c(0.05, 0.01, 0.001), cex = 0.8, useQ = TRUE,
        alpha = 0.75, outline_col = NA,
        fullGeneNames = TRUE,
        scheme = c('darkgrey', brewer.pal(9, 'RdYlBu')[c(7:9, 3:1)]),
@@ -297,7 +301,7 @@ knitr::include_graphics("rect grey.png")
 
 ```{r eval = FALSE}
 # White text on black background, no rounding
-volcanoplot(volc2, useQ = TRUE, fullGeneNames = TRUE,
+easyVolcano(volc2, useQ = TRUE, fullGeneNames = TRUE,
             fccut = 0,
             rectangles = TRUE,
             padding = 4,

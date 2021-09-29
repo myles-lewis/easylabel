@@ -198,6 +198,6 @@ editing is very slow).
 }
 }
 \seealso{
-\code{\link[=volcanoplot]{volcanoplot()}}, \code{\link[=MAplot]{MAplot()}},
+\code{\link[=easyVolcano]{easyVolcano()}}, \code{\link[=easyMAplot]{easyMAplot()}},
 \code{\link[=plot_ly]{plot_ly()}}, \code{\link[=points]{points()}}, \code{\link[=par]{par()}}, \code{\link[=plot.default]{plot.default()}}, \code{\link[=plotmath]{plotmath()}}
 }

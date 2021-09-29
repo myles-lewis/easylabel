@@ -98,7 +98,7 @@
 #' plotted but before the labels and label lines are drawn, which will allow the
 #' addition of trend lines, extra titles or legends for example (see
 #' [plot.default()]).
-#' @seealso [volcanoplot()], [MAplot()],
+#' @seealso [easyVolcano()], [easyMAplot()],
 #' [plot_ly()], [points()], [par()], [plot.default()], [plotmath()]
 #' @importFrom shiny fluidPage tabsetPanel tabPanel fluidRow column
 #' radioButtons selectizeInput actionButton checkboxGroupInput observe
@@ -123,7 +123,8 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                       hline = NULL, vline = NULL,
                       alpha = 1,
                       pch = 21, outlier_pch = 5,
-                      outline_col = 'white', outline_lwd = 0.5,
+                      outline_col = 'white',
+                      outline_lwd = 0.5,
                       cex = 1,
                       cex.text = 0.72,
                       mgp = c(1.8, 0.5, 0),
@@ -189,9 +190,11 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
   start_xy <- lapply(start_annot, function(i) list(ax = i$ax, ay = i$ay))
   names(start_xy) <- startLabels
   # plotly arguments
-  symbols <- c('circle', 'diamond-open')
+  symbols <- pch2symbol[pch + 1]
+  outlier_symbol <- pch2symbol[outlier_pch + 1]
   markerSize <- cex * 8
   if (is.na(outline_col)) outline_lwd <- 0  # fix plotly no outlines
+  if (pch < 15) outline_lwd <- 1
   markerOutline <- list(width = outline_lwd,
                         color = outline_col)
   marker <- list(size = markerSize,
@@ -325,6 +328,7 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                      mode = 'markers',
                      color = as.formula(paste0('~', col)), colors = scheme,
                      marker = marker,
+                     symbol = I(symbols),
                      text = hovertext, hoverinfo = 'text',
                      key = labelchoices, source = 'lab_plotly',
                      width = width, height = height) %>%
@@ -346,6 +350,7 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                      mode = 'markers',
                      color = as.formula(paste0('~', col)), colors = scheme,
                      marker = marker,
+                     symbol = I(symbols),
                      text = hovertext[!data$outlier], hoverinfo = 'text',
                      key = labelchoices[!data$outlier], source = 'lab_plotly',
                      legendgroup = 'Main',
@@ -357,7 +362,7 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                            color = as.formula(paste0('~', col)),
                            colors = scheme,
                            marker = marker,
-                           symbol = I(symbols[2]),
+                           symbol = I(outlier_symbol),
                            text = hovertext[data$outlier],
                            hoverinfo = 'text',
                            key = labelchoices[data$outlier],
@@ -404,7 +409,8 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
                 las = 1, bty = 'l',
                 font.main = 1)
       plot(data[!data$outlier, x], data[!data$outlier, y],
-           pch = pch, bg = scheme2[data$col[!data$outlier]], col = outline_col,
+           pch = pch, bg = scheme2[data$col[!data$outlier]],
+           col = if (pch < 21) scheme2[data$col[!data$outlier]] else outline_col,
            lwd = outline_lwd,
            xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, cex = cex, ...,
            panel.first = {
@@ -423,7 +429,7 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
             cex = args$cex.lab)
       legtext <- levels(data$col)
       legbg <- scheme2
-      col <- outline_col
+      col <- if (pch < 21) scheme2 else outline_col
       pt.lwd <- outline_lwd
       if (any(data$outlier)) {
         points(data[data$outlier, x], data[data$outlier, y],
@@ -651,12 +657,12 @@ easylabel <- function(data, x, y, col, labs = NULL, scheme = NULL,
 #' @param useQ Logical whether to convert nominal P values to q values.
 #' Requires the qvalue Bioconductor package.
 #' @param ... Other arguments passed to [easylabel()].
-#' @seealso [easylabel()] [MAplot()]
+#' @seealso [easylabel()] [easyMAplot()]
 #' @importFrom qvalue qvalue
 #' @export
 
 
-volcanoplot <- function(data, x = NULL, y = NULL, padj = NULL,
+easyVolcano <- function(data, x = NULL, y = NULL, padj = NULL,
                         fdrcutoff = 0.05, fccut = NULL,
                         scheme = c('darkgrey', 'blue', 'red'),
                         xlab = expression("log"[2] ~ " fold change"),
@@ -794,12 +800,12 @@ volcanoplot <- function(data, x = NULL, y = NULL, padj = NULL,
 #' @param useQ Logical whether to convert nominal P values to q values.
 #' Requires the qvalue Bioconductor package.
 #' @param ... Other arguments passed to [easylabel()].
-#' @seealso [easylabel()] [volcanoplot()]
+#' @seealso [easylabel()] [easyVolcano()]
 #' @importFrom qvalue qvalue
 #' @export
 
 
-MAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
+easyMAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
                    scheme = c('darkgrey', 'blue', 'red'),
                    hline = 0,
                    labelDir = 'yellipse',
@@ -1029,3 +1035,19 @@ pixelToXY <- function(pix) {
   xi <- xi * figheight / (par("din")[1] - sum(par("mai")[c(2, 4)]))
   c(xi, yi)
 }
+
+# convert pch to plotly symbol
+# offset by 1 since pch starts from 0
+pch2symbol <- c('square-open', 'circle-open',
+            'arrow-up-open', 'cross-thin-open',
+            'x-thin-open', 'diamond-open',
+            'arrow-down-open', 'square-x-open',
+            'asterisk-open', 'diamond-x-open',
+            'circle-x-open', 'hexagram-open',
+            'square-cross-open', 'circle-x-open',
+            'hourglass-open', 'square',
+            'circle', 'arrow-up',
+            'diamond', 'circle',
+            'circle', 'circle',
+            'square', 'diamond',
+            'arrow-up', 'arrow-down')
