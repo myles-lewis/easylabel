@@ -26,12 +26,12 @@
 #' @param startLabels Vector of initial labels.
 #' @param cex.text Font size for labels. Default 0.72 to match plotly font size.
 #' See [text()].
-#' @param col Specifies which column (ideally a factor) in `data` affects point
-#' colour.
+#' @param col Specifies which column in `data` affects point colour. Must be
+#' categorical. If it is not a factor, it will be coerced to a factor.
 #' @param colScheme A single colour or a vector of colours for points.
 #' @param alpha Alpha value for transparency of points.
-#' @param shape Specifies which column (ideally a factor) in `data` controls
-#' point shapes.
+#' @param shape Specifies which column in `data` controls point shapes. If not a
+#' factor, will be coerced to a factor.
 #' @param shapeScheme A single symbol for points or a vector of symbols.
 #' See `pch` in [points()].
 #' @param cex Size of points. Default 1.
@@ -321,9 +321,11 @@ easylabel <- function(data, x, y,
       tabPanel("Table",
                fluidRow(
                  column(2,
-                        checkboxGroupInput('selgroup', 'Select groups',
+                        if (!is.null(col)) {
+                          checkboxGroupInput('colgroup', 'Select groups',
                                            levels(data[, col]),
                                            selected = levels(data[, col]))
+                        }
                  ),
                  column(10,
                         DT::dataTableOutput("table")
@@ -660,10 +662,13 @@ easylabel <- function(data, x, y,
     output$table <- DT::renderDataTable({
       showCols <- colnames(data)[!colnames(data) %in%
                                    c('log10P', 'col', 'outlier', 'symbol')]
-      df <- data[data[,col] %in% input$selgroup, showCols]
+      df <- data[, showCols]
+      if (!is.null(col)) df <- df[df[, col] %in% input$colgroup, ]
       cols <- colnames(df)[sapply(df, class) == "numeric"]
       rn <- if (is.null(labs)) TRUE else {
-        labelchoices[data[,col] %in% input$selgroup, ]
+        if (!is.null(col)) {
+          labelchoices[data[,col] %in% input$colgroup]
+        } else labelchoices
       }
       datatable(df, rownames = rn) %>% formatSignif(cols, digits = 3)
     })
