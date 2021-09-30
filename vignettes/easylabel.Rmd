@@ -69,7 +69,7 @@ ymatrix <- readRDS('/Users/myles/R/R4RA/ymatrix_drug_time.rds')
 ```
 ```{r eval = FALSE}
 easylabel(ymatrix, x = 'x', y = 'y', col = 'col',
-          scheme = c('darkgrey', 'green3', 'gold3', 'blue'),
+          colScheme = c('darkgrey', 'green3', 'gold3', 'blue'),
           xlab = expression("log"[2] ~ " fold change post-Rituximab"),
           ylab = expression("log"[2] ~ " fold change post-Tocilizumab"),
           showgrid = TRUE)
@@ -171,7 +171,7 @@ easyVolcano(volc1,
             cex.lab = 0.9, cex.axis = 0.8,
             fccut = c(1, 2), fdrcutoff = 0.2,
             ylim = c(0, 6), xlim = c(-5, 5),
-            scheme = c('darkgrey', 'blue', 'orange', 'red'))
+            colScheme = c('darkgrey', 'blue', 'orange', 'red'))
 ```
 
 ```{r plot3, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
@@ -205,10 +205,10 @@ In the next 2 plots, the colours range from blue for downregulated genes,
 through to red for upregulated genes. Vertical lines can be added using `vline`.
 
 ```{r eval = FALSE}
-scheme <- c('darkgrey', 'blue', 'lightblue', 'orange', 'red')
+colScheme <- c('darkgrey', 'blue', 'lightblue', 'orange', 'red')
 easyVolcano(volc1, fccut = 1, fdrcutoff = 0.2,
             ylim = c(0, 6), xlim = c(-5, 5),
-            scheme = scheme, 
+            colScheme = colScheme, 
             vline = c(-1, 1))
 ```
 
@@ -220,10 +220,10 @@ The next example has 6 colours and also shows how to remove the white outlines
 around points using `outline_col = NA` and use transparency instead via `alpha`.
 ```{r eval = FALSE}
 library(RColorBrewer)
-scheme <- c('darkgrey', brewer.pal(9, 'RdYlBu')[c(9:7, 3:1)])
+colScheme <- c('darkgrey', brewer.pal(9, 'RdYlBu')[c(9:7, 3:1)])
 easyVolcano(volc1, fccut = c(1, 2), fdrcutoff = 0.2, 
             ylim = c(0, 6), xlim = c(-5, 5),
-            scheme = scheme, 
+            colScheme = colScheme, 
             alpha = 0.75, outline_col = NA)
 ```
 
@@ -235,10 +235,10 @@ Similarly 6 colours can be applied to MA plots using 3 levels of cut-off for FDR
 (note the colour scheme is in a slightly different order).
 
 ```{r eval = FALSE}
-scheme <- c('darkgrey', brewer.pal(9, 'RdYlBu')[c(7:9, 3:1)])
+colScheme <- c('darkgrey', brewer.pal(9, 'RdYlBu')[c(7:9, 3:1)])
 easyMAplot(volc2, fdrcutoff = c(0.05, 0.01, 0.001), cex = 0.8, useQ = TRUE,
        alpha = 0.75, outline_col = NA,
-       scheme = scheme)
+       colScheme = colScheme)
 ```
 
 ```{r easyMAplot2, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
@@ -343,7 +343,7 @@ knitr::include_graphics("rect red outline.png")
 easyMAplot(volc2, fdrcut = c(0.05, 0.01, 0.001), cex = 0.8, useQ = TRUE,
        alpha = 0.75, outline_col = NA,
        fullGeneNames = TRUE,
-       scheme = c('darkgrey', brewer.pal(9, 'RdYlBu')[c(7:9, 3:1)]),
+       colScheme = c('darkgrey', brewer.pal(9, 'RdYlBu')[c(7:9, 3:1)]),
        rectangles = TRUE,
        border_col = NA,
        padding = 5,
