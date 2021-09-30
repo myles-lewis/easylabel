@@ -62,7 +62,7 @@ easylabel(
 \item{labs}{Specifies the column in \code{data} with label names for points.
 If \code{NULL} defaults to \code{rownames(data)}.}
 
-\item{startLabels}{vector of initial labels.}
+\item{startLabels}{Vector of initial labels.}
 
 \item{cex.text}{Font size for labels. Default 0.72 to match plotly font size.
 See \code{\link[=text]{text()}}.}
@@ -121,7 +121,7 @@ text for left side title. Size of font can be changed using \code{cex.lab}.}
 \item{Rtitle}{A character or expression value specifying text for right side
 title. Size of font can be changed using \code{cex.lab}.}
 
-\item{LRtitle_side}{on which side of the plot for \code{Ltitle} and \code{Rtitle}
+\item{LRtitle_side}{On which side of the plot for \code{Ltitle} and \code{Rtitle}
 (1 = bottom, 3 = top). See \code{\link[=mtext]{mtext()}}.}
 
 \item{labelDir}{Initial label line directions. Options include 'radial'
@@ -203,6 +203,5 @@ editing is very slow).
 }
 }
 \seealso{
-\code{\link[=easyVolcano]{easyVolcano()}}, \code{\link[=easyMAplot]{easyMAplot()}},
-\code{\link[=plot_ly]{plot_ly()}}, \code{\link[=points]{points()}}, \code{\link[=par]{par()}}, \code{\link[=plot.default]{plot.default()}}, \code{\link[=plotmath]{plotmath()}}
+\code{\link[=easyVolcano]{easyVolcano()}}, \code{\link[=easyMAplot]{easyMAplot()}}
 }

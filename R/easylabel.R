@@ -23,7 +23,7 @@
 #' @param y Specifies column of y coordinates in `data`.
 #' @param labs Specifies the column in `data` with label names for points.
 #' If `NULL` defaults to `rownames(data)`.
-#' @param startLabels vector of initial labels.
+#' @param startLabels Vector of initial labels.
 #' @param cex.text Font size for labels. Default 0.72 to match plotly font size.
 #' See [text()].
 #' @param col Specifies which column (ideally a factor) in `data` affects point
@@ -57,7 +57,7 @@
 #' text for left side title. Size of font can be changed using `cex.lab`.
 #' @param Rtitle A character or expression value specifying text for right side
 #' title. Size of font can be changed using `cex.lab`.
-#' @param LRtitle_side on which side of the plot for `Ltitle` and `Rtitle`
+#' @param LRtitle_side On which side of the plot for `Ltitle` and `Rtitle`
 #' (1 = bottom, 3 = top). See [mtext()].
 #' @param labelDir Initial label line directions. Options include 'radial'
 #' (default) for radial lines around the centre of the plot,
@@ -101,8 +101,7 @@
 #' plotted but before the labels and label lines are drawn, which will allow the
 #' addition of trend lines, extra titles or legends for example (see
 #' [plot.default()]).
-#' @seealso [easyVolcano()], [easyMAplot()],
-#' [plot_ly()], [points()], [par()], [plot.default()], [plotmath()]
+#' @seealso [easyVolcano()], [easyMAplot()]
 #' @importFrom shiny fluidPage tabsetPanel tabPanel fluidRow column
 #' radioButtons selectizeInput actionButton checkboxGroupInput observe
 #' updateSelectizeInput reactiveValues isolate reactive debounce
