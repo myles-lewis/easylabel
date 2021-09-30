@@ -8,36 +8,35 @@ easylabel(
   data,
   x,
   y,
-  col,
   labs = NULL,
-  scheme = NULL,
+  startLabels = NULL,
+  cex.text = 0.72,
+  col = NULL,
+  colScheme = NULL,
+  alpha = 1,
+  shape = NULL,
+  shapeScheme = 21,
+  cex = 1,
   xlab = x,
   ylab = y,
-  filename = NULL,
-  startLabels = NULL,
   xlim = NULL,
   ylim = NULL,
   showOutliers = TRUE,
+  outlier_shape = 5,
+  outline_col = "white",
+  outline_lwd = 0.5,
   width = 800,
   height = 600,
   showgrid = FALSE,
   zeroline = TRUE,
   hline = NULL,
   vline = NULL,
-  alpha = 1,
-  pch = 21,
-  outlier_pch = 5,
-  outline_col = "white",
-  outline_lwd = 0.5,
-  cex = 1,
-  cex.text = 0.72,
   mgp = c(1.8, 0.5, 0),
   Ltitle = "",
   Rtitle = "",
   LRtitle_side = 1,
   labelDir = "radial",
   labCentre = NULL,
-  panel.last = NULL,
   text_col = "black",
   line_col = "black",
   rectangles = FALSE,
@@ -45,6 +44,8 @@ easylabel(
   border_col = "black",
   padding = 3,
   border_radius = 5,
+  filename = NULL,
+  panel.last = NULL,
   fullGeneNames = FALSE,
   AnnotationDb = NULL,
   custom_annotation = NULL,
@@ -54,32 +55,49 @@ easylabel(
 \arguments{
 \item{data}{Dataset to use for plot.}
 
-\item{x}{specifies column of x coordinates in \code{data}.}
+\item{x}{Specifies column of x coordinates in \code{data}.}
 
-\item{y}{specifies column of y coordinates in \code{data}.}
+\item{y}{Specifies column of y coordinates in \code{data}.}
 
-\item{col}{specifies the column (ideally a factor) in \code{data} with which
-to colour points.}
-
-\item{labs}{specifies the column in \code{data} with label names for points.
+\item{labs}{Specifies the column in \code{data} with label names for points.
 If \code{NULL} defaults to \code{rownames(data)}.}
 
-\item{scheme}{vector of colours for points.}
+\item{startLabels}{vector of initial labels.}
+
+\item{cex.text}{Font size for labels. Default 0.72 to match plotly font size.
+See \code{\link[=text]{text()}}.}
+
+\item{col}{Specifies which column (ideally a factor) in \code{data} affects point
+colour.}
+
+\item{colScheme}{A single colour or a vector of colours for points.}
+
+\item{alpha}{Alpha value for transparency of points.}
+
+\item{shape}{Specifies which column (ideally a factor) in \code{data} controls
+point shapes.}
+
+\item{shapeScheme}{A single symbol for points or a vector of symbols.
+See \code{pch} in \code{\link[=points]{points()}}.}
+
+\item{cex}{Size of points. Default 1.}
 
 \item{xlab}{x axis title. Accepts expressions when exporting base graphics.}
 
 \item{ylab}{y axis title. Accepts expressions when exporting base graphics.}
 
-\item{filename}{Filename for saving plots to pdf.}
+\item{xlim}{The x limits (x1, x2) of the plot.}
 
-\item{startLabels}{vector of initial labels.}
-
-\item{xlim}{the x limits (x1, x2) of the plot.}
-
-\item{ylim}{the y limits of the plot.}
+\item{ylim}{The y limits of the plot.}
 
 \item{showOutliers}{Logical whether to show outliers on the margins of the
 plot.}
+
+\item{outlier_shape}{Symbol for outliers.}
+
+\item{outline_col}{Colour of symbol outlines. Set to \code{NA} for no outlines.}
+
+\item{outline_lwd}{Line width of symbol outlines.}
 
 \item{width}{Width of the plot in pixels. Saving to pdf scales 100 pixels to
 1 inch.}
@@ -94,28 +112,13 @@ plot.}
 
 \item{vline}{Adds vertical lines at values of x.}
 
-\item{alpha}{Alpha value for transparency of points.}
-
-\item{pch}{Main point symbol. See \code{\link[=points]{points()}}.}
-
-\item{outlier_pch}{Symbol for outliers.}
-
-\item{outline_col}{Colour of symbol outlines. Set to \code{NA} for no outlines.}
-
-\item{outline_lwd}{Line width of symbol outlines.}
-
-\item{cex}{Size of points. Default 1.}
-
-\item{cex.text}{Font size for labels. Default 0.72 to match plotly font size.
-See \code{\link[=text]{text()}}.}
-
 \item{mgp}{The margin line for the axis title, axis labels and axis line.
 See \code{\link[=par]{par()}}.}
 
-\item{Ltitle}{a character or expression (see \link{plotmath}) value specifying
+\item{Ltitle}{A character or expression (see \link{plotmath}) value specifying
 text for left side title. Size of font can be changed using \code{cex.lab}.}
 
-\item{Rtitle}{a character or expression value specifying text for right side
+\item{Rtitle}{A character or expression value specifying text for right side
 title. Size of font can be changed using \code{cex.lab}.}
 
 \item{LRtitle_side}{on which side of the plot for \code{Ltitle} and \code{Rtitle}
@@ -131,13 +134,8 @@ arranged in an elliptical way around the centre,
 'x' for diagonal lines,
 'oct' for lines in 8 directions around the centre.}
 
-\item{labCentre}{Coordinates of the central point around which radial labels
-converge towards. Defaults to the centre of the plot.}
-
-\item{panel.last}{An expression to be evaluated after plotting has taken
-place but before the axes, title and box are added. This can be useful for
-adding extra titles, legends or trend lines. Currently only works when saving
-plots using base graphics and does not work with plotly. See \link{plot.default}}
+\item{labCentre}{Coordinates in x/y units of the central point towards which
+radial labels converge. Defaults to the centre of the plot.}
 
 \item{text_col}{Colour of label text. (Not supported by plotly.)}
 
@@ -155,6 +153,13 @@ borders. (Not supported by plotly.)}
 
 \item{border_radius}{Amount of roundedness in pixels to apply to label
 rectangles. (Not supported by plotly.)}
+
+\item{filename}{Filename for saving plots to pdf.}
+
+\item{panel.last}{An expression to be evaluated after plotting has taken
+place but before the axes, title and box are added. This can be useful for
+adding extra titles, legends or trend lines. Currently only works when saving
+plots using base graphics and does not work with plotly. See \link{plot.default}}
 
 \item{fullGeneNames}{Logical whether to expand gene symbols using
 Bioconductor AnnotationDbi package. With multiple matches, returns first

@@ -19,26 +19,26 @@
 #'   editing is very slow).
 #' * Press camera button in modebar to save image as SVG.
 #' @param data Dataset to use for plot.
-#' @param x specifies column of x coordinates in `data`.
-#' @param y specifies column of y coordinates in `data`.
-#' @param labs specifies the column in `data` with label names for points.
+#' @param x Specifies column of x coordinates in `data`.
+#' @param y Specifies column of y coordinates in `data`.
+#' @param labs Specifies the column in `data` with label names for points.
 #' If `NULL` defaults to `rownames(data)`.
 #' @param startLabels vector of initial labels.
 #' @param cex.text Font size for labels. Default 0.72 to match plotly font size.
 #' See [text()].
-#' @param col specifies which column (ideally a factor) in `data` affects point
+#' @param col Specifies which column (ideally a factor) in `data` affects point
 #' colour.
-#' @param colScheme a single colour or a vector of colours for points.
+#' @param colScheme A single colour or a vector of colours for points.
 #' @param alpha Alpha value for transparency of points.
-#' @param shape specifies which column (ideally a factor) in `data` controls
+#' @param shape Specifies which column (ideally a factor) in `data` controls
 #' point shapes.
 #' @param shapeScheme A single symbol for points or a vector of symbols.
 #' See `pch` in [points()].
 #' @param cex Size of points. Default 1.
 #' @param xlab x axis title. Accepts expressions when exporting base graphics.
 #' @param ylab y axis title. Accepts expressions when exporting base graphics.
-#' @param xlim the x limits (x1, x2) of the plot.
-#' @param ylim the y limits of the plot.
+#' @param xlim The x limits (x1, x2) of the plot.
+#' @param ylim The y limits of the plot.
 #' @param showOutliers Logical whether to show outliers on the margins of the
 #' plot.
 #' @param outlier_shape Symbol for outliers.
@@ -53,9 +53,9 @@
 #' @param vline Adds vertical lines at values of x.
 #' @param mgp The margin line for the axis title, axis labels and axis line.
 #' See [par()].
-#' @param Ltitle a character or expression (see [plotmath]) value specifying
+#' @param Ltitle A character or expression (see [plotmath]) value specifying
 #' text for left side title. Size of font can be changed using `cex.lab`.
-#' @param Rtitle a character or expression value specifying text for right side
+#' @param Rtitle A character or expression value specifying text for right side
 #' title. Size of font can be changed using `cex.lab`.
 #' @param LRtitle_side on which side of the plot for `Ltitle` and `Rtitle`
 #' (1 = bottom, 3 = top). See [mtext()].

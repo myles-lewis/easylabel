@@ -93,7 +93,7 @@ easyVolcano <- function(data, x = NULL, y = NULL, padj = NULL,
       stop("Number of colours in 'colScheme' does not fit with number of cuts in 'fccut'")
     }
     siggenes <- as.numeric(siggenes)
-    if (length(fccut) == 1 & fccut == 0) {
+    if (all(fccut == 0)) {
       # simple 3 colour version (grey: ns, blue: FC<0, red: FC>0)
       fc <- cut(data[,x], c(-Inf, 0, Inf))
       siggenes[siggenes == 1] <- as.numeric(fc[siggenes == 1])
