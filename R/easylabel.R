@@ -201,14 +201,16 @@ easylabel <- function(data, x, y,
       brewer.pal(nlevels(data[,col]), "Set1")
     } else 'black'
   }
+  # plotly arguments
   labelchoices <- if (is.null(labs)) rownames(data) else data[, labs]
   startLabels <- startLabels[startLabels %in% labelchoices]
+  labSize <- cex.text / 0.72 * 12
   start_annot <- annotation(startLabels, data, x, y, labSize = labSize,
                             labelDir = labelDir, labCentre = labCentre,
                             xyspan = xyspan)
   start_xy <- lapply(start_annot, function(i) list(ax = i$ax, ay = i$ay))
   names(start_xy) <- startLabels
-  # plotly arguments
+
   psymbols <- pch2symbol[shapeScheme + 1]
   outlier_psymbol <- pch2symbol[outlier_shape + 1]
   pmarkerSize <- cex * 8
@@ -219,7 +221,6 @@ easylabel <- function(data, x, y,
   pmarker <- list(size = pmarkerSize,
                  opacity = alpha,
                  line = pmarkerOutline)
-  labSize <- cex.text / 0.72 * 12
   LRtitles <- list(
     list(x = 0,
          y = ifelse(LRtitle_side == 3, 1, 0),

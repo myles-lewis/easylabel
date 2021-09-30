@@ -82,7 +82,9 @@ See \code{pch} in \code{\link[=points]{points()}}.}
 
 \item{cex}{Size of points. Default 1.}
 
-\item{xlab}{x axis title. Accepts expressions when exporting base graphics.}
+\item{xlab}{x axis title. Accepts expressions when exporting base graphics.
+Set \code{cex.lab} to alter the font size of the axis titles (default 1).
+Set \code{cex.axis} to alter the font size of the axis numbering (default 1).}
 
 \item{ylab}{y axis title. Accepts expressions when exporting base graphics.}
 
