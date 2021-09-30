@@ -21,19 +21,29 @@
 #' @param data Dataset to use for plot.
 #' @param x specifies column of x coordinates in `data`.
 #' @param y specifies column of y coordinates in `data`.
-#' @param col specifies the column (ideally a factor) in `data` with which
-#' to colour points.
 #' @param labs specifies the column in `data` with label names for points.
 #' If `NULL` defaults to `rownames(data)`.
-#' @param scheme vector of colours for points.
+#' @param startLabels vector of initial labels.
+#' @param cex.text Font size for labels. Default 0.72 to match plotly font size.
+#' See [text()].
+#' @param col specifies which column (ideally a factor) in `data` affects point
+#' colour.
+#' @param colScheme a single colour or a vector of colours for points.
+#' @param alpha Alpha value for transparency of points.
+#' @param shape specifies which column (ideally a factor) in `data` controls
+#' point shapes.
+#' @param shapeScheme A single symbol for points or a vector of symbols.
+#' See `pch` in [points()].
+#' @param cex Size of points. Default 1.
 #' @param xlab x axis title. Accepts expressions when exporting base graphics.
 #' @param ylab y axis title. Accepts expressions when exporting base graphics.
-#' @param filename Filename for saving plots to pdf.
-#' @param startLabels vector of initial labels.
 #' @param xlim the x limits (x1, x2) of the plot.
 #' @param ylim the y limits of the plot.
 #' @param showOutliers Logical whether to show outliers on the margins of the
 #' plot.
+#' @param outlier_shape Symbol for outliers.
+#' @param outline_col Colour of symbol outlines. Set to `NA` for no outlines.
+#' @param outline_lwd Line width of symbol outlines.
 #' @param width Width of the plot in pixels. Saving to pdf scales 100 pixels to
 #' 1 inch.
 #' @param height Height of the plot in pixels.
@@ -41,14 +51,6 @@
 #' @param zeroline Logical whether to show lines at x = 0 and y = 0.
 #' @param hline Adds horizontal lines at values of y.
 #' @param vline Adds vertical lines at values of x.
-#' @param alpha Alpha value for transparency of points.
-#' @param pch Main point symbol. See [points()].
-#' @param outlier_pch Symbol for outliers.
-#' @param outline_col Colour of symbol outlines. Set to `NA` for no outlines.
-#' @param outline_lwd Line width of symbol outlines.
-#' @param cex Size of points. Default 1.
-#' @param cex.text Font size for labels. Default 0.72 to match plotly font size.
-#' See [text()].
 #' @param mgp The margin line for the axis title, axis labels and axis line.
 #' See [par()].
 #' @param Ltitle a character or expression (see [plotmath]) value specifying
@@ -66,12 +68,8 @@
 #' 'rect' for rectilinear lines (a mix of horizontal and vertical),
 #' 'x' for diagonal lines,
 #' 'oct' for lines in 8 directions around the centre.
-#' @param labCentre Coordinates of the central point around which radial labels
-#' converge towards. Defaults to the centre of the plot.
-#' @param panel.last An expression to be evaluated after plotting has taken
-#' place but before the axes, title and box are added. This can be useful for
-#' adding extra titles, legends or trend lines. Currently only works when saving
-#' plots using base graphics and does not work with plotly. See [plot.default]
+#' @param labCentre Coordinates in x/y units of the central point towards which
+#' radial labels converge. Defaults to the centre of the plot.
 #' @param text_col Colour of label text. (Not supported by plotly.)
 #' @param line_col Colour of label lines. (Not supported by plotly.)
 #' @param rectangles Logical whether to show rectangles around labels.
@@ -82,6 +80,11 @@
 #' @param padding Amount of padding in pixels around label text.
 #' @param border_radius Amount of roundedness in pixels to apply to label
 #' rectangles. (Not supported by plotly.)
+#' @param filename Filename for saving plots to pdf.
+#' @param panel.last An expression to be evaluated after plotting has taken
+#' place but before the axes, title and box are added. This can be useful for
+#' adding extra titles, legends or trend lines. Currently only works when saving
+#' plots using base graphics and does not work with plotly. See [plot.default]
 #' @param fullGeneNames Logical whether to expand gene symbols using
 #' Bioconductor AnnotationDbi package. With multiple matches, returns first
 #' value only.
@@ -114,33 +117,33 @@
 
 easylabel <- function(data, x, y,
                       labs = NULL,
-                      col = NULL, scheme = NULL,
-                      xlab = x, ylab = y,
-                      filename = NULL,
                       startLabels = NULL,
+                      cex.text = 0.72,
+                      col = NULL, colScheme = NULL,
+                      alpha = 1,
+                      shape = NULL,
+                      shapeScheme = 21,
+                      cex = 1,
+                      xlab = x, ylab = y,
                       xlim = NULL, ylim = NULL,
                       showOutliers = TRUE,
+                      outlier_shape = 5,
+                      outline_col = 'white',
+                      outline_lwd = 0.5,
                       width = 800, height = 600,
                       showgrid = FALSE, zeroline = TRUE,
                       hline = NULL, vline = NULL,
-                      alpha = 1,
-                      aes_pch = NULL,
-                      pch = 21,
-                      outlier_pch = 5,
-                      outline_col = 'white',
-                      outline_lwd = 0.5,
-                      cex = 1,
-                      cex.text = 0.72,
                       mgp = c(1.8, 0.5, 0),
                       Ltitle = "", Rtitle = "",
                       LRtitle_side = 1,
                       labelDir = "radial",
                       labCentre = NULL,
-                      panel.last = NULL,
                       text_col = 'black', line_col = 'black',
                       rectangles = FALSE,
                       rect_col = 'white', border_col = 'black',
                       padding = 3, border_radius = 5,
+                      filename = NULL,
+                      panel.last = NULL,
                       fullGeneNames = FALSE,
                       AnnotationDb = NULL,
                       custom_annotation = NULL, ...) {
@@ -178,11 +181,11 @@ easylabel <- function(data, x, y,
   } else {
     if (any(data$outlier)) {
       showOutliers <- 2
-      if (!is.null(aes_pch)) {
-        data$comb_symbol <- factor(data[, aes_pch])
+      if (!is.null(shape)) {
+        data$comb_symbol <- factor(data[, shape])
         levels(data$comb_symbol) <- c(levels(data$comb_symbol), "Outlier")
         data$comb_symbol[data$outlier] <- "Outlier"
-        pch <- c(pch, outlier_pch)
+        shapeScheme <- c(shapeScheme, outlier_shape)
       }
     } else showOutliers <- 1
   }
@@ -192,8 +195,8 @@ easylabel <- function(data, x, y,
                    mean(range(data[, y], na.rm = TRUE)))
   }
 
-  if (is.null(scheme)) {
-    scheme <- if (!is.null(col)) {
+  if (is.null(colScheme)) {
+    colScheme <- if (!is.null(col)) {
       brewer.pal(nlevels(data[,col]), "Set1")
     } else 'black'
   }
@@ -205,16 +208,16 @@ easylabel <- function(data, x, y,
   start_xy <- lapply(start_annot, function(i) list(ax = i$ax, ay = i$ay))
   names(start_xy) <- startLabels
   # plotly arguments
-  symbols <- pch2symbol[pch + 1]
-  outlier_symbol <- pch2symbol[outlier_pch + 1]
-  markerSize <- cex * 8
+  psymbols <- pch2symbol[shapeScheme + 1]
+  outlier_psymbol <- pch2symbol[outlier_shape + 1]
+  pmarkerSize <- cex * 8
   if (is.na(outline_col)) outline_lwd <- 0  # fix plotly no outlines
-  if (all(pch < 15)) outline_lwd <- 1
-  markerOutline <- list(width = outline_lwd,
+  if (all(shapeScheme < 15)) outline_lwd <- 1
+  pmarkerOutline <- list(width = outline_lwd,
                         color = outline_col)
-  marker <- list(size = markerSize,
+  pmarker <- list(size = pmarkerSize,
                  opacity = alpha,
-                 line = markerOutline)
+                 line = pmarkerOutline)
   labSize <- cex.text / 0.72 * 12
   LRtitles <- list(
     list(x = 0,
@@ -253,12 +256,6 @@ easylabel <- function(data, x, y,
     hovertext[notNA] <- paste0(labelchoices[notNA], "\n",
                                data$gene_fullname[notNA])
   }
-  labDir_choices <- c('radial', 'origin', 'horiz', 'vert', 'xellipse',
-                      'yellipse', 'rect', 'x', 'oct')
-  names(labDir_choices) <- c('Radial centre', 'Radial origin',
-                             'Horizontal', 'Vertical',
-                             'Horizontal ellipse', 'Vertical ellipse',
-                             'Rectilinear', 'Diagonal', 'Octagonal')
 
   ui <- fluidPage(
     tabsetPanel(
@@ -319,16 +316,16 @@ easylabel <- function(data, x, y,
                           labCentre = labCentre, xyspan = xyspan)
       isolate(labels$annot <- annot)
       if (!is.null(hline)) {
-        shapes = lapply(hline, function(i) {
+        pshapes = lapply(hline, function(i) {
           list(type = "line",
                line = list(width = 1, color = '#AAAAAA', dash = 'dash'),
                x0 = 0, x1 = 1, y0 = i, y1 = i, xref = "paper")
         })
       } else {
-        shapes = list()
+        pshapes = list()
       }
       if (!is.null(vline)) {
-        shapes = c(shapes, lapply(vline, function(i) {
+        pshapes = c(pshapes, lapply(vline, function(i) {
           list(type = "line",
                line = list(width = 1, color = '#AAAAAA', dash = 'dash'),
                y0 = 0, y1 = 1, x0 = i, x1 = i, yref = "paper")
@@ -343,13 +340,13 @@ easylabel <- function(data, x, y,
                      mode = 'markers',
                      color = if (!is.null(col)) {
                        as.formula(paste0('~', col))
-                     } else I(scheme),
-                     colors = scheme,
-                     marker = marker,
-                     symbol = if (!is.null(aes_pch)) {
-                       as.formula(paste0('~', aes_pch))
-                     } else I(symbols),
-                     symbols = symbols,
+                     } else I(colScheme),
+                     colors = colScheme,
+                     marker = pmarker,
+                     symbol = if (!is.null(shape)) {
+                       as.formula(paste0('~', shape))
+                     } else I(psymbols),
+                     symbols = psymbols,
                      text = hovertext, hoverinfo = 'text',
                      key = labelchoices, source = 'lab_plotly',
                      width = width, height = height) %>%
@@ -371,13 +368,13 @@ easylabel <- function(data, x, y,
                      mode = 'markers',
                      color = if (!is.null(col)) {
                        as.formula(paste0('~', col))
-                     } else I(scheme),
-                     colors = scheme,
-                     marker = marker,
-                     symbol = if (!is.null(aes_pch)) {
+                     } else I(colScheme),
+                     colors = colScheme,
+                     marker = pmarker,
+                     symbol = if (!is.null(shape)) {
                        ~comb_symbol
-                     } else I(symbols),
-                     symbols = symbols,
+                     } else I(psymbols),
+                     symbols = psymbols,
                      text = hovertext[!data$outlier], hoverinfo = 'text',
                      key = labelchoices[!data$outlier], source = 'lab_plotly',
                      legendgroup = 'Main',
@@ -387,12 +384,12 @@ easylabel <- function(data, x, y,
                            y = as.formula(paste0('~', y)),
                            type = switch(pt, 'scattergl', 'scatter'),
                            color = as.formula(paste0('~', col)),
-                           colors = scheme,
-                           marker = marker,
-                           symbol = if (!is.null(aes_pch)) {
+                           colors = colScheme,
+                           marker = pmarker,
+                           symbol = if (!is.null(shape)) {
                              ~comb_symbol
-                           } else I(outlier_symbol),
-                           symbols = symbols,
+                           } else I(outlier_psymbol),
+                           symbols = psymbols,
                            inherit = F,
                            text = hovertext[data$outlier],
                            hoverinfo = 'text',
@@ -414,9 +411,8 @@ easylabel <- function(data, x, y,
         layout(annotations = c(annot, LRtitles, custom_annotation),
                hovermode = 'closest',
                legend = list(font = list(color = 'black')),
-               shapes = shapes) %>%
+               shapes = pshapes) %>%
         config(edits = list(annotationTail = TRUE, legendPosition = TRUE),
-               # plotGlPixelRatio = 6,
                toImageButtonOptions = list(format = "svg")) %>%
         event_register(event = 'plotly_click')
 
@@ -431,10 +427,10 @@ easylabel <- function(data, x, y,
       current_xy <- labelsxy$list
       xrange <- range(c(data[, x], xlim), na.rm = TRUE)
       yrange <- range(c(data[, y], ylim), na.rm = TRUE)
-      scheme2 <- adjustcolor(scheme, alpha.f = alpha)
+      colScheme2 <- adjustcolor(colScheme, alpha.f = alpha)
       if (!is.null(col)) data <- data[order(data[, col]), ]
       legenddist <- max(
-        (max(nchar(c(levels(data[, col]), levels(data[, aes_pch]))), na.rm = TRUE)
+        (max(nchar(c(levels(data[, col]), levels(data[, shape]))), na.rm = TRUE)
          + 3) * 0.37, 6)
 
       pdf(file, width = width/100, height = height/100 + 0.75)
@@ -442,15 +438,15 @@ easylabel <- function(data, x, y,
                 las = 1, bty = 'l',
                 font.main = 1)
       plot(data[!data$outlier, x], data[!data$outlier, y],
-           pch = if (is.null(aes_pch)) pch else pch[data[!data$outlier, aes_pch]],
-           bg = if (is.null(col)) scheme2 else scheme2[data[!data$outlier, col]],
+           pch = if (is.null(shape)) shapeScheme else shapeScheme[data[!data$outlier, shape]],
+           bg = if (is.null(col)) colScheme2 else colScheme2[data[!data$outlier, col]],
            col = if (!is.null(col)) {
-             if (all(pch > 20)) {
+             if (all(shapeScheme > 20)) {
                outline_col
              } else {
-               scheme2[data[!data$outlier, col]]
+               colScheme2[data[!data$outlier, col]]
              }
-           } else {scheme2},
+           } else {colScheme2},
            lwd = outline_lwd,
            xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, cex = cex, ...,
            panel.first = {
@@ -471,34 +467,34 @@ easylabel <- function(data, x, y,
       legtext <- legcol <- legpch <- legbg <- NULL
       if (!is.null(col)) {
         legtext <- levels(data[, col])
-        legbg <- scheme2
-        legpch <- rep(pch[1], length(scheme2))
-        legcol <- if (any(pch < 21)) scheme2 else rep(outline_col, length(scheme2))
+        legbg <- colScheme2
+        legpch <- rep(shapeScheme[1], length(colScheme2))
+        legcol <- if (any(shapeScheme < 21)) colScheme2 else rep(outline_col, length(colScheme2))
       }
-      if (!is.null(aes_pch)) {
-        legtext <- c(legtext, levels(data[, aes_pch]))
-        legpch <- c(legpch, pch)
-        legbg <- c(legbg, rep(scheme2[1], length(pch)))
-        legcol <- c(legcol, rep(scheme2[1], length(pch)))
+      if (!is.null(shape)) {
+        legtext <- c(legtext, levels(data[, shape]))
+        legpch <- c(legpch, shapeScheme)
+        legbg <- c(legbg, rep(colScheme2[1], length(shapeScheme)))
+        legcol <- c(legcol, rep(colScheme2[1], length(shapeScheme)))
       }
-      # special case of col == aes_pch
-      if (length(col) > 0 & length(aes_pch) > 0) {
-        if (aes_pch == col) {
+      # special case of col == shape
+      if (length(col) > 0 & length(shape) > 0) {
+        if (shape == col) {
           legtext <- levels(data[, col])
-          legbg <- scheme2
-          legcol <- if (any(pch < 21)) scheme2 else outline_col
-          legpch <- pch
+          legbg <- colScheme2
+          legcol <- if (any(shapeScheme < 21)) colScheme2 else outline_col
+          legpch <- shapeScheme
         }
       }
 
       pt.lwd <- outline_lwd
       if (any(data$outlier)) {
         points(data[data$outlier, x], data[data$outlier, y],
-               pch = outlier_pch,
+               pch = outlier_shape,
                col = if (!is.null(col)) {
-                 scheme2[data[data$outlier, col]]} else scheme2,
+                 colScheme2[data[data$outlier, col]]} else colScheme2,
                cex = cex)
-        legpch <- c(legpch, outlier_pch)
+        legpch <- c(legpch, outlier_shape)
         legcol <- c(legcol, 'black')
         legbg <- c(legbg, 'black')
         pt.lwd <- c(rep(pt.lwd, length(legtext)), 1)
@@ -535,7 +531,7 @@ easylabel <- function(data, x, y,
         text(annotdf$ax, annotdf$ay, annotdf$text,
              col = text_col, xpd = NA, cex = cex.text)
       }
-      if (!is.null(c(col, aes_pch))) {
+      if (!is.null(c(col, shape))) {
         legend(x = xrange[2] + (xrange[2] - xrange[1]) * 0.04, y = yrange[2],
                legend = legtext, pt.bg = legbg,
                pt.lwd = pt.lwd, pt.cex = 0.9,
@@ -551,10 +547,6 @@ easylabel <- function(data, x, y,
       }
       par(op)
       dev.off()
-      # print(legtext)
-      # print(legcol)
-      # print(legbg)
-      # print(legpch)
 
     }, contentType = 'application/pdf')
 
@@ -699,266 +691,12 @@ easylabel <- function(data, x, y,
 }
 
 
-#' Interactive volcano plot labels
-#'
-#' Interactive labelling of volcano plots using shiny/plotly interface.
-#'
-#' @param data The dataset for the plot. Automatically attempts to recognises
-#' DESeq2 and limma objects.
-#' @param x Name of the column containing log fold change. For DESeq2 and limma
-#' objects this is automatically set.
-#' @param y Name of the column containing p values. For DESeq2 and limma objects
-#' this is automatically set.
-#' @param padj Name of the column containing adjusted p values. Cannot be NULL
-#' when y is not NULL.
-#' @param fdrcutoff Cut-off for FDR significance. Defaults to FDR < 0.05
-#' @param fccut Optional vector of log fold change cut-offs.
-#' @param scheme Colour scheme. If no fold change cut-off is set, 2 colours
-#' need to be specified. With a single fold change cut-off, 3 or 5 colours are
-#' required, depending on whether the colours are symmetrical about x = 0.
-#' Accommodates asymmetric colour schemes with multiple fold change cut-offs
-#' (see examples).
-#' @param xlab x axis title. Accepts expressions.
-#' @param ylab y axis title. Accepts expressions.
-#' @param filename Filename for saving to pdf.
-#' @param showCounts Logical whether to show legend with number of
-#' differentially expressed genes.
-#' @param useQ Logical whether to convert nominal P values to q values.
-#' Requires the qvalue Bioconductor package.
-#' @param ... Other arguments passed to [easylabel()].
-#' @seealso [easylabel()] [easyMAplot()]
-#' @importFrom qvalue qvalue
-#' @export
-
-
-easyVolcano <- function(data, x = NULL, y = NULL, padj = NULL,
-                        fdrcutoff = 0.05, fccut = NULL,
-                        scheme = c('darkgrey', 'blue', 'red'),
-                        xlab = expression("log"[2] ~ " fold change"),
-                        ylab = expression("-log"[10] ~ " P"),
-                        filename = NULL,
-                        showCounts = TRUE, useQ = FALSE, ...) {
-  if (is.null(filename)) filename <- paste0("volcano_",
-                                            deparse(substitute(data)))
-  if (is.null(x)) {
-    if ('log2FoldChange' %in% colnames(data)) x = 'log2FoldChange'  # DESeq2
-    if ('logFC' %in% colnames(data)) x = 'logFC'  # limma
-  }
-  if (is.null(y)) {
-    if ('pvalue' %in% colnames(data)) {
-      y = 'pvalue'  # DESeq2
-      padj = 'padj'
-    }
-    if ('P.Value' %in% colnames(data)) {
-      y = 'P.Value'  # limma
-      padj = 'adj.P.Val'
-    }
-  }
-  data[, 'log10P'] <- -log10(data[, y])
-  if (useQ) {
-    data$qvalue <- NA
-    q <- try(qvalue::qvalue(data[!is.na(data[, padj]), y])$qvalues,
-             silent = TRUE)
-    if (inherits(q, 'try-error')) q <- p.adjust(data[!is.na(data[, padj]), y])
-    data$qvalue[!is.na(data[, padj])] <- q
-    siggenes <- data$qvalue < fdrcutoff
-  } else {
-    siggenes <- data[, padj] < fdrcutoff
-  }
-  siggenes[is.na(siggenes)] <- FALSE
-  if (sum(siggenes) >0) {
-    fdrline <- min(data[siggenes, 'log10P'])
-  } else fdrline <- NULL
-  if (showCounts) {
-    up <- sum(siggenes & data[, x] > 0)
-    down <- sum(siggenes & data[, x] < 0)
-    total <- nrow(data)
-    custom_annotation <- list(list(x = 1.2, y = 0.02, align = 'left',
-                                   text = paste0(up, ' upregulated<br>',
-                                               down, ' downregulated<br>',
-                                               total, ' total genes'),
-                                   font = list(size = 11, color = "black"),
-                                   xref = 'paper', yref = 'paper',
-                                   showarrow = F))
-  } else custom_annotation = NULL
-
-  if (is.null(fccut)) {
-    data$col <- factor(siggenes, levels = c(F, T),
-                       labels = c('ns', paste0('FDR<', fdrcutoff)))
-    scheme <- scheme[1:2]
-  } else {
-    fccut <- abs(fccut)
-    if (!(length(scheme)-1) %in% ((length(fccut)+1) * 1:2)) {
-      stop("Number of colours in 'scheme' does not fit with number of cuts in 'fccut'")
-    }
-    siggenes <- as.numeric(siggenes)
-    if (length(fccut) == 1 & fccut == 0) {
-      # simple 3 colour version (grey: ns, blue: FC<0, red: FC>0)
-      fc <- cut(data[,x], c(-Inf, 0, Inf))
-      siggenes[siggenes == 1] <- as.numeric(fc[siggenes == 1])
-      data$col <- factor(siggenes, levels = 0:(length(fccut) + 1),
-                         labels = c('ns',
-                                    paste0('FDR<', fdrcutoff, ', FC<0'),
-                                    paste0('FDR<', fdrcutoff, ', FC>0')))
-    } else if (length(scheme) - 1 == length(fccut) + 1) {
-      # symmetric colours
-      fc <- cut(abs(data[, x]), c(-1, fccut, Inf))
-      siggenes[siggenes == 1] <- as.numeric(fc[siggenes == 1])
-      data$col <- factor(siggenes, levels = 0:(length(fccut) + 1),
-                         labels = c('ns',
-                                    paste0('FDR<', fdrcutoff,
-                                           ', FC<', fccut[1]),
-                                    paste0('FDR<', fdrcutoff, ', FC>', fccut)))
-    } else {
-      # asymmetric colours
-      fccut <- sort(unique(c(fccut, 0, -fccut)))
-      fc <- cut(data[,x], c(-Inf, fccut, Inf))
-      siggenes[siggenes == 1] <- as.numeric(fc[siggenes == 1])
-      data$col <- factor(siggenes, levels = 0:(length(fccut)+1),
-                         labels = c('ns',
-                                    paste0('FDR<', fdrcutoff,
-                                           ', FC<', fccut[1]),
-                                    paste0('FDR<', fdrcutoff, ', ',
-                                           fccut[-length(fccut)],
-                                           '<FC<', fccut[-1]),
-                                    paste0('FDR<', fdrcutoff, ', FC>',
-                                           fccut[length(fccut)])))
-    }
-  }
-  y <- 'log10P'
-  # this line removes a few genes which have P value < FDR cutoff but are
-  # excluded by DESeq2
-  if (!is.null(fdrline)) {
-    data <- data[!(is.na(data[, padj]) & data$log10P > fdrline), ]
-  }
-
-  easylabel(data, x, y, col = 'col',
-            xlab = xlab,
-            ylab = ylab,
-            filename = filename,
-            scheme = scheme, zeroline = FALSE, hline = fdrline,
-            custom_annotation = custom_annotation, ...)
-}
-
-
-#' Interactive MA plot labels
-#'
-#' Interactive labelling of MA plots using shiny/plotly interface.
-#'
-#' @param data The dataset for the plot. Automatically attempts to recognises
-#' DESeq2 and limma objects.
-#' @param x Name of the column containing mean expression. For DESeq2 and limma
-#' objects this is automatically set.
-#' @param y Name of the column containing log fold change. For DESeq2 and limma
-#' objects this is automatically set.
-#' @param padj Name of the column containing adjusted p values. For DESeq2 and
-#' limma objects this is automatically set.
-#' @param fdrcutoff Cut-off for FDR significance. Defaults to FDR < 0.05. Can
-#' be vector with multiple cut-offs.
-#' @param scheme Colour scheme. Length must match either length(fdrcutoff) + 1
-#' to allow for non-significant genes, or match length(fdrcutoff) * 2 + 1 to
-#' accommodates asymmetric colour schemes for positive & negative fold change.
-#' (see examples).
-#' @param hline Vector of horizontal lines (default is y = 0).
-#' @param labelDir Option for label lines. See [easylabel()].
-#' @param xlab x axis title. Accepts expressions.
-#' @param ylab y axis title. Accepts expressions.
-#' @param filename Filename for saving to pdf.
-#' @param showCounts Logical whether to show legend with number of
-#' differentially expressed genes.
-#' @param useQ Logical whether to convert nominal P values to q values.
-#' Requires the qvalue Bioconductor package.
-#' @param ... Other arguments passed to [easylabel()].
-#' @seealso [easylabel()] [easyVolcano()]
-#' @importFrom qvalue qvalue
-#' @export
-
-
-easyMAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
-                   scheme = c('darkgrey', 'blue', 'red'),
-                   hline = 0,
-                   labelDir = 'yellipse',
-                   xlab = expression("log"[2] ~ " mean expression"),
-                   ylab = expression("log"[2] ~ " fold change"),
-                   filename = NULL,
-                   showCounts = TRUE, useQ = FALSE, ...) {
-  if (is.null(filename)) filename <- paste0("MAplot_",
-                                            deparse(substitute(data)))
-  if (is.null(y)) {
-    if ('log2FoldChange' %in% colnames(data)) y = 'log2FoldChange'  # DESeq2
-    if ('logFC' %in% colnames(data)) y = 'logFC'  # limma
-  }
-  if (is.null(padj)) {
-    if ('pvalue' %in% colnames(data)) {
-      pv = 'pvalue'  # DESeq2
-      padj = 'padj'
-    }
-    if ('P.Value' %in% colnames(data)) {
-      pv = 'P.Value'  # limma
-      padj = 'adj.P.Val'
-    }
-  }
-  if (is.null(x)) {
-    if ('baseMean' %in% colnames(data)) {
-      data[, 'logmean'] <- log2(data[, 'baseMean'])  # DESeq2
-      x <- 'logmean'
-    }
-    if ('AveExpr' %in% colnames(data))
-      x <- 'AveExpr'  # limma
-  }
-
-  if (useQ) {
-    data$qvalue <- NA
-    q <- try(qvalue::qvalue(data[!is.na(data[, padj]), pv])$qvalues,
-             silent = TRUE)
-    if (inherits(q, 'try-error')) q <- p.adjust(data[!is.na(data[, padj]), pv])
-    data$qvalue[!is.na(data[, padj])] <- q
-    siggenes <- data$qvalue < fdrcutoff[1]
-  } else {
-    siggenes <- data[, padj] < fdrcutoff[1]
-  }
-  siggenes[is.na(siggenes)] <- FALSE
-  if (showCounts) {
-    up <- sum(siggenes & data[, y] > 0)
-    down <- sum(siggenes & data[, y] < 0)
-    total <- nrow(data)
-    custom_annotation <- list(list(x = 1.2, y = 0.02, align = 'left',
-                                   text = paste0(up, ' upregulated<br>',
-                                               down, ' downregulated<br>',
-                                               total, ' total genes'),
-                                   font = list(size = 11, color = "black"),
-                                   xref = 'paper', yref = 'paper',
-                                   showarrow = F))
-  } else custom_annotation = NULL
-
-  if (!(length(scheme) - 1) %in% (length(fdrcutoff) * 1:2)) {
-    stop("Number of colours in 'scheme' does not fit with number of cuts in 'fdrcut'")
-  }
-  fdrcuts <- cut(data[, padj], c(-1, fdrcutoff, Inf))
-  siggenes <- length(fdrcutoff) + 1 - as.numeric(fdrcuts)
-  siggenes[is.na(siggenes)] <- 0
-  if ((length(scheme) - 1 == length(fdrcutoff))) {
-    # symmetric colours
-    data$col <- factor(siggenes, levels = 0:length(fdrcutoff),
-                       labels = c('ns', paste0('FDR<', fdrcutoff)))
-  } else {
-    # asymmetric colours
-    fc <- data[, y] > 0
-    siggenes[fc & siggenes != 0] <- siggenes[fc & siggenes != 0] + length(fdrcutoff)
-    data$col <- factor(siggenes, levels = 0:(length(fdrcutoff) * 2),
-                       labels = c('ns', paste0('FC<0, FDR<', fdrcutoff),
-                                paste0('FC>0, FDR<', fdrcutoff)))
-  }
-
-  easylabel(data, x, y, col = 'col',
-            ylab = ylab,
-            xlab = xlab,
-            filename = filename,
-            scheme = scheme, zeroline = FALSE, hline = hline,
-            labelDir = labelDir,
-            custom_annotation = custom_annotation, ...)
-}
-
+labDir_choices <- c('radial', 'origin', 'horiz', 'vert', 'xellipse',
+                    'yellipse', 'rect', 'x', 'oct')
+names(labDir_choices) <- c('Radial centre', 'Radial origin',
+                           'Horizontal', 'Vertical',
+                           'Horizontal ellipse', 'Vertical ellipse',
+                           'Rectilinear', 'Diagonal', 'Octagonal')
 
 # Annotate gene labels
 annotation <- function(labels, data, x, y, current_xy = NULL,
@@ -1105,8 +843,8 @@ pixelToXY <- function(pix) {
   c(xi, yi)
 }
 
-# convert pch to plotly symbol
-# offset by 1 since pch starts from 0
+# convert shapeScheme to plotly symbol
+# offset by 1 since shapeScheme starts from 0
 pch2symbol <- c('square-open', 'circle-open',
             'arrow-up-open', 'cross-thin-open',
             'x-thin-open', 'diamond-open',
