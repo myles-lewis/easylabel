@@ -36,6 +36,8 @@
 #' See `pch` in [points()].
 #' @param cex Size of points. Default 1.
 #' @param xlab x axis title. Accepts expressions when exporting base graphics.
+#' Set `cex.lab` to alter the font size of the axis titles (default 1).
+#' Set `cex.axis` to alter the font size of the axis numbering (default 1).
 #' @param ylab y axis title. Accepts expressions when exporting base graphics.
 #' @param xlim The x limits (x1, x2) of the plot.
 #' @param ylim The y limits of the plot.
