@@ -501,8 +501,13 @@ easylabel <- function(data, x, y,
       if (!is.null(shape)) {
         legtext <- c(legtext, levels(data[, shape]))
         legpch <- c(legpch, shapeScheme)
-        legbg <- c(legbg, rep(colScheme2[1], length(shapeScheme)))
-        legcol <- c(legcol, rep(colScheme2[1], length(shapeScheme)))
+        if (length(colScheme2) == 1) {
+          legbg <- c(legbg, rep(colScheme2, length(shapeScheme)))
+          legcol <- c(legcol, rep(colScheme2, length(shapeScheme)))
+        } else {
+          legbg <- c(legbg, rep('black', length(shapeScheme)))
+          legcol <- c(legcol, rep('black', length(shapeScheme)))
+        }
       }
       # special case of col == shape
       if (length(col) > 0 & length(shape) > 0) {
