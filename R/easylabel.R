@@ -203,8 +203,10 @@ easylabel <- function(data, x, y,
   if (!is.null(shape)) {
     data[, shape] <- factor(data[, shape])  # coerce to factor
     if (length(shapeScheme) < nlevels(data[, shape])) {
+      if (!identical(shapeScheme, 21)) {
       warning(paste0("shapeScheme has fewer levels than ",
                      name_data, "$", shape), call. = FALSE)
+      }
       shapeScheme <- c(16:17, 15, 18, 1:2, 0, 3:13)
     }
   }
