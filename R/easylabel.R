@@ -148,8 +148,8 @@ easylabel <- function(data, x, y,
                       fullGeneNames = FALSE,
                       AnnotationDb = NULL,
                       custom_annotation = NULL, ...) {
-  if (is.null(filename)) filename <- paste0("label_",
-                                            deparse(substitute(data)))
+  name_data <- deparse(substitute(data))
+  if (is.null(filename)) filename <- paste0("label_", name_data)
   args <- list(...)
   data <- as.data.frame(data)
   # determine outliers
@@ -196,11 +196,34 @@ easylabel <- function(data, x, y,
                    mean(range(data[, y], na.rm = TRUE)))
   }
 
+  # checks on data and variables
+  if (!is.null(col)) {
+    data[, col] <- factor(data[, col])  # coerce to factor
+  }
+  if (!is.null(shape)) {
+    data[, shape] <- factor(data[, shape])  # coerce to factor
+    if (length(shapeScheme) < nlevels(data[, shape])) {
+      warning(paste0("shapeScheme has fewer levels than ",
+                     name_data, "$", shape), call. = FALSE)
+      shapeScheme <- c(16:17, 15, 18, 1:2, 0, 3:13)
+    }
+  }
+
   if (is.null(colScheme)) {
     colScheme <- if (!is.null(col)) {
       brewer.pal(nlevels(data[,col]), "Set1")
     } else 'black'
+  } else {
+    if (is.null(col) & length(colScheme) > 1) {
+      warning("`col` is not set. Using first colour only.", call. = FALSE)
+    } else if (!is.null(col)) {
+      if (length(colScheme) < nlevels(data[, col])) {
+        warning(paste0("colScheme has fewer levels than ", name_data, "$", col),
+                call. = FALSE)
+      }
+    }
   }
+
   # plotly arguments
   labelchoices <- if (is.null(labs)) rownames(data) else data[, labs]
   startLabels <- startLabels[startLabels %in% labelchoices]
@@ -215,7 +238,7 @@ easylabel <- function(data, x, y,
   outlier_psymbol <- pch2symbol[outlier_shape + 1]
   pmarkerSize <- cex * 8
   if (is.na(outline_col)) outline_lwd <- 0  # fix plotly no outlines
-  if (all(shapeScheme < 15)) outline_lwd <- 1
+  if (all(shapeScheme < 21) & outline_lwd == 0.5) outline_lwd <- 1
   pmarkerOutline <- list(width = outline_lwd,
                         color = outline_col)
   pmarker <- list(size = pmarkerSize,
