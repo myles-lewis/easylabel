@@ -67,15 +67,15 @@ If \code{NULL} defaults to \code{rownames(data)}.}
 \item{cex.text}{Font size for labels. Default 0.72 to match plotly font size.
 See \code{\link[=text]{text()}}.}
 
-\item{col}{Specifies which column (ideally a factor) in \code{data} affects point
-colour.}
+\item{col}{Specifies which column in \code{data} affects point colour. Must be
+categorical. If it is not a factor, it will be coerced to a factor.}
 
 \item{colScheme}{A single colour or a vector of colours for points.}
 
 \item{alpha}{Alpha value for transparency of points.}
 
-\item{shape}{Specifies which column (ideally a factor) in \code{data} controls
-point shapes.}
+\item{shape}{Specifies which column in \code{data} controls point shapes. If not a
+factor, will be coerced to a factor.}
 
 \item{shapeScheme}{A single symbol for points or a vector of symbols.
 See \code{pch} in \code{\link[=points]{points()}}.}

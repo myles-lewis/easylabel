@@ -229,8 +229,11 @@ easylabel <- function(data, x, y,
   # plotly arguments
   labelchoices <- if (is.null(labs)) rownames(data) else data[, labs]
   startLabels <- startLabels[startLabels %in% labelchoices]
+  pkey <- 1:length(labelchoices)
   labSize <- cex.text / 0.72 * 12
-  start_annot <- annotation(startLabels, data, x, y, labSize = labSize,
+  start_annot <- annotation(startLabels, data, x, y,
+                            labelchoices = labelchoices,
+                            labSize = labSize,
                             labelDir = labelDir, labCentre = labCentre,
                             xyspan = xyspan)
   start_xy <- lapply(start_annot, function(i) list(ax = i$ax, ay = i$ay))
@@ -341,7 +344,9 @@ easylabel <- function(data, x, y,
       labs <- startLabels
       isolate(pt <- as.numeric(input$ptype))
       isolate(ldir <- input$labDir)
-      annot <- annotation(labs, data, x, y, labSize = labSize, labelDir = ldir,
+      annot <- annotation(labs, data, x, y,
+                          labelchoices = labelchoices,
+                          labSize = labSize, labelDir = ldir,
                           labCentre = labCentre, xyspan = xyspan)
       isolate(labels$annot <- annot)
       if (!is.null(hline)) {
@@ -377,7 +382,7 @@ easylabel <- function(data, x, y,
                      } else I(psymbols),
                      symbols = psymbols,
                      text = hovertext, hoverinfo = 'text',
-                     key = labelchoices, source = 'lab_plotly',
+                     key = pkey, source = 'lab_plotly',
                      width = width, height = height) %>%
                layout(
                  title = args$main,
@@ -405,7 +410,7 @@ easylabel <- function(data, x, y,
                      } else I(psymbols),
                      symbols = psymbols,
                      text = hovertext[!data$outlier], hoverinfo = 'text',
-                     key = labelchoices[!data$outlier], source = 'lab_plotly',
+                     key = pkey[!data$outlier], source = 'lab_plotly',
                      legendgroup = 'Main',
                      width = width, height = height) %>%
                add_markers(data = data[data$outlier, ],
@@ -422,7 +427,7 @@ easylabel <- function(data, x, y,
                            inherit = F,
                            text = hovertext[data$outlier],
                            hoverinfo = 'text',
-                           key = labelchoices[data$outlier],
+                           key = pkey[data$outlier],
                            legendgroup = 'outlier', name = 'outlier') %>%
                layout(
                  title = args$main,
@@ -456,6 +461,21 @@ easylabel <- function(data, x, y,
       current_xy <- labelsxy$list
       xrange <- range(c(data[, x], xlim), na.rm = TRUE)
       yrange <- range(c(data[, y], ylim), na.rm = TRUE)
+      if (length(labs) > 0) {
+        annot <- annotation(labs, data, x, y, current_xy,
+                            labelchoices = labelchoices,
+                            labSize = labSize)
+        annotdf <- data.frame(x = unlist(lapply(annot, '[', 'x')),
+                              y = unlist(lapply(annot, '[', 'y')),
+                              ax = unlist(lapply(annot, '[', 'ax')),
+                              ay = unlist(lapply(annot, '[', 'ay')),
+                              text = unlist(lapply(annot, '[', 'text')))
+        # convert plotly ax,ay to x,y coords
+        annotdf$ax <- annotdf$x +
+          annotdf$ax / (width - 150) * (xrange[2] - xrange[1]) * 1.2
+        annotdf$ay <- annotdf$y -
+          annotdf$ay / height * (yrange[2] - yrange[1]) * 1.2
+      }
       colScheme2 <- adjustcolor(colScheme, alpha.f = alpha)
       if (!is.null(col)) data <- data[order(data[, col]), ]
       legenddist <- max(
@@ -539,21 +559,10 @@ easylabel <- function(data, x, y,
       abline(h = hline[hline == 0], v = vline[vline == 0])
       # add labels
       if (length(labs) > 0) {
-        annot <- annotation(labs, data, x, y, current_xy, labSize = labSize)
-        annotdf <- data.frame(x = unlist(lapply(annot, '[', 'x')),
-                              y = unlist(lapply(annot, '[', 'y')),
-                              ax = unlist(lapply(annot, '[', 'ax')),
-                              ay = unlist(lapply(annot, '[', 'ay')),
-                              text = unlist(lapply(annot, '[', 'text')))
-        # convert plotly ax,ay to x,y coords
-        annotdf$ax <- annotdf$x +
-          annotdf$ax / (width - 150) * (xrange[2] - xrange[1]) * 1.2
-        annotdf$ay <- annotdf$y -
-          annotdf$ay / height * (yrange[2] - yrange[1]) * 1.2
         # padding
         pxy <- pixelToXY(padding)
-        annotdf$texth <- strheight(labs, cex = cex.text) + 2 * pxy[2]
-        annotdf$textw <- strwidth(labs, cex = cex.text) + 2 * pxy[1]
+        annotdf$texth <- strheight(annotdf$text, cex = cex.text) + 2 * pxy[2]
+        annotdf$textw <- strwidth(annotdf$text, cex = cex.text) + 2 * pxy[1]
         # plot label line
         linerect(annotdf, line_col)
         if (rectangles) {
@@ -585,7 +594,7 @@ easylabel <- function(data, x, y,
     }, contentType = 'application/pdf')
 
     updateSelectizeInput(session, 'label',
-                         choices = labelchoices, server = TRUE)
+                         choices = unique(labelchoices), server = TRUE)
     labels <- reactiveValues(list = startLabels)
     labelsxy <- reactiveValues(list = start_xy)
 
@@ -611,11 +620,16 @@ easylabel <- function(data, x, y,
     # Update labels from selectize
     observeEvent(input_label(), {
       currentsel <- input_label()
+      convert_labs <- labelchoices[as.numeric(labels$list)]
       if (length(currentsel) == 0) {labels$list <- character(0)
-      } else if (any(!currentsel %in% labels$list) |
-                 any(!labels$list %in% currentsel)) {
-        labels$list <- currentsel
-        labelsxy$list <- labelsxy$list[currentsel]
+      } else if (any(!currentsel %in% convert_labs)) {
+        addsel <- currentsel[!currentsel %in% convert_labs]
+        labels$list <- c(labels$list, which(labelchoices %in% addsel))
+      } else if (any(!convert_labs %in% currentsel)) {
+        removesel <- convert_labs[!convert_labs %in% currentsel]
+        removenum <- which(labelchoices %in% removesel)
+        labels$list <- labels$list[!labels$list %in% removenum]
+        labelsxy$list <- labelsxy$list[!names(labelsxy$list) %in% removenum]
       }
     }, ignoreNULL = FALSE, ignoreInit = TRUE)
 
@@ -624,7 +638,9 @@ easylabel <- function(data, x, y,
       labs <- labels$list
       current_xy <- labelsxy$list
       # Annotate gene labels
-      annot <- annotation(labs, data, x, y, current_xy, labSize = labSize,
+      annot <- annotation(labs, data, x, y, current_xy,
+                          labelchoices = labelchoices,
+                          labSize = labSize,
                           labelDir = input$labDir, labCentre = labCentre,
                           xyspan = xyspan)
       labelsxy$list <- lapply(annot, function(i) list(ax = i$ax, ay = i$ay))
@@ -633,9 +649,10 @@ easylabel <- function(data, x, y,
         plotlyProxyInvoke("relayout",
                           list(annotations = append(annot, custom_annotation)))
       sel_labels <- input$label
-      if (any(!sel_labels %in% labs) | any(!labs %in% sel_labels)) {
-        updateSelectizeInput(session, 'label', choices = labelchoices,
-                             selected = labs, server = TRUE)
+      sel_labels <- which(labelchoices %in% sel_labels)
+      if (any(!sel_labels %in% as.numeric(labs)) | any(!as.numeric(labs) %in% sel_labels)) {
+        updateSelectizeInput(session, 'label', choices = unique(labelchoices),
+                             selected = labelchoices[as.numeric(labs)], server = TRUE)
       }
 
     })
@@ -661,9 +678,9 @@ easylabel <- function(data, x, y,
     # Table tab
     output$table <- DT::renderDataTable({
       showCols <- colnames(data)[!colnames(data) %in%
-                                   c('log10P', 'col', 'outlier', 'symbol')]
+                                   c('outlier', 'comb_symbol')]
       df <- data[, showCols]
-      if (!is.null(col)) df <- df[df[, col] %in% input$colgroup, ]
+      if (!is.null(col)) df <- df[data[, col] %in% input$colgroup, ]
       cols <- colnames(df)[sapply(df, class) == "numeric"]
       rn <- if (is.null(labs)) TRUE else {
         if (!is.null(col)) {
@@ -710,6 +727,7 @@ easylabel <- function(data, x, y,
       labs <- labels$list
       # Redraw gene labels
       annot <- annotation(labs, data, x, y, current_xy = NULL,
+                          labelchoices = labelchoices,
                           labSize = labSize,
                           labelDir = input$labDir, labCentre = labCentre,
                           xyspan = xyspan)
@@ -737,12 +755,13 @@ names(labDir_choices) <- c('Radial centre', 'Radial origin',
 
 # Annotate gene labels
 annotation <- function(labels, data, x, y, current_xy = NULL,
+                       labelchoices,
                        labSize = 12, labelDir = "radial",
                        labCentre = c(0,0), xyspan = c(1,1)) {
   if (length(labels)!= 0) {
     annot <- lapply(1:length(labels), function(j) {
       i <- labels[j]
-      row <- data[i, ]
+      row <- data[as.numeric(i), ]
       sx <- row[, x]
       sy <- row[, y]
       dx <- (sx - labCentre[1]) / xyspan[1]
@@ -798,7 +817,7 @@ annotation <- function(labels, data, x, y, current_xy = NULL,
         }
       }
       list(x = sx, y = sy, ax = ax, ay = ay,
-           text = i, textangle = 0,
+           text = labelchoices[as.numeric(i)], textangle = 0,
            font = list(color = "black", size = labSize),
            arrowcolor = "black", arrowwidth = 1, arrowhead = 0, arrowsize = 1.5,
            xanchor = "auto", yanchor = "auto")
