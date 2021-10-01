@@ -34,7 +34,9 @@
 #' factor, will be coerced to a factor.
 #' @param shapeScheme A single symbol for points or a vector of symbols.
 #' See `pch` in [points()].
-#' @param cex Size of points. Default 1.
+#' @param size Either a single value for size of points (default 1) or specifies
+#' which column in `data` affects point size for bubble charts.
+#' @param sizeRange
 #' @param xlab x axis title. Accepts expressions when exporting base graphics.
 #' Set `cex.lab` to alter the font size of the axis titles (default 1).
 #' Set `cex.axis` to alter the font size of the axis numbering (default 1).
@@ -125,6 +127,9 @@ easylabel <- function(data, x, y,
                       shape = NULL,
                       shapeScheme = 21,
                       cex = 1,
+                      size = 1,
+                      sizeRange = c(3, 80),
+                      sizemode = 'area',
                       xlab = x, ylab = y,
                       xlim = NULL, ylim = NULL,
                       showOutliers = TRUE,
@@ -241,14 +246,23 @@ easylabel <- function(data, x, y,
 
   psymbols <- pch2symbol[shapeScheme + 1]
   outlier_psymbol <- pch2symbol[outlier_shape + 1]
-  pmarkerSize <- cex * 8
+  sizeSwitch <- switch(class(size), "numeric" = 1, "character" = 2)
+  pmarkerSize <- switch(sizeSwitch,
+                        size * 8,
+                        as.formula(paste0('~', size)))
+  sizeref <- if (sizeSwitch == 2) {
+    2 * max(data[, size], na.rm = TRUE) / max(sizeRange)^2
+  } else 1
   if (is.na(outline_col)) outline_lwd <- 0  # fix plotly no outlines
   if (all(shapeScheme < 21) & outline_lwd == 0.5) outline_lwd <- 1
   pmarkerOutline <- list(width = outline_lwd,
                         color = outline_col)
   pmarker <- list(size = pmarkerSize,
-                 opacity = alpha,
-                 line = pmarkerOutline)
+                  sizeref = sizeref,
+                  # sizemin = min(sizeRange),
+                  opacity = alpha,
+                  line = pmarkerOutline,
+                  sizemode = sizemode)
   LRtitles <- list(
     list(x = 0,
          y = ifelse(LRtitle_side == 3, 1, 0),
@@ -377,6 +391,7 @@ easylabel <- function(data, x, y,
                      } else I(colScheme),
                      colors = colScheme,
                      marker = pmarker,
+                     sizes = sort(sizeRange, dec = TRUE),
                      symbol = if (!is.null(shape)) {
                        as.formula(paste0('~', shape))
                      } else I(psymbols),
@@ -405,6 +420,7 @@ easylabel <- function(data, x, y,
                      } else I(colScheme),
                      colors = colScheme,
                      marker = pmarker,
+                     sizes = sizeRange,
                      symbol = if (!is.null(shape)) {
                        ~comb_symbol
                      } else I(psymbols),
@@ -497,7 +513,7 @@ easylabel <- function(data, x, y,
              }
            } else {colScheme2},
            lwd = outline_lwd,
-           xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, cex = cex, ...,
+           xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, cex = size, ...,
            panel.first = {
              if (showgrid) {
                abline(h = pretty(data[, y]), v = pretty(data[, x]),
@@ -547,7 +563,7 @@ easylabel <- function(data, x, y,
                pch = outlier_shape,
                col = if (!is.null(col)) {
                  colScheme2[data[data$outlier, col]]} else colScheme2,
-               cex = cex)
+               cex = size)
         legpch <- c(legpch, outlier_shape)
         legcol <- c(legcol, 'black')
         legbg <- c(legbg, 'black')
