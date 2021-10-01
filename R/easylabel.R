@@ -716,7 +716,7 @@ easylabel <- function(data, x, y,
     observeEvent(input$batch_ok, {
       if (!is.null(input$batchlabs)) {
         batch_genes <- unlist(strsplit(input$batchlabs, ",| |\n"))
-        batch_genes <- batch_genes[batch_genes %in% labelchoices]
+        batch_genes <- which(labelchoices %in% batch_genes)
         labels$list <- c(labels$list, batch_genes)
         removeModal()
       }
