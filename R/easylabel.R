@@ -34,9 +34,9 @@
 #' factor, will be coerced to a factor.
 #' @param shapeScheme A single symbol for points or a vector of symbols.
 #' See `pch` in [points()].
-#' @param size Either a single value for size of points (default 1) or specifies
-#' which column in `data` affects point size for bubble charts.
-#' @param sizeRange
+#' @param size Either a single value for size of points (default 1), or
+#' specifies which column in `data` affects point size for bubble charts.
+#' @param sizeRange Range of size of points for bubble charts.
 #' @param xlab x axis title. Accepts expressions when exporting base graphics.
 #' Set `cex.lab` to alter the font size of the axis titles (default 1).
 #' Set `cex.axis` to alter the font size of the axis numbering (default 1).
@@ -126,10 +126,8 @@ easylabel <- function(data, x, y,
                       alpha = 1,
                       shape = NULL,
                       shapeScheme = 21,
-                      cex = 1,
                       size = 1,
-                      sizeRange = c(3, 80),
-                      sizemode = 'area',
+                      sizeRange = c(4, 80),
                       xlab = x, ylab = y,
                       xlim = NULL, ylim = NULL,
                       showOutliers = TRUE,
@@ -247,20 +245,17 @@ easylabel <- function(data, x, y,
   psymbols <- pch2symbol[shapeScheme + 1]
   outlier_psymbol <- pch2symbol[outlier_shape + 1]
   sizeSwitch <- switch(class(size), "numeric" = 1, "character" = 2)
-  pmarkerSize <- switch(sizeSwitch,
-                        size * 8,
-                        as.formula(paste0('~', size)))
-  sizeref <- if (sizeSwitch == 2) {
-    2 * max(data[, size], na.rm = TRUE) / max(sizeRange)^2
-  } else 1
+  if (sizeSwitch == 2) {
+    if (!class(data[, size]) %in% c('numeric', 'integer')) {
+      stop(paste(size, "is not numeric"))
+    data$plotly_size <- sqrt(data[, size]) / max(sqrt(data[, size]), na.rm = TRUE) *
+      max(sizeRange) + min(sizeRange)
+  }
   if (is.na(outline_col)) outline_lwd <- 0  # fix plotly no outlines
   if (all(shapeScheme < 21) & outline_lwd == 0.5) outline_lwd <- 1
   pmarkerOutline <- list(width = outline_lwd,
                         color = outline_col)
-  pmarker <- list(size = pmarkerSize,
-                  sizeref = sizeref,
-                  # sizemin = min(sizeRange),
-                  opacity = alpha,
+  pmarker <- list(opacity = alpha,
                   line = pmarkerOutline,
                   sizemode = sizemode)
   LRtitles <- list(
@@ -390,8 +385,9 @@ easylabel <- function(data, x, y,
                        as.formula(paste0('~', col))
                      } else I(colScheme),
                      colors = colScheme,
+                     size = switch(sizeSwitch, I(size * 8), ~plotly_size),
                      marker = pmarker,
-                     sizes = sort(sizeRange, dec = TRUE),
+                     sizes = sizeRange,
                      symbol = if (!is.null(shape)) {
                        as.formula(paste0('~', shape))
                      } else I(psymbols),
@@ -419,8 +415,8 @@ easylabel <- function(data, x, y,
                        as.formula(paste0('~', col))
                      } else I(colScheme),
                      colors = colScheme,
+                     size = switch(sizeSwitch, I(size * 8), ~plotly_size),
                      marker = pmarker,
-                     sizes = sizeRange,
                      symbol = if (!is.null(shape)) {
                        ~comb_symbol
                      } else I(psymbols),
@@ -512,8 +508,10 @@ easylabel <- function(data, x, y,
                colScheme2[data[!data$outlier, col]]
              }
            } else {colScheme2},
+           cex = switch(sizeSwitch, size,
+                        data[!data$outlier, 'plotly_size'] / 8),
            lwd = outline_lwd,
-           xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, cex = size, ...,
+           xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, ...,
            panel.first = {
              if (showgrid) {
                abline(h = pretty(data[, y]), v = pretty(data[, x]),
