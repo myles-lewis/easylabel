@@ -228,7 +228,7 @@ easylabel <- function(data, x, y,
 
   # plotly arguments
   labelchoices <- if (is.null(labs)) rownames(data) else data[, labs]
-  startLabels <- startLabels[startLabels %in% labelchoices]
+  startLabels <- which(labelchoices %in% startLabels)
   pkey <- 1:length(labelchoices)
   labSize <- cex.text / 0.72 * 12
   start_annot <- annotation(startLabels, data, x, y,
