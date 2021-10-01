@@ -16,7 +16,8 @@ easylabel(
   alpha = 1,
   shape = NULL,
   shapeScheme = 21,
-  cex = 1,
+  size = 1,
+  sizeRange = c(4, 80),
   xlab = x,
   ylab = y,
   xlim = NULL,
@@ -80,7 +81,10 @@ factor, will be coerced to a factor.}
 \item{shapeScheme}{A single symbol for points or a vector of symbols.
 See \code{pch} in \code{\link[=points]{points()}}.}
 
-\item{cex}{Size of points. Default 1.}
+\item{size}{Either a single value for size of points (default 1), or
+specifies which column in \code{data} affects point size for bubble charts.}
+
+\item{sizeRange}{Range of size of points for bubble charts.}
 
 \item{xlab}{x axis title. Accepts expressions when exporting base graphics.
 Set \code{cex.lab} to alter the font size of the axis titles (default 1).

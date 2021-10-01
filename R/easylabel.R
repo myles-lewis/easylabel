@@ -248,6 +248,7 @@ easylabel <- function(data, x, y,
   if (sizeSwitch == 2) {
     if (!class(data[, size]) %in% c('numeric', 'integer')) {
       stop(paste(size, "is not numeric"))
+    }
     data$plotly_size <- sqrt(data[, size]) / max(sqrt(data[, size]), na.rm = TRUE) *
       max(sizeRange) + min(sizeRange)
   }
@@ -257,7 +258,7 @@ easylabel <- function(data, x, y,
                         color = outline_col)
   pmarker <- list(opacity = alpha,
                   line = pmarkerOutline,
-                  sizemode = sizemode)
+                  sizemode = 'diameter')
   LRtitles <- list(
     list(x = 0,
          y = ifelse(LRtitle_side == 3, 1, 0),
