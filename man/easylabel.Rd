@@ -16,7 +16,7 @@ easylabel(
   alpha = 1,
   shape = NULL,
   shapeScheme = 21,
-  size = 1,
+  size = 8,
   sizeRange = c(4, 80),
   xlab = x,
   ylab = y,
@@ -81,7 +81,7 @@ factor, will be coerced to a factor.}
 \item{shapeScheme}{A single symbol for points or a vector of symbols.
 See \code{pch} in \code{\link[=points]{points()}}.}
 
-\item{size}{Either a single value for size of points (default 1), or
+\item{size}{Either a single value for size of points (default 8), or
 specifies which column in \code{data} affects point size for bubble charts.}
 
 \item{sizeRange}{Range of size of points for bubble charts.}
