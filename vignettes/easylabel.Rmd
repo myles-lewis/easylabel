@@ -24,7 +24,8 @@ an interactive shiny and plotly interface, users can hover over points to see
 where specific points are located and click on points to easily label them. 
 Labels can be toggled on/off simply by clicking. An input box and batch input 
 window provides an easy way to label points by name. Labels can be dragged 
-around the plot to place them optimally.
+around the plot to place them optimally. Notably we provide an easy way to 
+export directly to pdf for publication.
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -45,10 +46,104 @@ devtools::install_github("myles-lewis/easylabel", auth_token="...")
 library(easylabel)
 ```
 
+We recommend installing at least version 4.9.4.9 (currently the development 
+version) of plotly which has much better on-screen resolution of scatter plots 
+for a better user experience. Note that exporting to pdf is unaffected by this.
+
+```{r eval = FALSE}
+remotes::install_github("ropensci/plotly")
+```
+
 # Scatter plots
 
 Use `easylabel` to open a shiny app and plot and label scatter plots. A table of 
 the main data is supplied in the Table tab for easy viewing of data.
+
+```{r eval = FALSE}
+data(mtcars)
+easylabel(mtcars, x = 'mpg', y = 'wt',
+          colScheme = 'royalblue')
+```
+
+```{r scatter1, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
+knitr::include_graphics("scatter1.png")
+```
+
+## Export plot to PDF
+* Hover over and click on/off genes which you want to label.
+* When you have selected all your chosen genes, then drag gene names to move
+  label positions.
+* Click the save button to export a PDF in base graphics.
+
+## Export SVG from plotly
+* You can move the legend as well.
+* Switch to SVG when finalised (only do this at last moment as otherwise
+  editing can very slow, particularly with large numbers of points).
+* Press the camera button in the plotly modebar to save image as SVG.
+
+## Colour
+
+Similar to ggplot2 and plotly, colour can either be set as a single colour, 
+using `colScheme = 'blue'` or can be set to change with the level of a factor 
+variable within `data` by setting `col`. Transparency can be altered by setting
+`alpha`. Currently colour gradients are not supported.
+
+```{r eval = FALSE}
+easylabel(mtcars, x = 'mpg', y = 'wt',
+          col = 'cyl')
+```
+
+```{r scatter2, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
+knitr::include_graphics("scatter2.png")
+```
+
+## Shape
+
+Marker shapes can either be set as a single shape using `shapeScheme = 21`, 
+based on the base graphics `pch` symbol scheme (see `points()`), or shapes can 
+be set to change with the level of a factor variable within `data` by setting 
+`shape`. Shapes and colours can be combined.
+
+```{r eval = FALSE}
+# gapminder data set
+if(!require(gapminder)) {install.packages("gapminder")}
+library(gapminder)
+easylabel(gapminder[gapminder$year == 2007, ], x = 'gdpPercap', y = 'lifeExp',
+          col = 'continent', shape = 'continent',
+          size = 10,
+          labs = 'country', 
+          zeroline = FALSE)
+```
+
+```{r scatter3, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
+knitr::include_graphics("scatter3.png")
+```
+
+## Size
+
+The size of all markers can be adjusted by setting `size` to a single number 
+e.g. `size = 6` (default 8). Size can be assigned to a column of continuous data 
+within `data` to produce a bubble chart. The size of points is automatically 
+scaled to fit within a range of point sizes, determined by `scaleRange`.
+
+```{r eval = FALSE}
+library(gapminder)
+easylabel(gapminder[gapminder$year == 2007, ], x = 'gdpPercap', y = 'lifeExp',
+          col = 'continent', labs = 'country', 
+          size = 'pop',
+          alpha = 0.6,
+          zeroline = FALSE)
+```
+
+```{r bubble, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
+knitr::include_graphics("bubble.png")
+```
+
+## Axis titles
+
+Axis titles can be set using `xlab` and `ylab`. These accept R expressions to 
+allow maths symbols. This is primarily designed to work when exporting plots to 
+pdf via base graphics, since plotly does not natively understand expressions.
 
 ```{r include = FALSE}
 ymatrix <- readRDS('/Users/myles/R/R4RA/ymatrix_drug_time.rds')
@@ -61,21 +156,17 @@ easylabel(ymatrix, x = 'x', y = 'y', col = 'col',
           showgrid = TRUE)
 ```
 
-## Export plot to PDF
-* Hover over and click on/off genes which you want to label.
-* When you have selected all your chosen genes, then drag gene names to move
-  label positions.
-* Click the save button to export a PDF in base graphics.
-
-## Export SVG from plotly
-* You can move the legend as well.
-* Switch to SVG when finalised (only do this at last moment as otherwise
-  editing is very slow).
-* Press camera button in the plotly modebar to save image as SVG.
-
-```{r plot1, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+```{r plot1, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
 knitr::include_graphics("plot1.png")
 ```
+
+## Gridlines
+
+Gridlines can be shown by setting `showgrid = TRUE`. Black lines through the 
+origin can be controlled by setting `zeroline` to `TRUE` or `FALSE`. Dashed grey 
+horizontal lines can be added at specific levels by setting `hline` with a 
+vector of values. Similarly dashed grey vertical lines can be added by setting 
+`vline` with a vector of values.
 
 # Volcano plots
 
@@ -89,7 +180,7 @@ volc1 <- readRDS('/Users/myles/R/R4RA/DESeq2.nociceptive.res.RDS')
 easyVolcano(volc1, useQ = TRUE)
 ```
 
-```{r plot2, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+```{r plot2, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
 knitr::include_graphics("plot2.png")
 ```
 
@@ -105,7 +196,7 @@ volc2 <- readRDS('/Users/myles/R/R4RA/limma.output.RDS')
 easyMAplot(volc2, useQ = TRUE)
 ```
 
-```{r easyMAplot1, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+```{r easyMAplot1, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
 knitr::include_graphics("MAplot1.png")
 ```
 
@@ -137,7 +228,7 @@ easyVolcano(volc2,
             main = "Volcano title")
 ```
 
-```{r plot7, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+```{r plot7, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
 knitr::include_graphics("plot7.png")
 ```
 
@@ -158,8 +249,6 @@ them on the top.
 `cex.lab` controls font size for these titles as well as axis titles.
 `cex.axis` controls font size for axis numbering.
 
-
-
 ```{r eval = FALSE}
 easyVolcano(volc1,
             useQ = TRUE, fullGeneNames = TRUE,
@@ -172,20 +261,9 @@ easyVolcano(volc1,
             colScheme = c('darkgrey', 'blue', 'orange', 'red'))
 ```
 
-```{r plot3, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+```{r plot3, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
 knitr::include_graphics("plot3.png")
 ```
-
-## Complex colour schemes
-
-The colour scheme system has been expanded to allow multiple fold change
-cut-offs. In the example above the colours are symmetrical. 
-
-## Axis limits and outliers
-
-`xlim` and `ylim` allow control over the range of each axis. Outlying points are
-shown as diamonds. See example above. Outliers can be toggled off using 
-`showOutliers = FALSE`.
 
 ## Setting P value cut-off
 
@@ -199,6 +277,20 @@ column. Note this does mean the legend incorrectly states 'FDR < ' etc.
 easyVolcano(volc1, y = 'pvalue', padj = 'pvalue', fdrcutoff = 0.01)
 ```
 
+## Axis limits and outliers
+
+`xlim` and `ylim` allow control over the range of each axis. Outlying points are
+shown as diamonds (see example above). Outliers can be toggled off using 
+`showOutliers = FALSE`. Outlier symbol, colour and line width can be set using 
+`outlier_shape`, `outlier_col` and `outlier_lwd` respectively.
+
+Axes can be further customised by using `panel.last`, see [panel.last].
+
+## Complex colour schemes
+
+The colour scheme system has been expanded to allow multiple fold change
+cut-offs. In the example above the colours are symmetrical. 
+
 In the next 2 plots, the colours range from blue for downregulated genes,
 through to red for upregulated genes. Vertical lines can be added using `vline`.
 
@@ -210,7 +302,7 @@ easyVolcano(volc1, fccut = 1, fdrcutoff = 0.2,
             vline = c(-1, 1))
 ```
 
-```{r plot4, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+```{r plot4, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
 knitr::include_graphics("plot4.png")
 ```
 
@@ -225,7 +317,7 @@ easyVolcano(volc1, fccut = c(1, 2), fdrcutoff = 0.2,
             alpha = 0.75, outline_col = NA)
 ```
 
-```{r plot5, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+```{r plot5, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
 knitr::include_graphics("plot5.png")
 ```
 
@@ -234,26 +326,39 @@ Similarly 6 colours can be applied to MA plots using 3 levels of cut-off for FDR
 
 ```{r eval = FALSE}
 colScheme <- c('darkgrey', brewer.pal(9, 'RdYlBu')[c(7:9, 3:1)])
-easyMAplot(volc2, fdrcutoff = c(0.05, 0.01, 0.001), cex = 0.8, useQ = TRUE,
+easyMAplot(volc2, fdrcutoff = c(0.05, 0.01, 0.001), size = 6, useQ = TRUE,
        alpha = 0.75, outline_col = NA,
        colScheme = colScheme)
 ```
 
-```{r easyMAplot2, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+```{r easyMAplot2, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
 knitr::include_graphics("MAplot2.png")
 ```
 
-## Further control of plotting
+# Further control of plotting
 
-The size of markers can be changed using `cex` (default 1).
-A box around the plot can be added using `bty='o'` (see `par()`).
+Further control of plotting can be achieved by passing other arguments to 
+plot() via R's `...` argument. For example, a box around the plot can be added 
+using `bty='o'` (see `par()`). Note this method only works for saving to pdf 
+since it is not supported by plotly. 
+
+## panel.last
+
+Base graphics' `panel.last` argument is a flexible way to add plotting commands.
+This provides a way to add trend lines, loess lines or any additional features 
+such as extra legends to the plot after the points are plotted, but before 
+labels are drawn.
+
+An example of the use of `panel.last` to completely customise axes is shown 
+below. Note that `panel.last` only works when saving to pdf, and is not 
+available in plotly.
+
 Axes can be customised by first suppressing the initial axis using `xaxt='n'` or
 `yaxt='n'` and then adding an `axis()` call using `panel.last`.
-A top title can also be added using `main`.
 
 ```{r eval = FALSE}
 easyVolcano(volc1, useQ = TRUE, fdrcutoff = 0.2, ylim = c(0,8), xlim = c(-6,6),
-            cex = 0.6,
+            size = 4.8,
             xaxt = 'n', yaxt = 'n', bty = 'o',
             main = "DEG volcano plot",
             panel.last = {
@@ -262,11 +367,11 @@ easyVolcano(volc1, useQ = TRUE, fdrcutoff = 0.2, ylim = c(0,8), xlim = c(-6,6),
             })
 ```
 
-```{r plot6, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+```{r plot6, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
 knitr::include_graphics("plot6.png")
 ```
 
-## Controlling labels
+# Controlling labels
 
 Label lines can be altered using the argument `labelDir` or by selecting the
 Label direction pulldown menu in the shiny app. Options are shown below:
@@ -338,7 +443,7 @@ knitr::include_graphics("rect red outline.png")
 
 ```{r eval = FALSE}
 # Transparent grey rectangles, rounded ends
-easyMAplot(volc2, fdrcut = c(0.05, 0.01, 0.001), cex = 0.8, useQ = TRUE,
+easyMAplot(volc2, fdrcut = c(0.05, 0.01, 0.001), size = 6, useQ = TRUE,
        alpha = 0.75, outline_col = NA,
        fullGeneNames = TRUE,
        colScheme = c('darkgrey', brewer.pal(9, 'RdYlBu')[c(7:9, 3:1)]),

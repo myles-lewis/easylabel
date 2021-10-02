@@ -34,7 +34,9 @@
 #' factor, will be coerced to a factor.
 #' @param shapeScheme A single symbol for points or a vector of symbols.
 #' See `pch` in [points()].
-#' @param cex Size of points. Default 1.
+#' @param size Either a single value for size of points (default 8), or
+#' specifies which column in `data` affects point size for bubble charts.
+#' @param sizeRange Range of size of points for bubble charts.
 #' @param xlab x axis title. Accepts expressions when exporting base graphics.
 #' Set `cex.lab` to alter the font size of the axis titles (default 1).
 #' Set `cex.axis` to alter the font size of the axis numbering (default 1).
@@ -124,7 +126,8 @@ easylabel <- function(data, x, y,
                       alpha = 1,
                       shape = NULL,
                       shapeScheme = 21,
-                      cex = 1,
+                      size = 8,
+                      sizeRange = c(4, 80),
                       xlab = x, ylab = y,
                       xlim = NULL, ylim = NULL,
                       showOutliers = TRUE,
@@ -198,16 +201,21 @@ easylabel <- function(data, x, y,
 
   # checks on data and variables
   if (!is.null(col)) {
+    if (!col %in% colnames(data)) {
+      stop(paste("Can't find column `col` in", name_data))}
     data[, col] <- factor(data[, col])  # coerce to factor
   }
   if (!is.null(shape)) {
+    if (!shape %in% colnames(data)) {
+      stop(paste("Can't find column `shape` in", name_data))}
     data[, shape] <- factor(data[, shape])  # coerce to factor
     if (length(shapeScheme) < nlevels(data[, shape])) {
       if (!identical(shapeScheme, 21)) {
       warning(paste0("shapeScheme has fewer levels than ",
                      name_data, "$", shape), call. = FALSE)
       }
-      shapeScheme <- c(16:17, 15, 18, 1:2, 0, 3:13)
+      shapeScheme <- c(21, 24, 22, 25, 23,
+                       1:2, 0, 6, 5, 3:4, 7:13)[1:nlevels(data[, shape])]
     }
   }
 
@@ -241,14 +249,23 @@ easylabel <- function(data, x, y,
 
   psymbols <- pch2symbol[shapeScheme + 1]
   outlier_psymbol <- pch2symbol[outlier_shape + 1]
-  pmarkerSize <- cex * 8
+  sizeSwitch <- switch(class(size), "numeric" = 1, "character" = 2)
+  if (sizeSwitch == 2) {
+    if (!size %in% colnames(data)) {
+      stop(paste("Can't find column `size` in", name_data))}
+    if (!class(data[, size]) %in% c('numeric', 'integer')) {
+      stop(paste(size, "is not numeric"))
+    }
+    data$plotly_size <- sqrt(data[, size]) / max(sqrt(data[, size]), na.rm = TRUE) *
+      max(sizeRange) + min(sizeRange)
+  }
   if (is.na(outline_col)) outline_lwd <- 0  # fix plotly no outlines
   if (all(shapeScheme < 21) & outline_lwd == 0.5) outline_lwd <- 1
   pmarkerOutline <- list(width = outline_lwd,
                         color = outline_col)
-  pmarker <- list(size = pmarkerSize,
-                 opacity = alpha,
-                 line = pmarkerOutline)
+  pmarker <- list(opacity = alpha,
+                  line = pmarkerOutline,
+                  sizemode = 'diameter')
   LRtitles <- list(
     list(x = 0,
          y = ifelse(LRtitle_side == 3, 1, 0),
@@ -348,7 +365,6 @@ easylabel <- function(data, x, y,
                           labelchoices = labelchoices,
                           labSize = labSize, labelDir = ldir,
                           labCentre = labCentre, xyspan = xyspan)
-      isolate(labels$annot <- annot)
       if (!is.null(hline)) {
         pshapes = lapply(hline, function(i) {
           list(type = "line",
@@ -376,7 +392,9 @@ easylabel <- function(data, x, y,
                        as.formula(paste0('~', col))
                      } else I(colScheme),
                      colors = colScheme,
+                     size = switch(sizeSwitch, I(size), ~plotly_size),
                      marker = pmarker,
+                     sizes = sizeRange,
                      symbol = if (!is.null(shape)) {
                        as.formula(paste0('~', shape))
                      } else I(psymbols),
@@ -404,6 +422,7 @@ easylabel <- function(data, x, y,
                        as.formula(paste0('~', col))
                      } else I(colScheme),
                      colors = colScheme,
+                     size = switch(sizeSwitch, I(size), ~plotly_size),
                      marker = pmarker,
                      symbol = if (!is.null(shape)) {
                        ~comb_symbol
@@ -461,6 +480,8 @@ easylabel <- function(data, x, y,
       current_xy <- labelsxy$list
       xrange <- range(c(data[, x], xlim), na.rm = TRUE)
       yrange <- range(c(data[, y], ylim), na.rm = TRUE)
+      xspan <- xrange[2] - xrange[1]
+      yspan <- yrange[2] - yrange[1]
       if (length(labs) > 0) {
         annot <- annotation(labs, data, x, y, current_xy,
                             labelchoices = labelchoices,
@@ -472,9 +493,20 @@ easylabel <- function(data, x, y,
                               text = unlist(lapply(annot, '[', 'text')))
         # convert plotly ax,ay to x,y coords
         annotdf$ax <- annotdf$x +
-          annotdf$ax / (width - 150) * (xrange[2] - xrange[1]) * 1.2
+          annotdf$ax / (width - 150) * xspan * 1.2
         annotdf$ay <- annotdf$y -
-          annotdf$ay / height * (yrange[2] - yrange[1]) * 1.2
+          annotdf$ay / height * yspan * 1.2
+        # expand xlim, ylim for labels on the edges
+        if (is.null(xlim)) {
+          xlim <- range(c(xrange, annotdf$ax), na.rm = TRUE)
+          xlim[1] <- xlim[1] - xspan * 0.025
+          xlim[2] <- xlim[2] + xspan * 0.025
+        }
+        if (is.null(ylim)) {
+          ylim <- range(c(yrange, annotdf$ay), na.rm = TRUE)
+          ylim[1] <- ylim[1] - yspan * 0.025
+          ylim[2] <- ylim[2] + yspan * 0.025
+        }
       }
       colScheme2 <- adjustcolor(colScheme, alpha.f = alpha)
       if (!is.null(col)) data <- data[order(data[, col]), ]
@@ -496,8 +528,10 @@ easylabel <- function(data, x, y,
                colScheme2[data[!data$outlier, col]]
              }
            } else {colScheme2},
+           cex = switch(sizeSwitch, size / 8,
+                        data[!data$outlier, 'plotly_size'] / 8),
            lwd = outline_lwd,
-           xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, cex = cex, ...,
+           xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, ...,
            panel.first = {
              if (showgrid) {
                abline(h = pretty(data[, y]), v = pretty(data[, x]),
@@ -547,7 +581,7 @@ easylabel <- function(data, x, y,
                pch = outlier_shape,
                col = if (!is.null(col)) {
                  colScheme2[data[data$outlier, col]]} else colScheme2,
-               cex = cex)
+               cex = size / 8)
         legpch <- c(legpch, outlier_shape)
         legcol <- c(legcol, 'black')
         legbg <- c(legbg, 'black')
@@ -575,7 +609,7 @@ easylabel <- function(data, x, y,
              col = text_col, xpd = NA, cex = cex.text)
       }
       if (!is.null(c(col, shape))) {
-        legend(x = xrange[2] + (xrange[2] - xrange[1]) * 0.04, y = yrange[2],
+        legend(x = xrange[2] + xspan * 0.04, y = yrange[2],
                legend = legtext, pt.bg = legbg,
                pt.lwd = pt.lwd, pt.cex = 0.9,
                col = legcol, pch = legpch, bty = 'n',
@@ -584,7 +618,7 @@ easylabel <- function(data, x, y,
       if (!is.null(custom_annotation)) {
         custtext <- custom_annotation[[1]]$text
         custtext <- gsub("<br>", "\n", custtext)
-        legend(x = xrange[2] + (xrange[2] - xrange[1]) * 0.02, y = yrange[1],
+        legend(x = xrange[2] + xspan * 0.02, y = yrange[1],
                legend = custtext,
                bty = 'n', cex = 0.65, xjust = 0, yjust = 0, xpd = NA)
       }
