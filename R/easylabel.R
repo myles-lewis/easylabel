@@ -474,6 +474,8 @@ easylabel <- function(data, x, y,
       current_xy <- labelsxy$list
       xrange <- range(c(data[, x], xlim), na.rm = TRUE)
       yrange <- range(c(data[, y], ylim), na.rm = TRUE)
+      xspan <- xrange[2] - xrange[1]
+      yspan <- yrange[2] - yrange[1]
       if (length(labs) > 0) {
         annot <- annotation(labs, data, x, y, current_xy,
                             labelchoices = labelchoices,
@@ -485,9 +487,20 @@ easylabel <- function(data, x, y,
                               text = unlist(lapply(annot, '[', 'text')))
         # convert plotly ax,ay to x,y coords
         annotdf$ax <- annotdf$x +
-          annotdf$ax / (width - 150) * (xrange[2] - xrange[1]) * 1.2
+          annotdf$ax / (width - 150) * xspan * 1.2
         annotdf$ay <- annotdf$y -
-          annotdf$ay / height * (yrange[2] - yrange[1]) * 1.2
+          annotdf$ay / height * yspan * 1.2
+        # expand xlim, ylim for labels on the edges
+        if (is.null(xlim)) {
+          xlim <- range(c(xrange, annotdf$ax), na.rm = TRUE)
+          xlim[1] <- xlim[1] - xspan * 0.025
+          xlim[2] <- xlim[2] + xspan * 0.025
+        }
+        if (is.null(ylim)) {
+          ylim <- range(c(yrange, annotdf$ay), na.rm = TRUE)
+          ylim[1] <- ylim[1] - yspan * 0.025
+          ylim[2] <- ylim[2] + yspan * 0.025
+        }
       }
       colScheme2 <- adjustcolor(colScheme, alpha.f = alpha)
       if (!is.null(col)) data <- data[order(data[, col]), ]

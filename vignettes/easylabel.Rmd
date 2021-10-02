@@ -45,6 +45,13 @@ devtools::install_github("myles-lewis/easylabel", auth_token="...")
 library(easylabel)
 ```
 
+We recommend installing the development version of plotly which has better
+resolution of scatter plots.
+
+```{r eval = FALSE}
+remotes::install_github("ropensci/plotly")
+```
+
 # Scatter plots
 
 Use `easylabel` to open a shiny app and plot and label scatter plots. A table of 
@@ -73,8 +80,43 @@ easylabel(ymatrix, x = 'x', y = 'y', col = 'col',
   editing is very slow).
 * Press camera button in the plotly modebar to save image as SVG.
 
-```{r plot1, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+```{r plot1, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
 knitr::include_graphics("plot1.png")
+```
+
+## Colour
+
+Similar to ggplot2 and plotly, colour can either be set as a single colour, 
+using `colScheme = 'blue'` or can be set to change with level of a factor 
+variable within `data` by setting `col`. Currently colour gradients are not 
+supported.
+
+## Shape
+
+Marker shapes can either be set as a single shape using `shapeScheme = 21`, 
+based on the base graphics `pch` symbol scheme (see `points()`). Shapes and 
+colours can be combined.
+
+## Size
+
+The size of all markers can be adjusted by setting `size` to a single number 
+e.g. `size = 1`. Size can be assigned to a column of continuous data within
+`data` to produce a bubble chart. The size of points is automatically scaled to 
+fit within a range of point sizes, determined by `scaleRange`.
+
+```{r eval = FALSE}
+# gapminder data set
+if(!require(gapminder)) {install.packages("gapminder"); library(gapminder)}
+
+easylabel(gapminder[gapminder$year == 2007, ], x = 'gdpPercap', y = 'lifeExp',
+          col = 'continent', labs = 'country', 
+          size = 'pop',
+          alpha = 0.6,
+          zeroline = FALSE)
+```
+
+```{r bubble, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
+knitr::include_graphics("bubble.png")
 ```
 
 # Volcano plots
@@ -89,7 +131,7 @@ volc1 <- readRDS('/Users/myles/R/R4RA/DESeq2.nociceptive.res.RDS')
 easyVolcano(volc1, useQ = TRUE)
 ```
 
-```{r plot2, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+```{r plot2, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
 knitr::include_graphics("plot2.png")
 ```
 
@@ -105,7 +147,7 @@ volc2 <- readRDS('/Users/myles/R/R4RA/limma.output.RDS')
 easyMAplot(volc2, useQ = TRUE)
 ```
 
-```{r easyMAplot1, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+```{r easyMAplot1, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
 knitr::include_graphics("MAplot1.png")
 ```
 
@@ -137,7 +179,7 @@ easyVolcano(volc2,
             main = "Volcano title")
 ```
 
-```{r plot7, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+```{r plot7, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
 knitr::include_graphics("plot7.png")
 ```
 
@@ -172,7 +214,7 @@ easyVolcano(volc1,
             colScheme = c('darkgrey', 'blue', 'orange', 'red'))
 ```
 
-```{r plot3, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+```{r plot3, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
 knitr::include_graphics("plot3.png")
 ```
 
@@ -210,7 +252,7 @@ easyVolcano(volc1, fccut = 1, fdrcutoff = 0.2,
             vline = c(-1, 1))
 ```
 
-```{r plot4, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+```{r plot4, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
 knitr::include_graphics("plot4.png")
 ```
 
@@ -225,7 +267,7 @@ easyVolcano(volc1, fccut = c(1, 2), fdrcutoff = 0.2,
             alpha = 0.75, outline_col = NA)
 ```
 
-```{r plot5, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+```{r plot5, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
 knitr::include_graphics("plot5.png")
 ```
 
@@ -234,12 +276,12 @@ Similarly 6 colours can be applied to MA plots using 3 levels of cut-off for FDR
 
 ```{r eval = FALSE}
 colScheme <- c('darkgrey', brewer.pal(9, 'RdYlBu')[c(7:9, 3:1)])
-easyMAplot(volc2, fdrcutoff = c(0.05, 0.01, 0.001), cex = 0.8, useQ = TRUE,
+easyMAplot(volc2, fdrcutoff = c(0.05, 0.01, 0.001), size = 0.8, useQ = TRUE,
        alpha = 0.75, outline_col = NA,
        colScheme = colScheme)
 ```
 
-```{r easyMAplot2, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+```{r easyMAplot2, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
 knitr::include_graphics("MAplot2.png")
 ```
 
@@ -253,7 +295,7 @@ A top title can also be added using `main`.
 
 ```{r eval = FALSE}
 easyVolcano(volc1, useQ = TRUE, fdrcutoff = 0.2, ylim = c(0,8), xlim = c(-6,6),
-            cex = 0.6,
+            size = 0.6,
             xaxt = 'n', yaxt = 'n', bty = 'o',
             main = "DEG volcano plot",
             panel.last = {
@@ -262,7 +304,7 @@ easyVolcano(volc1, useQ = TRUE, fdrcutoff = 0.2, ylim = c(0,8), xlim = c(-6,6),
             })
 ```
 
-```{r plot6, echo = FALSE, message=FALSE, fig.align='center', out.width='90%', out.extra='style="border: 0;"'}
+```{r plot6, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
 knitr::include_graphics("plot6.png")
 ```
 
@@ -338,7 +380,7 @@ knitr::include_graphics("rect red outline.png")
 
 ```{r eval = FALSE}
 # Transparent grey rectangles, rounded ends
-easyMAplot(volc2, fdrcut = c(0.05, 0.01, 0.001), cex = 0.8, useQ = TRUE,
+easyMAplot(volc2, fdrcut = c(0.05, 0.01, 0.001), size = 0.8, useQ = TRUE,
        alpha = 0.75, outline_col = NA,
        fullGeneNames = TRUE,
        colScheme = c('darkgrey', brewer.pal(9, 'RdYlBu')[c(7:9, 3:1)]),
