@@ -358,7 +358,6 @@ easylabel <- function(data, x, y,
                           labelchoices = labelchoices,
                           labSize = labSize, labelDir = ldir,
                           labCentre = labCentre, xyspan = xyspan)
-      isolate(labels$annot <- annot)
       if (!is.null(hline)) {
         pshapes = lapply(hline, function(i) {
           list(type = "line",
