@@ -34,7 +34,7 @@
 #' factor, will be coerced to a factor.
 #' @param shapeScheme A single symbol for points or a vector of symbols.
 #' See `pch` in [points()].
-#' @param size Either a single value for size of points (default 1), or
+#' @param size Either a single value for size of points (default 8), or
 #' specifies which column in `data` affects point size for bubble charts.
 #' @param sizeRange Range of size of points for bubble charts.
 #' @param xlab x axis title. Accepts expressions when exporting base graphics.
@@ -126,7 +126,7 @@ easylabel <- function(data, x, y,
                       alpha = 1,
                       shape = NULL,
                       shapeScheme = 21,
-                      size = 1,
+                      size = 8,
                       sizeRange = c(4, 80),
                       xlab = x, ylab = y,
                       xlim = NULL, ylim = NULL,
@@ -201,16 +201,21 @@ easylabel <- function(data, x, y,
 
   # checks on data and variables
   if (!is.null(col)) {
+    if (!col %in% colnames(data)) {
+      stop(paste("Can't find column `col` in", name_data))}
     data[, col] <- factor(data[, col])  # coerce to factor
   }
   if (!is.null(shape)) {
+    if (!shape %in% colnames(data)) {
+      stop(paste("Can't find column `shape` in", name_data))}
     data[, shape] <- factor(data[, shape])  # coerce to factor
     if (length(shapeScheme) < nlevels(data[, shape])) {
       if (!identical(shapeScheme, 21)) {
       warning(paste0("shapeScheme has fewer levels than ",
                      name_data, "$", shape), call. = FALSE)
       }
-      shapeScheme <- c(16:17, 15, 18, 1:2, 0, 3:13)
+      shapeScheme <- c(21, 24, 22, 25, 23,
+                       1:2, 0, 6, 5, 3:4, 7:13)[1:nlevels(data[, shape])]
     }
   }
 
@@ -246,6 +251,8 @@ easylabel <- function(data, x, y,
   outlier_psymbol <- pch2symbol[outlier_shape + 1]
   sizeSwitch <- switch(class(size), "numeric" = 1, "character" = 2)
   if (sizeSwitch == 2) {
+    if (!size %in% colnames(data)) {
+      stop(paste("Can't find column `size` in", name_data))}
     if (!class(data[, size]) %in% c('numeric', 'integer')) {
       stop(paste(size, "is not numeric"))
     }
@@ -385,7 +392,7 @@ easylabel <- function(data, x, y,
                        as.formula(paste0('~', col))
                      } else I(colScheme),
                      colors = colScheme,
-                     size = switch(sizeSwitch, I(size * 8), ~plotly_size),
+                     size = switch(sizeSwitch, I(size), ~plotly_size),
                      marker = pmarker,
                      sizes = sizeRange,
                      symbol = if (!is.null(shape)) {
@@ -415,7 +422,7 @@ easylabel <- function(data, x, y,
                        as.formula(paste0('~', col))
                      } else I(colScheme),
                      colors = colScheme,
-                     size = switch(sizeSwitch, I(size * 8), ~plotly_size),
+                     size = switch(sizeSwitch, I(size), ~plotly_size),
                      marker = pmarker,
                      symbol = if (!is.null(shape)) {
                        ~comb_symbol
@@ -521,7 +528,7 @@ easylabel <- function(data, x, y,
                colScheme2[data[!data$outlier, col]]
              }
            } else {colScheme2},
-           cex = switch(sizeSwitch, size,
+           cex = switch(sizeSwitch, size / 8,
                         data[!data$outlier, 'plotly_size'] / 8),
            lwd = outline_lwd,
            xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, ...,
@@ -574,7 +581,7 @@ easylabel <- function(data, x, y,
                pch = outlier_shape,
                col = if (!is.null(col)) {
                  colScheme2[data[data$outlier, col]]} else colScheme2,
-               cex = size)
+               cex = size / 8)
         legpch <- c(legpch, outlier_shape)
         legcol <- c(legcol, 'black')
         legbg <- c(legbg, 'black')
