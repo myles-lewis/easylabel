@@ -24,7 +24,8 @@ an interactive shiny and plotly interface, users can hover over points to see
 where specific points are located and click on points to easily label them. 
 Labels can be toggled on/off simply by clicking. An input box and batch input 
 window provides an easy way to label points by name. Labels can be dragged 
-around the plot to place them optimally.
+around the plot to place them optimally. Notably we provide an easy way to 
+export directly to pdf for publication.
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -45,8 +46,9 @@ devtools::install_github("myles-lewis/easylabel", auth_token="...")
 library(easylabel)
 ```
 
-We recommend installing the development version of plotly which has better
-resolution of scatter plots.
+We recommend installing at least version 4.9.4.9 (currently the development 
+version) of plotly which has much better on-screen resolution of scatter plots 
+for a better user experience. Note that exporting to pdf is unaffected by this.
 
 ```{r eval = FALSE}
 remotes::install_github("ropensci/plotly")
@@ -106,7 +108,6 @@ be set to change with the level of a factor variable within `data` by setting
 # gapminder data set
 if(!require(gapminder)) {install.packages("gapminder")}
 library(gapminder)
-str(gapminder)
 easylabel(gapminder[gapminder$year == 2007, ], x = 'gdpPercap', y = 'lifeExp',
           col = 'continent', shape = 'continent',
           size = 10,
@@ -126,6 +127,7 @@ within `data` to produce a bubble chart. The size of points is automatically
 scaled to fit within a range of point sizes, determined by `scaleRange`.
 
 ```{r eval = FALSE}
+library(gapminder)
 easylabel(gapminder[gapminder$year == 2007, ], x = 'gdpPercap', y = 'lifeExp',
           col = 'continent', labs = 'country', 
           size = 'pop',
