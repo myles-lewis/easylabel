@@ -609,7 +609,7 @@ easylabel <- function(data, x, y,
              col = text_col, xpd = NA, cex = cex.text)
       }
       if (!is.null(c(col, shape))) {
-        legend(x = xrange[2] + (xrange[2] - xrange[1]) * 0.04, y = yrange[2],
+        legend(x = xrange[2] + xspan * 0.04, y = yrange[2],
                legend = legtext, pt.bg = legbg,
                pt.lwd = pt.lwd, pt.cex = 0.9,
                col = legcol, pch = legpch, bty = 'n',
@@ -618,7 +618,7 @@ easylabel <- function(data, x, y,
       if (!is.null(custom_annotation)) {
         custtext <- custom_annotation[[1]]$text
         custtext <- gsub("<br>", "\n", custtext)
-        legend(x = xrange[2] + (xrange[2] - xrange[1]) * 0.02, y = yrange[1],
+        legend(x = xrange[2] + xspan * 0.02, y = yrange[1],
                legend = custtext,
                bty = 'n', cex = 0.65, xjust = 0, yjust = 0, xpd = NA)
       }
