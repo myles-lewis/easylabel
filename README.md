@@ -17,6 +17,22 @@ setwd("/users/.../")
 devtools::install("easylabel")
 ```
 
+If you wish to use the optional `useQ` function with `easyVolcano()` and 
+`easyMAplot()`, you will need to install additional package `qvalue` from 
+Bioconductor:
+```
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+BiocManager::install("qvalue")
+```
+
+If you wish to use the optional `fullGeneNames` function, you will need to 
+install packages `AnnotationDbi` and `org.Hs.eg.db` from Bioconductor:
+```
+BiocManager::install("AnnotationDbi")
+BiocManager::install("org.Hs.eg.db")
+```
+
 Simple instructions:
 * Hover over and click on/off genes which you want to label.
 * When you have selected all your chosen genes, then drag gene names to move
