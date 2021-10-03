@@ -1,4 +1,16 @@
-### easylabel
+# easylabel
+
+A common problem in R is labelling scatter plots with large numbers of points
+and/or labels. We provide a utility for easy labelling of scatter plots and 
+quick plotting of volcano plots and MA plots for gene expression analyses. Using
+an interactive shiny and plotly interface, users can hover over points to see
+where specific points are located and click on points to easily label them. 
+Labels can be toggled on/off simply by clicking. An input box and batch input 
+window provides an easy way to label points by name. Labels can be dragged 
+around the plot to place them optimally. Notably we provide an easy way to 
+export directly to pdf for publication.
+
+## Installation
 
 Install from CRAN
 ```
@@ -33,6 +45,7 @@ BiocManager::install("AnnotationDbi")
 BiocManager::install("org.Hs.eg.db")
 ```
 
+## Quick start
 Simple instructions:
 * Hover over and click on/off genes which you want to label.
 * When you have selected all your chosen genes, then drag gene names to move
@@ -45,7 +58,8 @@ To export an SVG from plotly:
   editing is very slow).
 * Press camera button in modebar to save image as SVG.
 
-# Examples:
+## Examples
+### Simple scatter plot
 Simple scatter plot from the gapminder dataset setting colours and marker shapes 
 and introducing the shiny app for clicking on points to set labels and dragging 
 labels around to position them.
@@ -61,7 +75,7 @@ easylabel(gapminder[gapminder$year == 2007, ], x = 'gdpPercap', y = 'lifeExp',
           zeroline = FALSE)
 ```
 
-# Bubble chart
+### Bubble chart
 `size` can be set to a column in the dataset to create a bubble chart.
 
 ```
@@ -73,7 +87,7 @@ easylabel(gapminder[gapminder$year == 2007, ], x = 'gdpPercap', y = 'lifeExp',
           zeroline = FALSE)
 ```
 
-# Volcano plots
+### Volcano plots
 Volcano plots can be quickly and easily created from results objects directly 
 from DESeq2 and limma.
 
