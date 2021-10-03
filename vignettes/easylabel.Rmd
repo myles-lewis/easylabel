@@ -247,7 +247,7 @@ knitr::include_graphics("plot7.png")
 ## Titles
 
 A title can be added using `main = "Title"`. The font size of the title can be 
-increased using `cex.main = 2` (default 1.2).
+modified using `cex.main = 2` (default 1.2) if saving to pdf.
 
 ## Adding left/right subtitles
 
