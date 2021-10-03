@@ -92,7 +92,7 @@
 #' @param fullGeneNames Logical whether to expand gene symbols using
 #' Bioconductor AnnotationDbi package. With multiple matches, returns first
 #' value only.
-#' See [mapIds()].
+#' See [AnnotationDbi::mapIds()].
 #' @param AnnotationDb Annotation database to use when expanding gene symbols.
 #' Defaults to human gene database `AnnotationDb = org.Hs.eg.db`.
 #' @param custom_annotation List of annotations to be added via
@@ -110,11 +110,16 @@
 #' radioButtons selectizeInput actionButton checkboxGroupInput observe
 #' updateSelectizeInput reactiveValues isolate reactive debounce
 #' observeEvent modalDialog textAreaInput tagList modalButton showModal
-#' removeModal h5 shinyApp downloadButton selectInput br textInput
+#' removeModal h5 shinyApp downloadButton selectInput br textInput req
+#' downloadHandler
 #' @importFrom plotly plot_ly layout plotlyOutput renderPlotly event_data
 #' event_register config plotlyProxy plotlyProxyInvoke add_markers %>%
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom DT dataTableOutput datatable formatSignif
+#' @importFrom grDevices adjustcolor pdf dev.off
+#' @importFrom graphics abline legend lines mtext par points polygon rect
+#' strheight strwidth text
+#' @importFrom stats as.formula
 #' @export
 
 

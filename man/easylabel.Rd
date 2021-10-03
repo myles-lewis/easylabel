@@ -170,7 +170,7 @@ plots using base graphics and does not work with plotly. See \link{plot.default}
 \item{fullGeneNames}{Logical whether to expand gene symbols using
 Bioconductor AnnotationDbi package. With multiple matches, returns first
 value only.
-See \code{\link[=mapIds]{mapIds()}}.}
+See \code{\link[AnnotationDbi:AnnotationDb-class]{AnnotationDbi::mapIds()}}.}
 
 \item{AnnotationDb}{Annotation database to use when expanding gene symbols.
 Defaults to human gene database \code{AnnotationDb = org.Hs.eg.db}.}

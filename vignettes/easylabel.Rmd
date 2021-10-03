@@ -395,7 +395,7 @@ easyVolcano(volc1, labelDir = "origin")
 ```
 
 ```{r labdirs1, echo = FALSE, message=FALSE, fig.show='hold', out.width='48%', out.extra='style="border: 0;"'}
-knitr::include_graphics(c("labdir radial.png", "labdir origin.png"))
+knitr::include_graphics(c("labdir_radial.png", "labdir_origin.png"))
 ```
 
 ```{r eval = FALSE}
@@ -404,7 +404,7 @@ easyMAplot(volc1, labelDir = "vert")
 ```
 
 ```{r labdirs2, echo = FALSE, message=FALSE, fig.show='hold', out.width='48%', out.extra='style="border: 0;"'}
-knitr::include_graphics(c("labdir horiz.png","labdir vert.png"))
+knitr::include_graphics(c("labdir_horiz.png","labdir_vert.png"))
 ```
 
 ```{r eval = FALSE}
@@ -413,7 +413,7 @@ easyMAplot(volc1, labelDir = "yellipse")
 ```
 
 ```{r labdirs3, echo = FALSE, message=FALSE, fig.show='hold', out.width='48%', out.extra='style="border: 0;"'}
-knitr::include_graphics(c("labdir xellipse.png", "labdir yellipse.png"))
+knitr::include_graphics(c("labdir_xellipse.png", "labdir_yellipse.png"))
 ```
 
 ```{r eval = FALSE}
@@ -422,7 +422,7 @@ easyVolcano(volc1, labelDir = "oct")
 ```
 
 ```{r labdirs4, echo = FALSE, message=FALSE, fig.show='hold', out.width='48%', out.extra='style="border: 0;"'}
-knitr::include_graphics(c("labdir rect.png", "labdir oct.png"))
+knitr::include_graphics(c("labdir_rect.png", "labdir_oct.png"))
 ```
 
 ## Adding label boxes
@@ -436,7 +436,7 @@ easyVolcano(volc2, useQ = TRUE, fccut = 0,
 ```
 
 ```{r labrect1, echo = FALSE, message=FALSE, fig.show='hold', out.width='80%', out.extra='style="border: 0;"'}
-knitr::include_graphics("rect simple.png")
+knitr::include_graphics("rect_simple.png")
 ```
 
 ```{r eval = FALSE}
@@ -451,7 +451,7 @@ easyVolcano(volc2, useQ = TRUE, fullGeneNames = TRUE,
 ```
 
 ```{r labrect2, echo = FALSE, message=FALSE, fig.show='hold', out.width='80%', out.extra='style="border: 0;"'}
-knitr::include_graphics("rect red outline.png")
+knitr::include_graphics("rect_red_outline.png")
 ```
 
 ```{r eval = FALSE}
@@ -468,7 +468,7 @@ easyMAplot(volc2, fdrcut = c(0.05, 0.01, 0.001), size = 6, useQ = TRUE,
 ```
 
 ```{r labrect3, echo = FALSE, message=FALSE, fig.show='hold', out.width='80%', out.extra='style="border: 0;"'}
-knitr::include_graphics("rect grey.png")
+knitr::include_graphics("rect_grey.png")
 ```
 
 ```{r eval = FALSE}
@@ -484,7 +484,7 @@ easyVolcano(volc2, useQ = TRUE, fullGeneNames = TRUE,
 ```
 
 ```{r labrect4, echo = FALSE, message=FALSE, fig.show='hold', out.width='80%', out.extra='style="border: 0;"'}
-knitr::include_graphics("rect invert.png")
+knitr::include_graphics("rect_invert.png")
 ```
 
 
