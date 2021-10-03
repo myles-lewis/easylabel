@@ -216,6 +216,18 @@ easyVolcano(volc1, useQ = TRUE, fullGeneNames = TRUE)
 knitr::include_graphics("table1.png")
 ```
 
+Full gene names are also shown when hovering over points in the scatter plot,
+which can make it easier to label points of interest. For mouse genes, install 
+`org.Mm.eg.db` and set `AnnotationDb = org.Mm.eg.db` (note the lack of quotes).
+
+```{r eval = FALSE}
+BiocManager::install("org.Mm.eg.db")
+library(org.Mm.eg.db)
+easyVolcano(volc1,
+          fullGeneNames = TRUE,
+          AnnotationDb = org.Mm.eg.db)
+```
+
 ## Colour schemes
 
 For volcano plots a simple colour scheme with downregulated genes in blue and
@@ -234,7 +246,8 @@ knitr::include_graphics("plot7.png")
 
 ## Titles
 
-A title can be added using `main = "Title"`.
+A title can be added using `main = "Title"`. The font size of the title can be 
+increased using `cex.main = 2` (default 1.2).
 
 ## Adding left/right subtitles
 
@@ -477,6 +490,10 @@ knitr::include_graphics("rect invert.png")
 
 # Known issues
 
+* Plotly's `scattergl` function, which uses webGL, seems to have a limit of 
+  around 400,000 scatter points per plot. Above this level, at around 500,000 
+  points the shiny/plotly app becomes sluggish and at >600,000 points it tends 
+  to freeze and becomes unusable.
 * Currently `easylabel()` relies on plotly for the interactive scatter plot
   and uses webGL for speed as a plotly scattergl trace. A known bug exists in 
   the current version 4.9.4.1 of plotly for R which is still using plotly.js 

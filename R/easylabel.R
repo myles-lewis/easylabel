@@ -883,6 +883,7 @@ linerect <- function(df, line_col = 'black') {
 
 # Allow plotly to show expressions as axis titles
 exprToHtml <- function(x) {
+  if (!is.expression(x)) return(x)
   x <- as.character(x)
   x <- gsub("\"|~", "", x)
   x <- gsub("\\[", "<sub>", x)
