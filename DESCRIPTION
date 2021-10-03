@@ -25,13 +25,13 @@ Suggests:
     AnnotationDbi,
     knitr,
     org.Hs.eg.db,
+    qvalue,
     rmarkdown
 Imports:
     plotly,
     shiny,
     RColorBrewer,
-    DT,
-    qvalue
+    DT
 RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr

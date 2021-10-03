@@ -28,7 +28,6 @@
 #' Requires the qvalue Bioconductor package.
 #' @param ... Other arguments passed to [easylabel()].
 #' @seealso [easylabel()] [easyMAplot()]
-#' @importFrom qvalue qvalue
 #' @importFrom stats p.adjust
 #' @export
 
@@ -177,7 +176,6 @@ easyVolcano <- function(data, x = NULL, y = NULL, padj = NULL,
 #' Requires the qvalue Bioconductor package.
 #' @param ... Other arguments passed to [easylabel()].
 #' @seealso [easylabel()] [easyVolcano()]
-#' @importFrom qvalue qvalue
 #' @importFrom stats p.adjust
 #' @export
 
