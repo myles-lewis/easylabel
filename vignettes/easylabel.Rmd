@@ -56,7 +56,7 @@ for a better user experience. Note that exporting to pdf is unaffected by this.
 remotes::install_github("ropensci/plotly")
 ```
 
-If you wish to use the optional `useQ` function with `easyVolcano()` and 
+If you wish to use the optional `useQ` argument with `easyVolcano()` and 
 `easyMAplot()`, you will need to install additional package `qvalue` from 
 Bioconductor:
 ```{r eval = FALSE}
@@ -65,7 +65,7 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install("qvalue")
 ```
 
-If you wish to use the optional `fullGeneNames` function, you will need to 
+If you wish to use the optional `fullGeneNames` argument, you will need to 
 install packages `AnnotationDbi` and `org.Hs.eg.db` from Bioconductor:
 ```{r eval = FALSE}
 BiocManager::install("AnnotationDbi")
