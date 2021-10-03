@@ -289,14 +289,14 @@ easylabel <- function(data, x, y,
   hovertext <- labelchoices
   if (fullGeneNames) {
     if (!requireNamespace("AnnotationDbi", quietly = TRUE)) {
-      stop("Can't find package AnnotationDbi.
-           Try BiocManager::install('AnnotationDbi')",
+      stop("Can't find package AnnotationDbi. Try:
+           BiocManager::install('AnnotationDbi')",
            call. = FALSE)
     }
     if (is.null(AnnotationDb)) {
       if (!requireNamespace("org.Hs.eg.db", quietly = TRUE)) {
-        stop("Can't find gene annotation database org.Hs.eg.db.
-             Try BiocManager::install('org.Hs.eg.db')",
+        stop("Can't find gene annotation database org.Hs.eg.db. Try:
+             BiocManager::install('org.Hs.eg.db')",
              call. = FALSE)
       }
       AnnotationDb <- org.Hs.eg.db::org.Hs.eg.db

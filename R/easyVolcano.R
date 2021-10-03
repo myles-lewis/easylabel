@@ -58,6 +58,11 @@ easyVolcano <- function(data, x = NULL, y = NULL, padj = NULL,
   }
   data[, 'log10P'] <- -log10(data[, y])
   if (useQ) {
+    if (!requireNamespace("qvalue", quietly = TRUE)) {
+      stop("Can't find package qvalue Try:
+           BiocManager::install('qvalue')",
+           call. = FALSE)
+    }
     data$qvalue <- NA
     q <- try(qvalue::qvalue(data[!is.na(data[, padj]), y])$qvalues,
              silent = TRUE)
@@ -211,6 +216,11 @@ easyMAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
   }
 
   if (useQ) {
+    if (!requireNamespace("qvalue", quietly = TRUE)) {
+      stop("Can't find package qvalue Try:
+           BiocManager::install('qvalue')",
+           call. = FALSE)
+    }
     data$qvalue <- NA
     q <- try(qvalue::qvalue(data[!is.na(data[, padj]), pv])$qvalues,
              silent = TRUE)
