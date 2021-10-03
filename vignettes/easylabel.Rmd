@@ -34,15 +34,17 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup, include = FALSE}
+# Installation
+
+Install from CRAN
+```{r eval = FALSE}
+install.packages("easylabel")
 library(easylabel)
 ```
 
-# Installation
-
 Install from Github
 ```{r eval = FALSE}
-devtools::install_github("myles-lewis/easylabel", auth_token="...")
+devtools::install_github("myles-lewis/easylabel")
 library(easylabel)
 ```
 
@@ -145,9 +147,6 @@ Axis titles can be set using `xlab` and `ylab`. These accept R expressions to
 allow maths symbols. This is primarily designed to work when exporting plots to 
 pdf via base graphics, since plotly does not natively understand expressions.
 
-```{r include = FALSE}
-ymatrix <- readRDS('/Users/myles/R/R4RA/ymatrix_drug_time.rds')
-```
 ```{r eval = FALSE}
 easylabel(ymatrix, x = 'x', y = 'y', col = 'col',
           colScheme = c('darkgrey', 'green3', 'gold3', 'blue'),
@@ -173,9 +172,6 @@ vector of values. Similarly dashed grey vertical lines can be added by setting
 Use the `easyVolcano()` function to quickly plot a volcano plot from DESeq2 or
 EdgeR objects. The `useQ` argument will switch to using q values for FDR.
 
-```{r include = FALSE}
-volc1 <- readRDS('/Users/myles/R/R4RA/DESeq2.nociceptive.res.RDS')
-```
 ```{r eval = FALSE}
 easyVolcano(volc1, useQ = TRUE)
 ```
@@ -189,9 +185,6 @@ knitr::include_graphics("plot2.png")
 Use the `easyMAplot()` function to quickly plot an MA plot from DESeq2 or EdgeR
 objects.
 
-```{r include = FALSE}
-volc2 <- readRDS('/Users/myles/R/R4RA/limma.output.RDS')
-```
 ```{r eval = FALSE}
 easyMAplot(volc2, useQ = TRUE)
 ```
