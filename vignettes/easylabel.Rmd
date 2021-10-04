@@ -111,10 +111,6 @@ easylabel(mtcars, x = 'mpg', y = 'wt',
           col = 'cyl')
 ```
 
-```{r scatter2, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
-knitr::include_graphics("scatter2.png")
-```
-
 ## Shape
 
 Marker shapes can either be set as a single shape using `shapeScheme = 21`, 
@@ -190,10 +186,6 @@ EdgeR objects. The `useQ` argument will switch to using q values for FDR.
 
 ```{r eval = FALSE}
 easyVolcano(volc1, useQ = TRUE)
-```
-
-```{r plot2, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
-knitr::include_graphics("plot2.png")
 ```
 
 ## MA plots
@@ -371,8 +363,8 @@ This provides a way to add trend lines, loess lines or any additional features
 such as extra legends to the plot after the points are plotted, but before 
 labels are drawn.
 
-An example of the use of `panel.last` to completely customise axes is shown 
-below. Note that `panel.last` only works when saving to pdf, and is not 
+The code below uses `panel.last` to completely customise the numbering of the 
+axis ticks. Note that `panel.last` only works when saving to pdf, and is not 
 available in plotly.
 
 Axes can be customised by first suppressing the initial axis using `xaxt='n'` or
@@ -389,49 +381,18 @@ easyVolcano(volc1, useQ = TRUE, fdrcutoff = 0.2, ylim = c(0,8), xlim = c(-6,6),
             })
 ```
 
-```{r plot6, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
-knitr::include_graphics("plot6.png")
-```
-
 # Controlling labels
 
 Label lines can be altered using the argument `labelDir` or by selecting the
 Label direction pulldown menu in the shiny app. Options are shown below:
 
 ```{r eval = FALSE}
-easyVolcano(volc1, labelDir = "radial")
-easyVolcano(volc1, labelDir = "origin")
-```
-
-```{r labdirs1, echo = FALSE, message=FALSE, fig.show='hold', out.width='48%', out.extra='style="border: 0;"'}
-knitr::include_graphics(c("labdir_radial.png", "labdir_origin.png"))
-```
-
-```{r eval = FALSE}
 easyVolcano(volc1, labelDir = "horiz")
 easyMAplot(volc1, labelDir = "vert")
 ```
 
-```{r labdirs2, echo = FALSE, message=FALSE, fig.show='hold', out.width='48%', out.extra='style="border: 0;"'}
-knitr::include_graphics(c("labdir_horiz.png","labdir_vert.png"))
-```
-
-```{r eval = FALSE}
-easyVolcano(volc1, labelDir = "xellipse")
-easyMAplot(volc1, labelDir = "yellipse")
-```
-
-```{r labdirs3, echo = FALSE, message=FALSE, fig.show='hold', out.width='48%', out.extra='style="border: 0;"'}
-knitr::include_graphics(c("labdir_xellipse.png", "labdir_yellipse.png"))
-```
-
-```{r eval = FALSE}
-easyVolcano(volc1, labelDir = "rect")
-easyVolcano(volc1, labelDir = "oct")
-```
-
-```{r labdirs4, echo = FALSE, message=FALSE, fig.show='hold', out.width='48%', out.extra='style="border: 0;"'}
-knitr::include_graphics(c("labdir_rect.png", "labdir_oct.png"))
+```{r labdirs1, echo = FALSE, message=FALSE, fig.show='hold', out.width='48%', out.extra='style="border: 0;"'}
+knitr::include_graphics(c("labdir_horiz.png", "labdir_vert.png"))
 ```
 
 ## Adding label boxes
@@ -442,13 +403,7 @@ Rectangles can be drawn around the label text, using `rectangles = TRUE`.
 # Simple outlines
 easyVolcano(volc2, useQ = TRUE, fccut = 0,
             rectangles = TRUE)
-```
 
-```{r labrect1, echo = FALSE, message=FALSE, fig.show='hold', out.width='80%', out.extra='style="border: 0;"'}
-knitr::include_graphics("rect_simple.png")
-```
-
-```{r eval = FALSE}
 # Red outlined labels, rounded ends
 easyVolcano(volc2, useQ = TRUE, fullGeneNames = TRUE,
             rectangles = TRUE,
@@ -474,13 +429,7 @@ easyMAplot(volc2, fdrcut = c(0.05, 0.01, 0.001), size = 6, useQ = TRUE,
        padding = 5,
        rect_col = adjustcolor('grey', alpha.f = 0.6),
        border_radius = 20)
-```
 
-```{r labrect3, echo = FALSE, message=FALSE, fig.show='hold', out.width='80%', out.extra='style="border: 0;"'}
-knitr::include_graphics("rect_grey.png")
-```
-
-```{r eval = FALSE}
 # White text on black background, no rounding
 easyVolcano(volc2, useQ = TRUE, fullGeneNames = TRUE,
             fccut = 0,
