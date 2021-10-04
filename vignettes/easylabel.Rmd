@@ -153,6 +153,12 @@ easylabel(gapminder[gapminder$year == 2007, ], x = 'gdpPercap', y = 'lifeExp',
 knitr::include_graphics("bubble.png")
 ```
 
+## Choosing label names
+
+By default, `easylabel()` takes the rownames of the main dataframe as the label 
+names. Any column can be selected for label names by setting `labs` to the name 
+of a column within `data`, as for example in the Gapminder dataset plots above.
+
 ## Axis titles
 
 Axis titles can be set using `xlab` and `ylab`. These accept R expressions to 
