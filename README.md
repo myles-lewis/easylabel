@@ -23,12 +23,6 @@ Install from Github
 devtools::install_github("myles-lewis/easylabel")
 ```
 
-Install from local repo
-```
-setwd("/users/.../")
-devtools::install("easylabel")
-```
-
 If you wish to use the optional `useQ` function with `easyVolcano()` and 
 `easyMAplot()`, you will need to install additional package `qvalue` from 
 Bioconductor:

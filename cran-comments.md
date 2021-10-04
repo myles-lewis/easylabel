@@ -1,7 +1,12 @@
 ## R CMD check results
 0 errors ✓ | 0 warnings ✓ | 0 notes ✓
 
-## This is a new submission
+## Resubmission
+This is a resubmission. In this version I have:
+
+* Fixed the LICENSE file to CRAN format
+
+* Reduced the package size to 4 MB
 
 ## RHub check_for_cran results
 2 NOTES
