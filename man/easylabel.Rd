@@ -208,6 +208,18 @@ editing is very slow).
 \item Press camera button in modebar to save image as SVG.
 }
 }
+\examples{
+\dontrun{
+
+# Simple example using mtcars dataset
+data(mtcars)
+# Launch easylabel shiny app
+if (interactive()) {
+easylabel(mtcars, x = 'mpg', y = 'wt', col = 'cyl')
+}
+
+}
+}
 \seealso{
 \code{\link[=easyVolcano]{easyVolcano()}}, \code{\link[=easyMAplot]{easyMAplot()}}
 }

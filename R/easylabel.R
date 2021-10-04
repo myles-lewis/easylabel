@@ -120,8 +120,18 @@
 #' @importFrom graphics abline legend lines mtext par points polygon rect
 #' strheight strwidth text
 #' @importFrom stats as.formula
+#' @examples 
+#' \dontrun{
+#' 
+#' # Simple example using mtcars dataset
+#' data(mtcars)
+#' # Launch easylabel shiny app
+#' if (interactive()) {
+#' easylabel(mtcars, x = 'mpg', y = 'wt', col = 'cyl')
+#' }
+#' 
+#' }
 #' @export
-
 
 easylabel <- function(data, x, y,
                       labs = NULL,

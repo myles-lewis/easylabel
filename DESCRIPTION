@@ -16,7 +16,11 @@ Authors@R:
     email = "c.cubuk@qmul.ac.uk",
     comment = c(ORCID = "0000-0003-4646-0849")))
 Maintainer: Myles Lewis <myles.lewis@qmul.ac.uk>
-Description: Interactive labelling of scatter plots and volcano plots using Shiny/Plotly interface.
+Description: Interactive labelling of scatter plots and volcano plots using a 
+    Shiny/Plotly interface. Users can hover over points to see where specific 
+    points are located and click points on/off to easily label them. Labels can 
+    be dragged around the plot to place them optimally. Plots can be exported 
+    directly to pdf for publication.
 Language: en-gb
 License: MIT + file LICENSE
 Encoding: UTF-8
