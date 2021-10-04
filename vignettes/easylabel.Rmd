@@ -27,7 +27,7 @@ window provides an easy way to label points by name. Labels can be dragged
 around the plot to place them optimally. Notably we provide an easy way to 
 export directly to pdf for publication.
 
-```{r, include = FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -185,6 +185,8 @@ Use the `easyVolcano()` function to quickly plot a volcano plot from DESeq2 or
 EdgeR objects. The `useQ` argument will switch to using q values for FDR.
 
 ```{r eval = FALSE}
+# typical DESeq2 workflow
+volc1 <- results(dds)
 easyVolcano(volc1, useQ = TRUE)
 ```
 
