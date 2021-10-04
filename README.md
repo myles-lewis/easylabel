@@ -14,7 +14,7 @@ export directly to pdf for publication.
 
 Install from CRAN
 ```
-install_package("easylabel")
+install.packages("easylabel")
 library(easylabel)
 ```
 
