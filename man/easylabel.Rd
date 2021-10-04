@@ -187,6 +187,9 @@ plotted but before the labels and label lines are drawn, which will allow the
 addition of trend lines, extra titles or legends for example (see
 \code{\link[=plot.default]{plot.default()}}).}
 }
+\value{
+No return value
+}
 \description{
 Interactive labelling of scatter plots using shiny/plotly interface.
 }
@@ -209,15 +212,12 @@ editing is very slow).
 }
 }
 \examples{
-\dontrun{
 
 # Simple example using mtcars dataset
 data(mtcars)
-# Launch easylabel shiny app
+# Launch easylabel Shiny app: only run this example in interactive R sessions
 if (interactive()) {
 easylabel(mtcars, x = 'mpg', y = 'wt', col = 'cyl')
-}
-
 }
 }
 \seealso{

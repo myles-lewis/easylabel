@@ -60,6 +60,9 @@ Requires the qvalue Bioconductor package.}
 
 \item{...}{Other arguments passed to \code{\link[=easylabel]{easylabel()}}.}
 }
+\value{
+No return value
+}
 \description{
 Interactive labelling of MA plots using shiny/plotly interface.
 }

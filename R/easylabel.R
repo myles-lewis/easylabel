@@ -106,6 +106,7 @@
 #' addition of trend lines, extra titles or legends for example (see
 #' [plot.default()]).
 #' @seealso [easyVolcano()], [easyMAplot()]
+#' @return No return value
 #' @importFrom shiny fluidPage tabsetPanel tabPanel fluidRow column
 #' radioButtons selectizeInput actionButton checkboxGroupInput observe
 #' updateSelectizeInput reactiveValues isolate reactive debounce
@@ -121,15 +122,12 @@
 #' strheight strwidth text
 #' @importFrom stats as.formula
 #' @examples 
-#' \dontrun{
 #' 
 #' # Simple example using mtcars dataset
 #' data(mtcars)
-#' # Launch easylabel shiny app
+#' # Launch easylabel Shiny app: only run this example in interactive R sessions
 #' if (interactive()) {
 #' easylabel(mtcars, x = 'mpg', y = 'wt', col = 'cyl')
-#' }
-#' 
 #' }
 #' @export
 
@@ -530,9 +528,10 @@ easylabel <- function(data, x, y,
          + 3) * 0.37, 6)
 
       pdf(file, width = width/100, height = height/100 + 0.75)
-      op <- par(mgp = mgp, mar = c(4, 4, 2, legenddist), tcl = -0.3,
-                las = 1, bty = 'l',
-                font.main = 1)
+      oldpar <- par(no.readonly = TRUE)
+      on.exit(par(oldpar))
+      par(mgp = mgp, mar = c(4, 4, 2, legenddist), tcl = -0.3,
+          las = 1, bty = 'l', font.main = 1)
       plot(data[!data$outlier, x], data[!data$outlier, y],
            pch = if (is.null(shape)) shapeScheme else shapeScheme[data[!data$outlier, shape]],
            bg = if (is.null(col)) colScheme2 else colScheme2[data[!data$outlier, col]],
@@ -637,7 +636,6 @@ easylabel <- function(data, x, y,
                legend = custtext,
                bty = 'n', cex = 0.65, xjust = 0, yjust = 0, xpd = NA)
       }
-      par(op)
       dev.off()
 
     }, contentType = 'application/pdf')
