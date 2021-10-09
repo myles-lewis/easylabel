@@ -18,7 +18,7 @@
 #' * Switch to SVG when finalised (only do this at last moment as otherwise
 #'   editing is very slow).
 #' * Press camera button in modebar to save image as SVG.
-#' @param data Dataset to use for plot.
+#' @param data Dataset (data.frame or data.table) to use for plot.
 #' @param x Specifies column of x coordinates in `data`.
 #' @param y Specifies column of y coordinates in `data`.
 #' @param labs Specifies the column in `data` with label names for points.
@@ -143,10 +143,12 @@ easylabel <- function(data, x, y,
                       sizeRange = c(4, 80),
                       xlab = x, ylab = y,
                       xlim = NULL, ylim = NULL,
+                      xaxis = NULL, yaxis = NULL,
                       showOutliers = TRUE,
                       outlier_shape = 5,
                       outline_col = 'white',
                       outline_lwd = 0.5,
+                      plotly_filter = NULL,
                       width = 800, height = 600,
                       showgrid = FALSE, zeroline = TRUE,
                       hline = NULL, vline = NULL,
@@ -159,6 +161,7 @@ easylabel <- function(data, x, y,
                       rectangles = FALSE,
                       rect_col = 'white', border_col = 'black',
                       padding = 3, border_radius = 5,
+                      showLegend = TRUE,
                       filename = NULL,
                       panel.last = NULL,
                       fullGeneNames = FALSE,
@@ -167,7 +170,27 @@ easylabel <- function(data, x, y,
   name_data <- deparse(substitute(data))
   if (is.null(filename)) filename <- paste0("label_", name_data)
   args <- list(...)
-  data <- as.data.frame(data)
+  if (!inherits(data, 'data.frame') | inherits(data, 'tbl')) data <- as.data.frame(data)
+  # plotly axes
+  pxaxis <- list(title = exprToHtml(xlab),
+                 showgrid = showgrid,
+                 color = 'black', ticklen = 5,
+                 showline = TRUE, zeroline = zeroline)
+  pyaxis <- list(title = exprToHtml(ylab),
+                 showgrid = showgrid, color = 'black',
+                 ticklen = 5, showline = TRUE,
+                 zeroline = zeroline)
+  if (!is.null(xaxis)) {
+    pxaxis <- c(pxaxis, tickmode = list('array'),
+                tickvals = list(xaxis$at),
+                ticktext = list(xaxis$labels))
+  }
+  if (!is.null(yaxis)) {
+    pyaxis <- c(pyaxis, tickmode = list('array'),
+                tickvals = list(yaxis$at),
+                ticktext = list(yaxis$labels))
+  }
+  
   # determine outliers
   data$outlier <- FALSE
   xyspan <- c(max(data[, x], na.rm = TRUE) - min(data[, x], na.rm = TRUE),
@@ -180,6 +203,7 @@ easylabel <- function(data, x, y,
     xyspan[2] <- ylim[2] - ylim[1]
     ylim[1] <- ylim[1] - xyspan[2] * 0.025
     ylim[2] <- ylim[2] + xyspan[2] * 0.025
+    pyaxis <- c(pyaxis, range = as.list(ylim))
   }
   if (!is.null(xlim)) {
     notNA <- !is.na(data[,x])
@@ -189,6 +213,7 @@ easylabel <- function(data, x, y,
     xyspan[1] <- xlim[2] - xlim[1]
     xlim[1] <- xlim[1] - xyspan[1] * 0.025
     xlim[2] <- xlim[2] + xyspan[1] * 0.025
+    pxaxis <- c(pxaxis, range = as.list(xlim))
   }
 
   # combine symbols & outlier symbol
@@ -216,12 +241,12 @@ easylabel <- function(data, x, y,
   if (!is.null(col)) {
     if (!col %in% colnames(data)) {
       stop(paste("Can't find column `col` in", name_data))}
-    data[, col] <- factor(data[, col])  # coerce to factor
+    if (!is.factor(data[, col])) data[, col] <- factor(data[, col])
   }
   if (!is.null(shape)) {
     if (!shape %in% colnames(data)) {
       stop(paste("Can't find column `shape` in", name_data))}
-    data[, shape] <- factor(data[, shape])  # coerce to factor
+    if (!is.factor(data[, shape])) data[, shape] <- factor(data[, shape])
     if (length(shapeScheme) < nlevels(data[, shape])) {
       if (!identical(shapeScheme, 21)) {
       warning(paste0("shapeScheme has fewer levels than ",
@@ -248,18 +273,6 @@ easylabel <- function(data, x, y,
   }
 
   # plotly arguments
-  labelchoices <- if (is.null(labs)) rownames(data) else data[, labs]
-  startLabels <- which(labelchoices %in% startLabels)
-  pkey <- 1:length(labelchoices)
-  labSize <- cex.text / 0.72 * 12
-  start_annot <- annotation(startLabels, data, x, y,
-                            labelchoices = labelchoices,
-                            labSize = labSize,
-                            labelDir = labelDir, labCentre = labCentre,
-                            xyspan = xyspan)
-  start_xy <- lapply(start_annot, function(i) list(ax = i$ax, ay = i$ay))
-  names(start_xy) <- startLabels
-
   psymbols <- pch2symbol[shapeScheme + 1]
   outlier_psymbol <- pch2symbol[outlier_shape + 1]
   sizeSwitch <- switch(class(size), "numeric" = 1, "character" = 2)
@@ -294,6 +307,25 @@ easylabel <- function(data, x, y,
          font = list(color = "black"),
          xref = 'paper', yref = 'paper',
          showarrow = F))
+  
+  # plotly_filter
+  plotly_data <- data
+  if (!is.null(plotly_filter)) {
+    plotly_data <- data[data[, plotly_filter], ]
+  }
+  
+  # initialise labelchoices
+  labelchoices <- if (is.null(labs)) rownames(plotly_data) else plotly_data[, labs]
+  startLabels <- which(labelchoices %in% startLabels)
+  pkey <- 1:length(labelchoices)
+  labSize <- cex.text / 0.72 * 12
+  start_annot <- annotation(startLabels, plotly_data, x, y,
+                            labelchoices = labelchoices,
+                            labSize = labSize,
+                            labelDir = labelDir, labCentre = labCentre,
+                            xyspan = xyspan)
+  start_xy <- lapply(start_annot, function(i) list(ax = i$ax, ay = i$ay))
+  names(start_xy) <- startLabels
   hovertext <- labelchoices
   if (fullGeneNames) {
     if (!requireNamespace("AnnotationDbi", quietly = TRUE)) {
@@ -309,14 +341,14 @@ easylabel <- function(data, x, y,
       }
       AnnotationDb <- org.Hs.eg.db::org.Hs.eg.db
     }
-    data$gene_fullname <- AnnotationDbi::mapIds(AnnotationDb, labelchoices,
+    plotly_data$gene_fullname <- AnnotationDbi::mapIds(AnnotationDb, labelchoices,
                                                 "GENENAME", "ALIAS",
                                                 multiVals = 'first')
-    notNA <- !is.na(data$gene_fullname)
+    notNA <- !is.na(plotly_data$gene_fullname)
     hovertext[notNA] <- paste0(labelchoices[notNA], "\n",
-                               data$gene_fullname[notNA])
+                               plotly_data$gene_fullname[notNA])
   }
-
+  
   ui <- fluidPage(
     tabsetPanel(
       tabPanel("Plot",
@@ -374,7 +406,7 @@ easylabel <- function(data, x, y,
       labs <- startLabels
       isolate(pt <- as.numeric(input$ptype))
       isolate(ldir <- input$labDir)
-      annot <- annotation(labs, data, x, y,
+      annot <- annotation(labs, plotly_data, x, y,
                           labelchoices = labelchoices,
                           labSize = labSize, labelDir = ldir,
                           labCentre = labCentre, xyspan = xyspan)
@@ -397,7 +429,7 @@ easylabel <- function(data, x, y,
 
       switch(showOutliers,
              # no outliers
-             plot_ly(data = data, x = as.formula(paste0('~', x)),
+             plot_ly(data = plotly_data, x = as.formula(paste0('~', x)),
                      y = as.formula(paste0('~', y)),
                      type = switch(pt, 'scattergl', 'scatter'),
                      mode = 'markers',
@@ -417,16 +449,10 @@ easylabel <- function(data, x, y,
                      width = width, height = height) %>%
                layout(
                  title = args$main,
-                 xaxis = list(title = exprToHtml(xlab),
-                              showgrid = showgrid,
-                              color = 'black', ticklen = 5,
-                              showline = TRUE, zeroline = zeroline),
-                 yaxis = list(title = exprToHtml(ylab),
-                              showgrid = showgrid,
-                              color = 'black', ticklen = 5,
-                              showline = TRUE, zeroline = zeroline)),
+                 xaxis = pxaxis,
+                 yaxis = pyaxis),
              # with outliers
-             plot_ly(data = data[!data$outlier,],
+             plot_ly(data = plotly_data[!plotly_data$outlier,],
                      x = as.formula(paste0('~', x)),
                      y = as.formula(paste0('~', y)),
                      type = switch(pt, 'scattergl', 'scatter'),
@@ -441,11 +467,11 @@ easylabel <- function(data, x, y,
                        ~comb_symbol
                      } else I(psymbols),
                      symbols = psymbols,
-                     text = hovertext[!data$outlier], hoverinfo = 'text',
-                     key = pkey[!data$outlier], source = 'lab_plotly',
+                     text = hovertext[!plotly_data$outlier], hoverinfo = 'text',
+                     key = pkey[!plotly_data$outlier], source = 'lab_plotly',
                      legendgroup = 'Main',
                      width = width, height = height) %>%
-               add_markers(data = data[data$outlier, ],
+               add_markers(data = plotly_data[plotly_data$outlier, ],
                            x = as.formula(paste0('~', x)),
                            y = as.formula(paste0('~', y)),
                            type = switch(pt, 'scattergl', 'scatter'),
@@ -457,22 +483,14 @@ easylabel <- function(data, x, y,
                            } else I(outlier_psymbol),
                            symbols = psymbols,
                            inherit = F,
-                           text = hovertext[data$outlier],
+                           text = hovertext[plotly_data$outlier],
                            hoverinfo = 'text',
-                           key = pkey[data$outlier],
+                           key = pkey[plotly_data$outlier],
                            legendgroup = 'outlier', name = 'outlier') %>%
                layout(
                  title = args$main,
-                 xaxis = list(range = as.list(xlim),
-                              title = exprToHtml(xlab),
-                              showgrid = showgrid, color = 'black',
-                              ticklen = 5, showline = TRUE,
-                              zeroline = zeroline),
-                 yaxis = list(range = as.list(ylim),
-                              title = exprToHtml(ylab),
-                              showgrid = showgrid, color = 'black',
-                              ticklen = 5, showline = TRUE,
-                              zeroline = zeroline))
+                 xaxis = pxaxis,
+                 yaxis = pyaxis)
       ) %>%
         layout(annotations = c(annot, LRtitles, custom_annotation),
                hovermode = 'closest',
@@ -496,7 +514,7 @@ easylabel <- function(data, x, y,
       xspan <- xrange[2] - xrange[1]
       yspan <- yrange[2] - yrange[1]
       if (length(labs) > 0) {
-        annot <- annotation(labs, data, x, y, current_xy,
+        annot <- annotation(labs, plotly_data, x, y, current_xy,
                             labelchoices = labelchoices,
                             labSize = labSize)
         annotdf <- data.frame(x = unlist(lapply(annot, '[', 'x')),
@@ -526,7 +544,9 @@ easylabel <- function(data, x, y,
       legenddist <- max(
         (max(nchar(c(levels(data[, col]), levels(data[, shape]))), na.rm = TRUE)
          + 3) * 0.37, 6)
-
+      xaxt <- if (is.null(xaxis)) 's' else 'n'
+      yaxt <- if (is.null(yaxis)) 's' else 'n'
+      
       pdf(file, width = width/100, height = height/100 + 0.75)
       oldpar <- par(no.readonly = TRUE)
       on.exit(par(oldpar))
@@ -545,6 +565,7 @@ easylabel <- function(data, x, y,
            cex = switch(sizeSwitch, size / 8,
                         data[!data$outlier, 'plotly_size'] / 8),
            lwd = outline_lwd,
+           xaxt = xaxt, yaxt = yaxt,
            xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, ...,
            panel.first = {
              if (showgrid) {
@@ -554,6 +575,12 @@ easylabel <- function(data, x, y,
              if (zeroline) abline(h = 0, v = 0)
            },
            panel.last = panel.last)
+      if (!is.null(xaxis)) {
+        axis(1, at = xaxis$at, labels = xaxis$labels, ...)
+      }
+      if (!is.null(yaxis)) {
+        axis(2, at = yaxis$at, labels = yaxis$labels, ...)
+      }
       mtext(Ltitle, LRtitle_side, adj = 0,
             line = ifelse(LRtitle_side <= 2, mgp[1], 0.1),
             cex = args$cex.lab)
@@ -622,14 +649,14 @@ easylabel <- function(data, x, y,
         text(annotdf$ax, annotdf$ay, annotdf$text,
              col = text_col, xpd = NA, cex = cex.text)
       }
-      if (!is.null(c(col, shape))) {
+      if (!is.null(c(col, shape)) & showLegend) {
         legend(x = xrange[2] + xspan * 0.04, y = yrange[2],
                legend = legtext, pt.bg = legbg,
                pt.lwd = pt.lwd, pt.cex = 0.9,
                col = legcol, pch = legpch, bty = 'n',
                cex = 0.75, xjust = 0, yjust = 0.5, xpd = NA)
       }
-      if (!is.null(custom_annotation)) {
+      if (!is.null(custom_annotation) & showLegend) {
         custtext <- custom_annotation[[1]]$text
         custtext <- gsub("<br>", "\n", custtext)
         legend(x = xrange[2] + xspan * 0.02, y = yrange[1],
@@ -685,7 +712,7 @@ easylabel <- function(data, x, y,
       labs <- labels$list
       current_xy <- labelsxy$list
       # Annotate gene labels
-      annot <- annotation(labs, data, x, y, current_xy,
+      annot <- annotation(labs, plotly_data, x, y, current_xy,
                           labelchoices = labelchoices,
                           labSize = labSize,
                           labelDir = input$labDir, labCentre = labCentre,
@@ -724,14 +751,14 @@ easylabel <- function(data, x, y,
 
     # Table tab
     output$table <- DT::renderDataTable({
-      showCols <- colnames(data)[!colnames(data) %in%
-                                   c('outlier', 'comb_symbol')]
-      df <- data[, showCols]
-      if (!is.null(col)) df <- df[data[, col] %in% input$colgroup, ]
+      showCols <- colnames(plotly_data)[!colnames(plotly_data) %in%
+                                   c('outlier', 'comb_symbol', 'plotly_filter')]
+      df <- plotly_data[, showCols]
+      if (!is.null(col)) df <- df[plotly_data[, col] %in% input$colgroup, ]
       cols <- colnames(df)[sapply(df, class) == "numeric"]
       rn <- if (is.null(labs)) TRUE else {
         if (!is.null(col)) {
-          labelchoices[data[,col] %in% input$colgroup]
+          labelchoices[plotly_data[,col] %in% input$colgroup]
         } else labelchoices
       }
       datatable(df, rownames = rn) %>% formatSignif(cols, digits = 3)
@@ -773,7 +800,7 @@ easylabel <- function(data, x, y,
     observeEvent(input$labDir, {
       labs <- labels$list
       # Redraw gene labels
-      annot <- annotation(labs, data, x, y, current_xy = NULL,
+      annot <- annotation(labs, plotly_data, x, y, current_xy = NULL,
                           labelchoices = labelchoices,
                           labSize = labSize,
                           labelDir = input$labDir, labCentre = labCentre,

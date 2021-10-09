@@ -271,3 +271,81 @@ easyMAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
             labelDir = labelDir,
             custom_annotation = custom_annotation, ...)
 }
+
+
+#' Interactive Manhattan plot labels
+#'
+#' Interactive labelling of Manhattan plots using 'shiny' and 'plotly' 
+#' interface.
+#'
+#' @param data The dataset for the plot.
+#' @param chrom The column of chomosome values in `data`.
+#' @param pos The column of SNP positions in `data`.
+#' @param p The column of p values in `data`.
+#' @param labs The column of labels in `data`
+#' @param pcutoff Cut-off for p value significance.
+#' @param colScheme Colour colScheme.
+#' @param alpha Transparency for points.
+#' @param labelDir Option for label lines. See [easylabel()].
+#' @param xlab x axis title. Accepts expressions.
+#' @param ylab y axis title. Accepts expressions.
+#' @param npoints Maximum number of points to plot.
+#' @param nplotly Maximum number of points to show via plotly. We recommend the 
+#' default setting of 100,000 points.
+#' @param filename Filename for saving to pdf.
+#' @param ... Other arguments passed to [easylabel()].
+#' @seealso [easylabel()] [easyVolcano()]
+#' @return No return value
+#' @export
+
+easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
+                          labs = 'rsid',
+                          pcutoff = 5E-8,
+                          colScheme = c('royalblue', 'skyblue', 'red'),
+                          alpha = 0.7,
+                          labelDir = 'yellipse',
+                          xlab = "Chromosome position",
+                          ylab = expression("-log"[10] ~ "P"),
+                          outline_col = NA,
+                          shapeScheme = 16,
+                          size = 6,
+                          width = 1000,
+                          npoints = 1E6,
+                          nplotly = 1E5,
+                          filename = NULL, ...) {
+  if (is.null(filename)) filename <- paste0("manhattan_",
+                                            deparse(substitute(data)))
+  index <- order(data[,p])
+  data$plotly_filter <- FALSE
+  data$plotly_filter[index[1:nplotly]] <- TRUE
+  data <- data[index[1:npoints], ]  # shrink dataset
+  data$logP <- -log10(data[, p])
+  max_chrom <- max(as.numeric(data[, chrom]), na.rm = TRUE)
+  data[, chrom] <- factor(data[, chrom], levels=c(1:max_chrom, 'X', 'Y'))
+  maxpos <- tapply(data[, pos], data[, chrom], max, na.rm = TRUE)
+  maxpos <- maxpos[as.character(c(1:max_chrom, 'X', 'Y'))]  # reorder
+  chrom_cumsum <- c(0, cumsum(as.numeric(maxpos)))
+  chrom_cumsum <- head(chrom_cumsum, length(maxpos))
+  data$genome_pos <- data[, pos] + chrom_cumsum[as.numeric(data[, chrom])]
+  data$col <- (as.numeric(data[, chrom]) %% 2) + 1
+  data$col[data[, p] < pcutoff] <- 3
+  data$col <-factor(data$col, levels = 1:3, 
+                        labels = c("1", "2", paste("p <", pcutoff)))
+  xaxis <- list(at = chrom_cumsum + 0.5 * maxpos, 
+                 labels = levels(data[, chrom]))
+  easylabel(data, x = 'genome_pos', y = 'logP',
+            labs = labs,
+            xlab = xlab, ylab = ylab,
+            xaxis = xaxis,
+            labelDir = labelDir,
+            col = 'col', colScheme = colScheme, alpha = alpha,
+            outline_col = outline_col,
+            shapeScheme = shapeScheme,
+            size = size,
+            width = width,
+            zeroline=FALSE,
+            plotly_filter = 'plotly_filter',
+            showLegend = FALSE,
+            filename = filename,
+            bty = 'n', las = 2, cex.axis = 0.9, ...)
+}
