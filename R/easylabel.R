@@ -124,9 +124,9 @@
 #' @importFrom shiny fluidPage tabsetPanel tabPanel fluidRow column
 #' radioButtons selectizeInput actionButton checkboxGroupInput observe
 #' updateSelectizeInput reactiveValues isolate reactive debounce
-#' observeEvent modalDialog textAreaInput tagList modalButton showModal
-#' removeModal h5 shinyApp downloadButton selectInput br textInput req
-#' downloadHandler
+#' observeEvent modalDialog textAreaInput tagList tags modalButton showModal
+#' removeModal h4 h5 shinyApp downloadButton selectInput br textInput req
+#' downloadHandler showNotification removeNotification HTML
 #' @importFrom plotly plot_ly layout plotlyOutput renderPlotly event_data
 #' event_register config plotlyProxy plotlyProxyInvoke add_markers %>%
 #' @importFrom RColorBrewer brewer.pal
@@ -135,6 +135,7 @@
 #' @importFrom graphics abline legend lines mtext par points polygon rect
 #' strheight strwidth text axis
 #' @importFrom stats as.formula
+#' @importFrom shinycssloaders withSpinner
 #' @examples 
 #' 
 #' # Simple example using mtcars dataset
@@ -370,11 +371,22 @@ easylabel <- function(data, x, y,
   }
   
   ui <- fluidPage(
+    tags$head(
+      tags$style(
+        HTML(".shiny-notification {
+             position:fixed;
+             top: calc(50% - 100px);
+             left: calc(50% - 65px);
+             }")
+      )
+    ),
     tabsetPanel(
       tabPanel("Plot",
                fluidRow(
                  br(),
-                 plotlyOutput("plotly", height = paste0(height, "px")),
+                 withSpinner(
+                   plotlyOutput("plotly", height = paste0(height, "px"))
+                 ),
                  br()),
                fluidRow(
                  column(3,
@@ -526,7 +538,11 @@ easylabel <- function(data, x, y,
 
     output$save_plot <- downloadHandler(filename = function()
     {paste0(input$filename, ".pdf")}, content = function(file) {
-
+      
+      id <- showNotification(h4("Saving PDF ..."), duration = NULL,
+                             closeButton = FALSE)
+      on.exit(removeNotification(id), add = TRUE)
+      
       labs <- labels$list
       current_xy <- labelsxy$list
       xrange <- range(c(data[, x], xlim), na.rm = TRUE)
@@ -569,7 +585,7 @@ easylabel <- function(data, x, y,
       
       pdf(file, width = width/100, height = height/100 + 0.75)
       oldpar <- par(no.readonly = TRUE)
-      on.exit(par(oldpar))
+      on.exit(par(oldpar), add = TRUE)
       par(mgp = mgp, mar = c(4, 4, 2, legenddist), tcl = -0.3,
           las = 1, bty = 'l', font.main = 1)
       plot(data[!data$outlier, x], data[!data$outlier, y],
