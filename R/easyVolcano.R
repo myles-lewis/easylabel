@@ -303,7 +303,7 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
                           pcutoff = 5E-8,
                           colScheme = c('royalblue', 'skyblue', 'red'),
                           alpha = 0.7,
-                          labelDir = 'yellipse',
+                          labelDir = 'horiz',
                           xlab = "Chromosome position",
                           ylab = expression("-log"[10] ~ "P"),
                           outline_col = NA,
@@ -331,12 +331,14 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
   data$col[data[, p] < pcutoff] <- 3
   data$col <-factor(data$col, levels = 1:3, 
                         labels = c("1", "2", paste("p <", pcutoff)))
-  xaxis <- list(at = chrom_cumsum + 0.5 * maxpos, 
-                 labels = levels(data[, chrom]))
+  if (length(unique(data[, chrom])) > 1) {
+    xticks <- list(at = chrom_cumsum + 0.5 * maxpos, 
+                   labels = levels(data[, chrom]))
+  } else xticks <- NULL
   easylabel(data, x = 'genome_pos', y = 'logP',
             labs = labs,
             xlab = xlab, ylab = ylab,
-            xaxis = xaxis,
+            xticks = xticks,
             labelDir = labelDir,
             col = 'col', colScheme = colScheme, alpha = alpha,
             outline_col = outline_col,

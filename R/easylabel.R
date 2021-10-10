@@ -43,11 +43,22 @@
 #' @param ylab y axis title. Accepts expressions when exporting base graphics.
 #' @param xlim The x limits (x1, x2) of the plot.
 #' @param ylim The y limits of the plot.
+#' @param xticks List of custom x axis ticks and labels specified as a list of 
+#' two named vectors `at = ...` and `labels = ...`. An alternative method is to 
+#' use `xaxp` (see [par()]).
+#' @param yticks List of custom y axis ticks and labels specified as a list of 
+#' two named vectors `at = ...` and `labels = ...`. An alternative method is to 
+#' use `yaxp` (see [par()]).
 #' @param showOutliers Logical whether to show outliers on the margins of the
 #' plot.
 #' @param outlier_shape Symbol for outliers.
 #' @param outline_col Colour of symbol outlines. Set to `NA` for no outlines.
 #' @param outline_lwd Line width of symbol outlines.
+#' @param plotly_filter Refers to a logical column in `data` used to filter rows 
+#' to reduce the number of points shown by plotly. We recommend using this for 
+#' datasets with >100,000 rows. When saving to pdf, the full original dataset is
+#' still plotted. This is useful for plots with millions of points such as 
+#' Manhattan plots where a subset of points to be labelled is already known.
 #' @param width Width of the plot in pixels. Saving to pdf scales 100 pixels to
 #' 1 inch.
 #' @param height Height of the plot in pixels.
@@ -143,7 +154,7 @@ easylabel <- function(data, x, y,
                       sizeRange = c(4, 80),
                       xlab = x, ylab = y,
                       xlim = NULL, ylim = NULL,
-                      xaxis = NULL, yaxis = NULL,
+                      xticks = NULL, yticks = NULL,
                       showOutliers = TRUE,
                       outlier_shape = 5,
                       outline_col = 'white',
@@ -180,15 +191,21 @@ easylabel <- function(data, x, y,
                  showgrid = showgrid, color = 'black',
                  ticklen = 5, showline = TRUE,
                  zeroline = zeroline)
-  if (!is.null(xaxis)) {
+  if (!is.null(xticks)) {
     pxaxis <- c(pxaxis, tickmode = list('array'),
-                tickvals = list(xaxis$at),
-                ticktext = list(xaxis$labels))
+                tickvals = list(xticks$at),
+                ticktext = list(xticks$labels))
+  } else if (!is.null(args$xaxp)) {
+    pxaxis <- c(pxaxis, tick0 = args$xaxp[1],
+                dtick = (args$xaxp[2] - args$xaxp[1]) / args$xaxp[3])
   }
-  if (!is.null(yaxis)) {
+  if (!is.null(yticks)) {
     pyaxis <- c(pyaxis, tickmode = list('array'),
-                tickvals = list(yaxis$at),
-                ticktext = list(yaxis$labels))
+                tickvals = list(yticks$at),
+                ticktext = list(yticks$labels))
+  } else if (!is.null(args$yaxp)) {
+    pyaxis <- c(pyaxis, tick0 = args$yaxp[1],
+                dtick = (args$yaxp[2] - args$yaxp[1]) / args$yaxp[3])
   }
   
   # determine outliers
@@ -544,8 +561,8 @@ easylabel <- function(data, x, y,
       legenddist <- max(
         (max(nchar(c(levels(data[, col]), levels(data[, shape]))), na.rm = TRUE)
          + 3) * 0.37, 6)
-      xaxt <- if (is.null(xaxis)) 's' else 'n'
-      yaxt <- if (is.null(yaxis)) 's' else 'n'
+      xaxt <- if (is.null(xticks)) 's' else 'n'
+      yaxt <- if (is.null(yticks)) 's' else 'n'
       
       pdf(file, width = width/100, height = height/100 + 0.75)
       oldpar <- par(no.readonly = TRUE)
@@ -575,11 +592,11 @@ easylabel <- function(data, x, y,
              if (zeroline) abline(h = 0, v = 0)
            },
            panel.last = panel.last)
-      if (!is.null(xaxis)) {
-        axis(1, at = xaxis$at, labels = xaxis$labels, ...)
+      if (!is.null(xticks)) {
+        axis(1, at = xticks$at, labels = xticks$labels, ...)
       }
-      if (!is.null(yaxis)) {
-        axis(2, at = yaxis$at, labels = yaxis$labels, ...)
+      if (!is.null(yticks)) {
+        axis(2, at = yticks$at, labels = yticks$labels, ...)
       }
       mtext(Ltitle, LRtitle_side, adj = 0,
             line = ifelse(LRtitle_side <= 2, mgp[1], 0.1),
