@@ -125,9 +125,9 @@
 #' @importFrom shiny fluidPage tabsetPanel tabPanel fluidRow column
 #' radioButtons selectizeInput actionButton checkboxGroupInput observe
 #' updateSelectizeInput reactiveValues isolate reactive debounce
-#' observeEvent modalDialog textAreaInput tagList tags modalButton showModal
+#' observeEvent modalDialog textAreaInput tagList modalButton showModal
 #' removeModal h4 h5 shinyApp downloadButton selectInput br textInput req
-#' downloadHandler showNotification removeNotification HTML
+#' downloadHandler
 #' @importFrom plotly plot_ly layout plotlyOutput renderPlotly event_data
 #' event_register config plotlyProxy plotlyProxyInvoke add_markers %>%
 #' @importFrom RColorBrewer brewer.pal
@@ -137,6 +137,7 @@
 #' strheight strwidth text axis
 #' @importFrom stats as.formula
 #' @importFrom shinycssloaders withSpinner
+#' @importFrom shinybusy show_modal_spinner remove_modal_spinner
 #' @examples 
 #' 
 #' # Simple example using mtcars dataset
@@ -372,15 +373,6 @@ easylabel <- function(data, x, y,
   }
   
   ui <- fluidPage(
-    tags$head(
-      tags$style(
-        HTML(".shiny-notification {
-             position:fixed;
-             top: calc(50% - 100px);
-             left: calc(50% - 65px);
-             }")
-      )
-    ),
     tabsetPanel(
       tabPanel("Plot",
                fluidRow(
@@ -536,13 +528,12 @@ easylabel <- function(data, x, y,
     })
 
     # download plot using base graphics
-
     output$save_plot <- downloadHandler(filename = function()
     {paste0(input$filename, ".pdf")}, content = function(file) {
       
-      id <- showNotification(h4("Saving PDF ..."), duration = NULL,
-                             closeButton = FALSE)
-      on.exit(removeNotification(id), add = TRUE)
+      show_modal_spinner(spin = "self-building-square",
+                         text = "Saving pdf ...", color = "royalblue")
+      on.exit(remove_modal_spinner(), add = TRUE)
       
       labs <- labels$list
       current_xy <- labelsxy$list
