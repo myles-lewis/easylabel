@@ -14,7 +14,7 @@ This is a resubmission. In this version I have:
 
 * \dontrun{} has been removed from the examples. The example is a 'shiny' app 
   and user interactive, and therefore never completes unless there is user 
-  intervention.
+  intervention. But it is enclosed in if(interactive()) { ... }
 
 * Lines 531 and 532 of easylabel.R have been changed to the following, before 
   the call to change par() which occurs in line 533:
