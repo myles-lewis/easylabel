@@ -44,21 +44,24 @@
 #' @param xlim The x limits (x1, x2) of the plot.
 #' @param ylim The y limits of the plot.
 #' @param xticks List of custom x axis ticks and labels specified as a list of 
-#' two named vectors `at = ...` and `labels = ...`. An alternative method is to 
-#' use `xaxp` (see [par()]).
+#' two named vectors `at = ...` and `labels = ...`. Another method is to use 
+#' `xaxp` as a vector of the form `c(x1, x2, n)` giving the coordinates of the 
+#' extreme tick marks and the number of intervals between tick-marks.
 #' @param yticks List of custom y axis ticks and labels specified as a list of 
-#' two named vectors `at = ...` and `labels = ...`. An alternative method is to 
-#' use `yaxp` (see [par()]).
+#' two named vectors `at = ...` and `labels = ...`. Another method is to use 
+#' `yaxp` as a vector of the form `c(y1, y2, n)` giving the coordinates of the 
+#' extreme tick marks and the number of intervals between tick-marks.
 #' @param showOutliers Logical whether to show outliers on the margins of the
 #' plot.
 #' @param outlier_shape Symbol for outliers.
 #' @param outline_col Colour of symbol outlines. Set to `NA` for no outlines.
 #' @param outline_lwd Line width of symbol outlines.
-#' @param plotly_filter Refers to a logical column in `data` used to filter rows 
-#' to reduce the number of points shown by plotly. We recommend using this for 
-#' datasets with >100,000 rows. When saving to pdf, the full original dataset is
-#' still plotted. This is useful for plots with millions of points such as 
-#' Manhattan plots where a subset of points to be labelled is already known.
+#' @param plotly_filter Refers to a column of logical values in `data` used to 
+#' filter rows to reduce the number of points shown by plotly. We recommend 
+#' using this for datasets with >100,000 rows. When saving to pdf, the full 
+#' original dataset is still plotted. This is useful for plots with millions of 
+#' points such as Manhattan plots where a subset of points to be labelled is 
+#' already known.
 #' @param width Width of the plot in pixels. Saving to pdf scales 100 pixels to
 #' 1 inch.
 #' @param height Height of the plot in pixels.
@@ -130,7 +133,7 @@
 #' @importFrom DT dataTableOutput datatable formatSignif
 #' @importFrom grDevices adjustcolor pdf dev.off
 #' @importFrom graphics abline legend lines mtext par points polygon rect
-#' strheight strwidth text
+#' strheight strwidth text axis
 #' @importFrom stats as.formula
 #' @examples 
 #' 

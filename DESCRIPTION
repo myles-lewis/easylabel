@@ -36,7 +36,8 @@ Imports:
     plotly,
     shiny,
     RColorBrewer,
-    DT
+    DT,
+    gtools
 RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr

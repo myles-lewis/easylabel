@@ -22,10 +22,13 @@ easylabel(
   ylab = y,
   xlim = NULL,
   ylim = NULL,
+  xticks = NULL,
+  yticks = NULL,
   showOutliers = TRUE,
   outlier_shape = 5,
   outline_col = "white",
   outline_lwd = 0.5,
+  plotly_filter = NULL,
   width = 800,
   height = 600,
   showgrid = FALSE,
@@ -45,6 +48,7 @@ easylabel(
   border_col = "black",
   padding = 3,
   border_radius = 5,
+  showLegend = TRUE,
   filename = NULL,
   panel.last = NULL,
   fullGeneNames = FALSE,
@@ -54,7 +58,7 @@ easylabel(
 )
 }
 \arguments{
-\item{data}{Dataset to use for plot.}
+\item{data}{Dataset (data.frame or data.table) to use for plot.}
 
 \item{x}{Specifies column of x coordinates in \code{data}.}
 
@@ -96,6 +100,16 @@ Set \code{cex.axis} to alter the font size of the axis numbering (default 1).}
 
 \item{ylim}{The y limits of the plot.}
 
+\item{xticks}{List of custom x axis ticks and labels specified as a list of
+two named vectors \code{at = ...} and \code{labels = ...}. Another method is to use
+\code{xaxp} as a vector of the form \code{c(x1, x2, n)} giving the coordinates of the
+extreme tick marks and the number of intervals between tick-marks.}
+
+\item{yticks}{List of custom y axis ticks and labels specified as a list of
+two named vectors \code{at = ...} and \code{labels = ...}. Another method is to use
+\code{yaxp} as a vector of the form \code{c(y1, y2, n)} giving the coordinates of the
+extreme tick marks and the number of intervals between tick-marks.}
+
 \item{showOutliers}{Logical whether to show outliers on the margins of the
 plot.}
 
@@ -104,6 +118,13 @@ plot.}
 \item{outline_col}{Colour of symbol outlines. Set to \code{NA} for no outlines.}
 
 \item{outline_lwd}{Line width of symbol outlines.}
+
+\item{plotly_filter}{Refers to a column of logical values in \code{data} used to
+filter rows to reduce the number of points shown by plotly. We recommend
+using this for datasets with >100,000 rows. When saving to pdf, the full
+original dataset is still plotted. This is useful for plots with millions of
+points such as Manhattan plots where a subset of points to be labelled is
+already known.}
 
 \item{width}{Width of the plot in pixels. Saving to pdf scales 100 pixels to
 1 inch.}
