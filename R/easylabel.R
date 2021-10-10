@@ -98,6 +98,7 @@
 #' @param padding Amount of padding in pixels around label text.
 #' @param border_radius Amount of roundedness in pixels to apply to label
 #' rectangles. (Not supported by plotly.)
+#' @param showLegend Logical whether to show or hide the legend.
 #' @param filename Filename for saving plots to pdf.
 #' @param panel.last An expression to be evaluated after plotting has taken
 #' place but before the axes, title and box are added. This can be useful for

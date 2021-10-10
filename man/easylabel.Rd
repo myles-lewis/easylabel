@@ -181,6 +181,8 @@ borders. (Not supported by plotly.)}
 \item{border_radius}{Amount of roundedness in pixels to apply to label
 rectangles. (Not supported by plotly.)}
 
+\item{showLegend}{Logical whether to show or hide the legend.}
+
 \item{filename}{Filename for saving plots to pdf.}
 
 \item{panel.last}{An expression to be evaluated after plotting has taken
