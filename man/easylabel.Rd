@@ -49,6 +49,7 @@ easylabel(
   padding = 3,
   border_radius = 5,
   showLegend = TRUE,
+  legendxy = c(1.02, 1),
   filename = NULL,
   panel.last = NULL,
   fullGeneNames = FALSE,
@@ -183,7 +184,18 @@ rectangles. (Not supported by plotly.)}
 
 \item{showLegend}{Logical whether to show or hide the legend.}
 
-\item{filename}{Filename for saving plots to pdf.}
+\item{legendxy}{Vector of coordinates for the position of the legend.
+Coordinates are in plotly paper reference with \code{c(0, 0)} being the bottom
+left corner and \code{c(1, 1)} being the top right corner of the plot window.
+Plotly has unusual behaviour in that the x coordinate always aligns the left
+side of the legend. However, the y coordinate aligns the top, middle or
+bottom of the legend dependent on whether it is in the top, middle or bottom
+1/3 of the plot window. So \code{c(1, 0)} positions the legend in the bottom right
+corner outside the right margin of the plot, while \code{c(1, 0.5)} centre aligns
+the legend around the centre of y axis.}
+
+\item{filename}{Filename for saving plots to pdf in a browser. Rstudio opens
+its own pdf file.}
 
 \item{panel.last}{An expression to be evaluated after plotting has taken
 place but before the axes, title and box are added. This can be useful for
@@ -228,7 +240,6 @@ move label positions.
 
 To export an SVG from plotly:
 \itemize{
-\item You can move the legend as well.
 \item Switch to SVG when finalised (only do this at last moment as otherwise
 editing is very slow).
 \item Press camera button in modebar to save image as SVG.

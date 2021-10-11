@@ -59,10 +59,12 @@ to \code{\link[=easylabel]{easylabel()}}.}
 \item{width}{Width of the plot in pixels. Saving to pdf scales 100 pixels to
 1 inch.}
 
-\item{npoints}{Maximum number of points to plot.}
+\item{npoints}{Maximum number of points to plot when saving to pdf. Defaults
+to plot the top 1 million points by p value. Setting a value of NA will
+plot all points.}
 
-\item{nplotly}{Maximum number of points to show via plotly. We recommend the
-default setting of 100,000 points.}
+\item{nplotly}{Maximum number of points to display via plotly. We recommend
+the default setting of 100,000 points (or fewer).}
 
 \item{filename}{Filename for saving to pdf.}
 

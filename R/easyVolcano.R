@@ -295,9 +295,11 @@ easyMAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
 #' @param size Specifies point size. Passed to [easylabel()].
 #' @param width Width of the plot in pixels. Saving to pdf scales 100 pixels to 
 #' 1 inch.
-#' @param npoints Maximum number of points to plot.
-#' @param nplotly Maximum number of points to show via plotly. We recommend the 
-#' default setting of 100,000 points.
+#' @param npoints Maximum number of points to plot when saving to pdf. Defaults 
+#' to plot the top 1 million points by p value. Setting a value of NA will 
+#' plot all points.
+#' @param nplotly Maximum number of points to display via plotly. We recommend 
+#' the default setting of 100,000 points (or fewer).
 #' @param filename Filename for saving to pdf.
 #' @param ... Other arguments passed to [easylabel()].
 #' @seealso [easylabel()] [easyVolcano()]
@@ -325,7 +327,9 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
   index <- order(data[,p])
   data$plotly_filter <- FALSE
   data$plotly_filter[index[1:nplotly]] <- TRUE
-  data <- data[index[1:npoints], ]  # shrink dataset
+  if (!is.na(npoints)) {
+    data <- data[index[1:npoints], ]  # shrink dataset
+  }
   data$logP <- -log10(data[, p])
   max_chrom <- max(as.numeric(data[, chrom]), na.rm = TRUE)
   chrom_list <- mixedsort(unique(data[, chrom]), na.last = NA)
