@@ -274,13 +274,12 @@ easylabel <- function(data, x, y,
 
   # checks on data and variables
   if (!is.null(col)) {
-    if (!col %in% colnames(data)) {
-      stop(paste("Can't find column `col` in", name_data))}
+    if (!col %in% colnames(data)) stop(paste0("Column '", col, "' not found"))
     if (!is.factor(data[, col])) data[, col] <- factor(data[, col])
   }
   if (!is.null(shape)) {
     if (!shape %in% colnames(data)) {
-      stop(paste("Can't find column `shape` in", name_data))}
+      stop(paste0("Column '", shape, "' not found"))}
     if (!is.factor(data[, shape])) data[, shape] <- factor(data[, shape])
     if (length(shapeScheme) < nlevels(data[, shape])) {
       if (!identical(shapeScheme, 21)) {
@@ -312,8 +311,7 @@ easylabel <- function(data, x, y,
   outlier_psymbol <- pch2symbol[outlier_shape + 1]
   sizeSwitch <- switch(class(size), "numeric" = 1, "character" = 2)
   if (sizeSwitch == 2) {
-    if (!size %in% colnames(data)) {
-      stop(paste("Can't find column `size` in", name_data))}
+    if (!size %in% colnames(data)) stop(paste0("Column '", size, "' not found"))
     if (!class(data[, size]) %in% c('numeric', 'integer')) {
       stop(paste(size, "is not numeric"))
     }

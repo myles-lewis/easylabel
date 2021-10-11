@@ -326,6 +326,14 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
                           filename = NULL, ...) {
   if (is.null(filename)) filename <- paste0("manhattan_",
                                             deparse(substitute(data)))
+  # PLINK headings
+  if ("CHR" %in% colnames(data)) chrom <- "CHR"
+  if ("BP" %in% colnames(data)) pos <- "BP"
+  if ("P" %in% colnames(data)) p <- "P"
+  if ("SNP" %in% colnames(data)) labs <- "SNP"
+  if (!chrom %in% colnames(data)) stop(paste0("Column '", chrom, "' not found"))
+  if (!pos %in% colnames(data)) stop(paste0("Column '", pos, "' not found"))
+  if (!p %in% colnames(data)) stop(paste0("Column '", p, "' not found"))
   index <- order(data[,p])
   data$plotly_filter <- FALSE
   data$plotly_filter[index[1:nplotly]] <- TRUE
