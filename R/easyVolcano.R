@@ -297,7 +297,7 @@ easyMAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
 #' 1 inch.
 #' @param lineLength Initial length of label lines in pixels.
 #' @param npoints Maximum number of points to plot when saving to pdf. Defaults 
-#' to plot the top 1 million points by p value. Setting a value of NA will 
+#' to plot the top 1 million points by p value. Setting a value of `NA` will 
 #' plot all points.
 #' @param nplotly Maximum number of points to display via plotly. We recommend 
 #' the default setting of 100,000 points (or fewer).

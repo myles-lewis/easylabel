@@ -63,7 +63,7 @@ to \code{\link[=easylabel]{easylabel()}}.}
 \item{lineLength}{Initial length of label lines in pixels.}
 
 \item{npoints}{Maximum number of points to plot when saving to pdf. Defaults
-to plot the top 1 million points by p value. Setting a value of NA will
+to plot the top 1 million points by p value. Setting a value of \code{NA} will
 plot all points.}
 
 \item{nplotly}{Maximum number of points to display via plotly. We recommend
