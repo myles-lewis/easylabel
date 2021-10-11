@@ -20,7 +20,7 @@ easyManhattan(
   shapeScheme = 16,
   size = 6,
   width = 1000,
-  lineLength = 50,
+  lineLength = 60,
   npoints = 1e+06,
   nplotly = 1e+05,
   filename = NULL,
