@@ -1,14 +1,15 @@
 # easylabel
 
 A common problem in R is labelling scatter plots with large numbers of points
-and/or labels. We provide a utility for easy labelling of scatter plots and 
-quick plotting of volcano plots and MA plots for gene expression analyses. Using
-an interactive shiny and plotly interface, users can hover over points to see
-where specific points are located and click on points to easily label them. 
-Labels can be toggled on/off simply by clicking. An input box and batch input 
-window provides an easy way to label points by name. Labels can be dragged 
-around the plot to place them optimally. Notably we provide an easy way to 
-export directly to pdf for publication.
+and/or labels. We provide a utility for easy labelling of scatter plots, and 
+quick plotting of volcano plots and MA plots for gene expression analyses as 
+well as Manhattan plots for genetic analyses. Using an interactive shiny 
+and plotly interface, users can hover over points to see where specific points 
+are located and click on points to easily label them. Labels can be toggled 
+on/off simply by clicking. An input box and batch input window provides an easy 
+way to label points by name. Labels can be dragged around the plot to place 
+them optimally. Notably we provide an easy way to export directly to pdf for 
+publication.
 
 ## Installation
 
