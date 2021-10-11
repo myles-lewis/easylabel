@@ -327,13 +327,22 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
   if (is.null(filename)) filename <- paste0("manhattan_",
                                             deparse(substitute(data)))
   # PLINK headings
-  if ("CHR" %in% colnames(data)) chrom <- "CHR"
-  if ("BP" %in% colnames(data)) pos <- "BP"
-  if ("P" %in% colnames(data)) p <- "P"
-  if ("SNP" %in% colnames(data)) labs <- "SNP"
-  if (!chrom %in% colnames(data)) stop(paste0("Column '", chrom, "' not found"))
-  if (!pos %in% colnames(data)) stop(paste0("Column '", pos, "' not found"))
-  if (!p %in% colnames(data)) stop(paste0("Column '", p, "' not found"))
+  if (!chrom %in% colnames(data)) {
+    if ("CHR" %in% colnames(data)) {chrom <- "CHR"
+    } else stop(paste0("Column '", chrom, "' not found"))
+  }
+  if (!pos %in% colnames(data)) {
+    if ("BP" %in% colnames(data)) {pos <- "BP"
+    } else stop(paste0("Column '", pos, "' not found"))
+  }
+  if (!p %in% colnames(data)) {
+    if ("P" %in% colnames(data)) {p <- "P"
+    } else stop(paste0("Column '", p, "' not found"))
+  }
+  if (!labs %in% colnames(data)) {
+    if ("SNP" %in% colnames(data)) {labs <- "SNP"
+    } else stop(paste0("Column '", labs, "' not found"))
+  }
   index <- order(data[,p])
   data$plotly_filter <- FALSE
   data$plotly_filter[index[1:nplotly]] <- TRUE
