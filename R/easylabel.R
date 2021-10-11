@@ -14,11 +14,10 @@
 #' * The Table tab shows a table view of the dataset to help with annotation.
 #'
 #' To export an SVG from plotly:
-#' * You can move the legend as well.
 #' * Switch to SVG when finalised (only do this at last moment as otherwise
 #'   editing is very slow).
 #' * Press camera button in modebar to save image as SVG.
-#' @param data Dataset to use for plot.
+#' @param data Dataset (data.frame or data.table) to use for plot.
 #' @param x Specifies column of x coordinates in `data`.
 #' @param y Specifies column of y coordinates in `data`.
 #' @param labs Specifies the column in `data` with label names for points.
@@ -43,11 +42,25 @@
 #' @param ylab y axis title. Accepts expressions when exporting base graphics.
 #' @param xlim The x limits (x1, x2) of the plot.
 #' @param ylim The y limits of the plot.
+#' @param xticks List of custom x axis ticks and labels specified as a list of 
+#' two named vectors `at = ...` and `labels = ...`. Another method is to use 
+#' `xaxp` as a vector of the form `c(x1, x2, n)` giving the coordinates of the 
+#' extreme tick marks and the number of intervals between tick-marks.
+#' @param yticks List of custom y axis ticks and labels specified as a list of 
+#' two named vectors `at = ...` and `labels = ...`. Another method is to use 
+#' `yaxp` as a vector of the form `c(y1, y2, n)` giving the coordinates of the 
+#' extreme tick marks and the number of intervals between tick-marks.
 #' @param showOutliers Logical whether to show outliers on the margins of the
 #' plot.
 #' @param outlier_shape Symbol for outliers.
 #' @param outline_col Colour of symbol outlines. Set to `NA` for no outlines.
 #' @param outline_lwd Line width of symbol outlines.
+#' @param plotly_filter Refers to a column of logical values in `data` used to 
+#' filter rows to reduce the number of points shown by plotly. We recommend 
+#' using this for datasets with >100,000 rows. When saving to pdf, the full 
+#' original dataset is still plotted. This is useful for plots with millions of 
+#' points such as Manhattan plots where a subset of points to be labelled is 
+#' already known.
 #' @param width Width of the plot in pixels. Saving to pdf scales 100 pixels to
 #' 1 inch.
 #' @param height Height of the plot in pixels.
@@ -74,6 +87,7 @@
 #' 'oct' for lines in 8 directions around the centre.
 #' @param labCentre Coordinates in x/y units of the central point towards which
 #' radial labels converge. Defaults to the centre of the plot.
+#' @param lineLength Initial length of label lines in pixels.
 #' @param text_col Colour of label text. (Not supported by plotly.)
 #' @param line_col Colour of label lines. (Not supported by plotly.)
 #' @param rectangles Logical whether to show rectangles around labels.
@@ -84,7 +98,18 @@
 #' @param padding Amount of padding in pixels around label text.
 #' @param border_radius Amount of roundedness in pixels to apply to label
 #' rectangles. (Not supported by plotly.)
-#' @param filename Filename for saving plots to pdf.
+#' @param showLegend Logical whether to show or hide the legend.
+#' @param legendxy Vector of coordinates for the position of the legend. 
+#' Coordinates are in plotly paper reference with `c(0, 0)` being the bottom 
+#' left corner and `c(1, 1)` being the top right corner of the plot window.
+#' Plotly has unusual behaviour in that the x coordinate always aligns the left 
+#' side of the legend. However, the y coordinate aligns the top, middle or 
+#' bottom of the legend dependent on whether it is in the top, middle or bottom 
+#' 1/3 of the plot window. So `c(1, 0)` positions the legend in the bottom right 
+#' corner outside the right margin of the plot, while `c(1, 0.5)` centre aligns 
+#' the legend around the centre of y axis.
+#' @param filename Filename for saving plots to pdf in a browser. Rstudio opens 
+#' its own pdf file.
 #' @param panel.last An expression to be evaluated after plotting has taken
 #' place but before the axes, title and box are added. This can be useful for
 #' adding extra titles, legends or trend lines. Currently only works when saving
@@ -111,7 +136,7 @@
 #' radioButtons selectizeInput actionButton checkboxGroupInput observe
 #' updateSelectizeInput reactiveValues isolate reactive debounce
 #' observeEvent modalDialog textAreaInput tagList modalButton showModal
-#' removeModal h5 shinyApp downloadButton selectInput br textInput req
+#' removeModal h4 h5 shinyApp downloadButton selectInput br textInput req
 #' downloadHandler
 #' @importFrom plotly plot_ly layout plotlyOutput renderPlotly event_data
 #' event_register config plotlyProxy plotlyProxyInvoke add_markers %>%
@@ -119,8 +144,10 @@
 #' @importFrom DT dataTableOutput datatable formatSignif
 #' @importFrom grDevices adjustcolor pdf dev.off
 #' @importFrom graphics abline legend lines mtext par points polygon rect
-#' strheight strwidth text
+#' strheight strwidth text axis
 #' @importFrom stats as.formula
+#' @importFrom shinycssloaders withSpinner
+#' @importFrom shinybusy show_modal_spinner remove_modal_spinner
 #' @examples 
 #' 
 #' # Simple example using mtcars dataset
@@ -143,10 +170,12 @@ easylabel <- function(data, x, y,
                       sizeRange = c(4, 80),
                       xlab = x, ylab = y,
                       xlim = NULL, ylim = NULL,
+                      xticks = NULL, yticks = NULL,
                       showOutliers = TRUE,
                       outlier_shape = 5,
                       outline_col = 'white',
                       outline_lwd = 0.5,
+                      plotly_filter = NULL,
                       width = 800, height = 600,
                       showgrid = FALSE, zeroline = TRUE,
                       hline = NULL, vline = NULL,
@@ -155,10 +184,13 @@ easylabel <- function(data, x, y,
                       LRtitle_side = 1,
                       labelDir = "radial",
                       labCentre = NULL,
+                      lineLength = 75,
                       text_col = 'black', line_col = 'black',
                       rectangles = FALSE,
                       rect_col = 'white', border_col = 'black',
                       padding = 3, border_radius = 5,
+                      showLegend = TRUE,
+                      legendxy = c(1.02, 1),
                       filename = NULL,
                       panel.last = NULL,
                       fullGeneNames = FALSE,
@@ -167,7 +199,33 @@ easylabel <- function(data, x, y,
   name_data <- deparse(substitute(data))
   if (is.null(filename)) filename <- paste0("label_", name_data)
   args <- list(...)
-  data <- as.data.frame(data)
+  if (!inherits(data, 'data.frame') | inherits(data, 'tbl')) data <- as.data.frame(data)
+  # plotly axes
+  pxaxis <- list(title = exprToHtml(xlab),
+                 showgrid = showgrid,
+                 color = 'black', ticklen = 5,
+                 showline = TRUE, zeroline = zeroline)
+  pyaxis <- list(title = exprToHtml(ylab),
+                 showgrid = showgrid, color = 'black',
+                 ticklen = 5, showline = TRUE,
+                 zeroline = zeroline)
+  if (!is.null(xticks)) {
+    pxaxis <- c(pxaxis, tickmode = list('array'),
+                tickvals = list(xticks$at),
+                ticktext = list(xticks$labels))
+  } else if (!is.null(args$xaxp)) {
+    pxaxis <- c(pxaxis, tick0 = args$xaxp[1],
+                dtick = (args$xaxp[2] - args$xaxp[1]) / args$xaxp[3])
+  }
+  if (!is.null(yticks)) {
+    pyaxis <- c(pyaxis, tickmode = list('array'),
+                tickvals = list(yticks$at),
+                ticktext = list(yticks$labels))
+  } else if (!is.null(args$yaxp)) {
+    pyaxis <- c(pyaxis, tick0 = args$yaxp[1],
+                dtick = (args$yaxp[2] - args$yaxp[1]) / args$yaxp[3])
+  }
+  
   # determine outliers
   data$outlier <- FALSE
   xyspan <- c(max(data[, x], na.rm = TRUE) - min(data[, x], na.rm = TRUE),
@@ -180,6 +238,7 @@ easylabel <- function(data, x, y,
     xyspan[2] <- ylim[2] - ylim[1]
     ylim[1] <- ylim[1] - xyspan[2] * 0.025
     ylim[2] <- ylim[2] + xyspan[2] * 0.025
+    pyaxis <- c(pyaxis, range = as.list(ylim))
   }
   if (!is.null(xlim)) {
     notNA <- !is.na(data[,x])
@@ -189,6 +248,7 @@ easylabel <- function(data, x, y,
     xyspan[1] <- xlim[2] - xlim[1]
     xlim[1] <- xlim[1] - xyspan[1] * 0.025
     xlim[2] <- xlim[2] + xyspan[1] * 0.025
+    pxaxis <- c(pxaxis, range = as.list(xlim))
   }
 
   # combine symbols & outlier symbol
@@ -216,12 +276,12 @@ easylabel <- function(data, x, y,
   if (!is.null(col)) {
     if (!col %in% colnames(data)) {
       stop(paste("Can't find column `col` in", name_data))}
-    data[, col] <- factor(data[, col])  # coerce to factor
+    if (!is.factor(data[, col])) data[, col] <- factor(data[, col])
   }
   if (!is.null(shape)) {
     if (!shape %in% colnames(data)) {
       stop(paste("Can't find column `shape` in", name_data))}
-    data[, shape] <- factor(data[, shape])  # coerce to factor
+    if (!is.factor(data[, shape])) data[, shape] <- factor(data[, shape])
     if (length(shapeScheme) < nlevels(data[, shape])) {
       if (!identical(shapeScheme, 21)) {
       warning(paste0("shapeScheme has fewer levels than ",
@@ -248,18 +308,6 @@ easylabel <- function(data, x, y,
   }
 
   # plotly arguments
-  labelchoices <- if (is.null(labs)) rownames(data) else data[, labs]
-  startLabels <- which(labelchoices %in% startLabels)
-  pkey <- 1:length(labelchoices)
-  labSize <- cex.text / 0.72 * 12
-  start_annot <- annotation(startLabels, data, x, y,
-                            labelchoices = labelchoices,
-                            labSize = labSize,
-                            labelDir = labelDir, labCentre = labCentre,
-                            xyspan = xyspan)
-  start_xy <- lapply(start_annot, function(i) list(ax = i$ax, ay = i$ay))
-  names(start_xy) <- startLabels
-
   psymbols <- pch2symbol[shapeScheme + 1]
   outlier_psymbol <- pch2symbol[outlier_shape + 1]
   sizeSwitch <- switch(class(size), "numeric" = 1, "character" = 2)
@@ -294,6 +342,26 @@ easylabel <- function(data, x, y,
          font = list(color = "black"),
          xref = 'paper', yref = 'paper',
          showarrow = F))
+  
+  # plotly_filter
+  plotly_data <- data
+  if (!is.null(plotly_filter)) {
+    plotly_data <- data[data[, plotly_filter], ]
+  }
+  
+  # initialise labelchoices
+  labelchoices <- if (is.null(labs)) rownames(plotly_data) else plotly_data[, labs]
+  startLabels <- which(labelchoices %in% startLabels)
+  pkey <- 1:length(labelchoices)
+  labSize <- cex.text / 0.72 * 12
+  start_annot <- annotation(startLabels, plotly_data, x, y,
+                            labelchoices = labelchoices,
+                            labSize = labSize,
+                            labelDir = labelDir, labCentre = labCentre,
+                            xyspan = xyspan,
+                            lineLength = lineLength)
+  start_xy <- lapply(start_annot, function(i) list(ax = i$ax, ay = i$ay))
+  names(start_xy) <- startLabels
   hovertext <- labelchoices
   if (fullGeneNames) {
     if (!requireNamespace("AnnotationDbi", quietly = TRUE)) {
@@ -309,20 +377,22 @@ easylabel <- function(data, x, y,
       }
       AnnotationDb <- org.Hs.eg.db::org.Hs.eg.db
     }
-    data$gene_fullname <- AnnotationDbi::mapIds(AnnotationDb, labelchoices,
+    plotly_data$gene_fullname <- AnnotationDbi::mapIds(AnnotationDb, labelchoices,
                                                 "GENENAME", "ALIAS",
                                                 multiVals = 'first')
-    notNA <- !is.na(data$gene_fullname)
+    notNA <- !is.na(plotly_data$gene_fullname)
     hovertext[notNA] <- paste0(labelchoices[notNA], "\n",
-                               data$gene_fullname[notNA])
+                               plotly_data$gene_fullname[notNA])
   }
-
+  
   ui <- fluidPage(
     tabsetPanel(
       tabPanel("Plot",
                fluidRow(
                  br(),
-                 plotlyOutput("plotly", height = paste0(height, "px")),
+                 withSpinner(
+                   plotlyOutput("plotly", height = paste0(height, "px"))
+                 ),
                  br()),
                fluidRow(
                  column(3,
@@ -374,10 +444,11 @@ easylabel <- function(data, x, y,
       labs <- startLabels
       isolate(pt <- as.numeric(input$ptype))
       isolate(ldir <- input$labDir)
-      annot <- annotation(labs, data, x, y,
+      annot <- annotation(labs, plotly_data, x, y,
                           labelchoices = labelchoices,
                           labSize = labSize, labelDir = ldir,
-                          labCentre = labCentre, xyspan = xyspan)
+                          labCentre = labCentre, xyspan = xyspan,
+                          lineLength = lineLength)
       if (!is.null(hline)) {
         pshapes = lapply(hline, function(i) {
           list(type = "line",
@@ -397,7 +468,7 @@ easylabel <- function(data, x, y,
 
       switch(showOutliers,
              # no outliers
-             plot_ly(data = data, x = as.formula(paste0('~', x)),
+             plot_ly(data = plotly_data, x = as.formula(paste0('~', x)),
                      y = as.formula(paste0('~', y)),
                      type = switch(pt, 'scattergl', 'scatter'),
                      mode = 'markers',
@@ -417,16 +488,10 @@ easylabel <- function(data, x, y,
                      width = width, height = height) %>%
                layout(
                  title = args$main,
-                 xaxis = list(title = exprToHtml(xlab),
-                              showgrid = showgrid,
-                              color = 'black', ticklen = 5,
-                              showline = TRUE, zeroline = zeroline),
-                 yaxis = list(title = exprToHtml(ylab),
-                              showgrid = showgrid,
-                              color = 'black', ticklen = 5,
-                              showline = TRUE, zeroline = zeroline)),
+                 xaxis = pxaxis,
+                 yaxis = pyaxis),
              # with outliers
-             plot_ly(data = data[!data$outlier,],
+             plot_ly(data = plotly_data[!plotly_data$outlier,],
                      x = as.formula(paste0('~', x)),
                      y = as.formula(paste0('~', y)),
                      type = switch(pt, 'scattergl', 'scatter'),
@@ -441,11 +506,11 @@ easylabel <- function(data, x, y,
                        ~comb_symbol
                      } else I(psymbols),
                      symbols = psymbols,
-                     text = hovertext[!data$outlier], hoverinfo = 'text',
-                     key = pkey[!data$outlier], source = 'lab_plotly',
+                     text = hovertext[!plotly_data$outlier], hoverinfo = 'text',
+                     key = pkey[!plotly_data$outlier], source = 'lab_plotly',
                      legendgroup = 'Main',
                      width = width, height = height) %>%
-               add_markers(data = data[data$outlier, ],
+               add_markers(data = plotly_data[plotly_data$outlier, ],
                            x = as.formula(paste0('~', x)),
                            y = as.formula(paste0('~', y)),
                            type = switch(pt, 'scattergl', 'scatter'),
@@ -457,38 +522,36 @@ easylabel <- function(data, x, y,
                            } else I(outlier_psymbol),
                            symbols = psymbols,
                            inherit = F,
-                           text = hovertext[data$outlier],
+                           text = hovertext[plotly_data$outlier],
                            hoverinfo = 'text',
-                           key = pkey[data$outlier],
+                           key = pkey[plotly_data$outlier],
                            legendgroup = 'outlier', name = 'outlier') %>%
                layout(
                  title = args$main,
-                 xaxis = list(range = as.list(xlim),
-                              title = exprToHtml(xlab),
-                              showgrid = showgrid, color = 'black',
-                              ticklen = 5, showline = TRUE,
-                              zeroline = zeroline),
-                 yaxis = list(range = as.list(ylim),
-                              title = exprToHtml(ylab),
-                              showgrid = showgrid, color = 'black',
-                              ticklen = 5, showline = TRUE,
-                              zeroline = zeroline))
+                 xaxis = pxaxis,
+                 yaxis = pyaxis)
       ) %>%
         layout(annotations = c(annot, LRtitles, custom_annotation),
                hovermode = 'closest',
-               legend = list(font = list(color = 'black')),
+               legend = list(font = list(color = 'black'),
+                             x = legendxy[1], y = legendxy[2]),
+               showlegend = showLegend,
                shapes = pshapes) %>%
-        config(edits = list(annotationTail = TRUE, legendPosition = TRUE),
+        config(edits = list(annotationTail = TRUE),
                toImageButtonOptions = list(format = "svg")) %>%
         event_register(event = 'plotly_click')
 
     })
 
     # download plot using base graphics
-
     output$save_plot <- downloadHandler(filename = function()
     {paste0(input$filename, ".pdf")}, content = function(file) {
-
+      
+      if (nrow(data) > 80000) {
+        show_modal_spinner(spin = "self-building-square",
+                           text = "Saving pdf ...", color = "royalblue")
+        on.exit(remove_modal_spinner(), add = TRUE)
+      }
       labs <- labels$list
       current_xy <- labelsxy$list
       xrange <- range(c(data[, x], xlim), na.rm = TRUE)
@@ -496,9 +559,10 @@ easylabel <- function(data, x, y,
       xspan <- xrange[2] - xrange[1]
       yspan <- yrange[2] - yrange[1]
       if (length(labs) > 0) {
-        annot <- annotation(labs, data, x, y, current_xy,
+        annot <- annotation(labs, plotly_data, x, y, current_xy,
                             labelchoices = labelchoices,
-                            labSize = labSize)
+                            labSize = labSize,
+                            lineLength = lineLength)
         annotdf <- data.frame(x = unlist(lapply(annot, '[', 'x')),
                               y = unlist(lapply(annot, '[', 'y')),
                               ax = unlist(lapply(annot, '[', 'ax')),
@@ -512,24 +576,30 @@ easylabel <- function(data, x, y,
         # expand xlim, ylim for labels on the edges
         if (is.null(xlim)) {
           xlim <- range(c(xrange, annotdf$ax), na.rm = TRUE)
+          xspan <- xlim[2] - xlim[1]
           xlim[1] <- xlim[1] - xspan * 0.025
           xlim[2] <- xlim[2] + xspan * 0.025
         }
         if (is.null(ylim)) {
           ylim <- range(c(yrange, annotdf$ay), na.rm = TRUE)
+          yspan <- ylim[2] - ylim[1]
           ylim[1] <- ylim[1] - yspan * 0.025
           ylim[2] <- ylim[2] + yspan * 0.025
         }
       }
+      leg_xy <- c(legendxy[1] * xspan * 1.05 + xrange[1] - xspan * 0.025,
+                  legendxy[2] * yspan * 1.05 + yrange[1] - yspan * 0.025)
       colScheme2 <- adjustcolor(colScheme, alpha.f = alpha)
       if (!is.null(col)) data <- data[order(data[, col]), ]
       legenddist <- max(
         (max(nchar(c(levels(data[, col]), levels(data[, shape]))), na.rm = TRUE)
          + 3) * 0.37, 6)
-
+      xaxt <- if (is.null(xticks)) 's' else 'n'
+      yaxt <- if (is.null(yticks)) 's' else 'n'
+      
       pdf(file, width = width/100, height = height/100 + 0.75)
       oldpar <- par(no.readonly = TRUE)
-      on.exit(par(oldpar))
+      on.exit(par(oldpar), add = TRUE)
       par(mgp = mgp, mar = c(4, 4, 2, legenddist), tcl = -0.3,
           las = 1, bty = 'l', font.main = 1)
       plot(data[!data$outlier, x], data[!data$outlier, y],
@@ -545,6 +615,7 @@ easylabel <- function(data, x, y,
            cex = switch(sizeSwitch, size / 8,
                         data[!data$outlier, 'plotly_size'] / 8),
            lwd = outline_lwd,
+           xaxt = xaxt, yaxt = yaxt,
            xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, ...,
            panel.first = {
              if (showgrid) {
@@ -554,6 +625,12 @@ easylabel <- function(data, x, y,
              if (zeroline) abline(h = 0, v = 0)
            },
            panel.last = panel.last)
+      if (!is.null(xticks)) {
+        axis(1, at = xticks$at, labels = xticks$labels, ...)
+      }
+      if (!is.null(yticks)) {
+        axis(2, at = yticks$at, labels = yticks$labels, ...)
+      }
       mtext(Ltitle, LRtitle_side, adj = 0,
             line = ifelse(LRtitle_side <= 2, mgp[1], 0.1),
             cex = args$cex.lab)
@@ -622,14 +699,18 @@ easylabel <- function(data, x, y,
         text(annotdf$ax, annotdf$ay, annotdf$text,
              col = text_col, xpd = NA, cex = cex.text)
       }
-      if (!is.null(c(col, shape))) {
-        legend(x = xrange[2] + xspan * 0.04, y = yrange[2],
+      if (!is.null(c(col, shape)) & showLegend) {
+        legend(x = leg_xy[1], y = leg_xy[2],
                legend = legtext, pt.bg = legbg,
                pt.lwd = pt.lwd, pt.cex = 0.9,
                col = legcol, pch = legpch, bty = 'n',
-               cex = 0.75, xjust = 0, yjust = 0.5, xpd = NA)
+               cex = 0.75, xjust = 0, xpd = NA,
+               yjust = c(0, 0.5, 1)[cut(legendxy[2], 
+                                        breaks = c(-Inf, 1/3, 2/3, Inf))]
+               )
+               # yjust needed for complex plotly behaviour
       }
-      if (!is.null(custom_annotation)) {
+      if (!is.null(custom_annotation) & showLegend) {
         custtext <- custom_annotation[[1]]$text
         custtext <- gsub("<br>", "\n", custtext)
         legend(x = xrange[2] + xspan * 0.02, y = yrange[1],
@@ -685,11 +766,12 @@ easylabel <- function(data, x, y,
       labs <- labels$list
       current_xy <- labelsxy$list
       # Annotate gene labels
-      annot <- annotation(labs, data, x, y, current_xy,
+      annot <- annotation(labs, plotly_data, x, y, current_xy,
                           labelchoices = labelchoices,
                           labSize = labSize,
                           labelDir = input$labDir, labCentre = labCentre,
-                          xyspan = xyspan)
+                          xyspan = xyspan,
+                          lineLength = lineLength)
       labelsxy$list <- lapply(annot, function(i) list(ax = i$ax, ay = i$ay))
       names(labelsxy$list) <- labs
       plotlyProxy('plotly', session) %>%
@@ -724,14 +806,14 @@ easylabel <- function(data, x, y,
 
     # Table tab
     output$table <- DT::renderDataTable({
-      showCols <- colnames(data)[!colnames(data) %in%
-                                   c('outlier', 'comb_symbol')]
-      df <- data[, showCols]
-      if (!is.null(col)) df <- df[data[, col] %in% input$colgroup, ]
+      showCols <- colnames(plotly_data)[!colnames(plotly_data) %in%
+                                   c('outlier', 'comb_symbol', 'plotly_filter')]
+      df <- plotly_data[, showCols]
+      if (!is.null(col)) df <- df[plotly_data[, col] %in% input$colgroup, ]
       cols <- colnames(df)[sapply(df, class) == "numeric"]
       rn <- if (is.null(labs)) TRUE else {
         if (!is.null(col)) {
-          labelchoices[data[,col] %in% input$colgroup]
+          labelchoices[plotly_data[,col] %in% input$colgroup]
         } else labelchoices
       }
       datatable(df, rownames = rn) %>% formatSignif(cols, digits = 3)
@@ -773,11 +855,12 @@ easylabel <- function(data, x, y,
     observeEvent(input$labDir, {
       labs <- labels$list
       # Redraw gene labels
-      annot <- annotation(labs, data, x, y, current_xy = NULL,
+      annot <- annotation(labs, plotly_data, x, y, current_xy = NULL,
                           labelchoices = labelchoices,
                           labSize = labSize,
                           labelDir = input$labDir, labCentre = labCentre,
-                          xyspan = xyspan)
+                          xyspan = xyspan,
+                          lineLength = lineLength)
       labelsxy$list <- lapply(annot, function(i) list(ax = i$ax, ay = i$ay))
       names(labelsxy$list) <- labs
       plotlyProxy('plotly', session) %>%
@@ -804,7 +887,8 @@ names(labDir_choices) <- c('Radial centre', 'Radial origin',
 annotation <- function(labels, data, x, y, current_xy = NULL,
                        labelchoices,
                        labSize = 12, labelDir = "radial",
-                       labCentre = c(0,0), xyspan = c(1,1)) {
+                       labCentre = c(0,0), xyspan = c(1,1),
+                       lineLength = 75) {
   if (length(labels)!= 0) {
     annot <- lapply(1:length(labels), function(j) {
       i <- labels[j]
@@ -815,46 +899,46 @@ annotation <- function(labels, data, x, y, current_xy = NULL,
       dy <- (sy - labCentre[2]) / xyspan[2]
       z <- sqrt(dx^2 + dy^2)
       if (labelDir == 'radial') {
-        ax <- dx/z*75
-        ay <- -dy/z*75
+        ax <- dx/z * lineLength
+        ay <- -dy/z * lineLength
       } else if (labelDir == 'origin') {
         ox <- sx / xyspan[1]
         oy <- sy / xyspan[2]
         z <- sqrt(ox^2 + oy^2)
-        ax <- ox/z*75
-        ay <- -oy/z*75
+        ax <- ox/z * lineLength
+        ay <- -oy/z * lineLength
       } else if (labelDir == 'xellipse') {
         dy <- dy / 4
         z <- sqrt(dx^2 + dy^2)
-        ax <- dx/z*75
-        ay <- -dy/z*75
+        ax <- dx/z * lineLength
+        ay <- -dy/z * lineLength
       } else if (labelDir == 'yellipse') {
         dx <- dx / 5
         z <- sqrt(dx^2 + dy^2)
-        ax <- dx/z*75
-        ay <- -dy/z*75
+        ax <- dx/z * lineLength
+        ay <- -dy/z * lineLength
       } else if (labelDir == 'horiz') {
-        ax <- sign(dx) * 75
+        ax <- sign(dx) * lineLength
         ay <- 0
       } else if (labelDir == 'vert') {
         ax <- 0
-        ay <- -sign(dy) * 75
+        ay <- -sign(dy) * lineLength
       } else if (labelDir == 'x') {
-        ax <- sign(dx) * 75
-        ay <- -sign(dy) * 75
+        ax <- sign(dx) * lineLength
+        ay <- -sign(dy) * lineLength
       } else if (labelDir == 'rect') {
         if (abs(dx) > abs(dy)) {
-          ax <- sign(dx) * 75
+          ax <- sign(dx) * lineLength
           ay <- 0
         } else {
           ax <- 0
-          ay <- -sign(dy) * 75
+          ay <- -sign(dy) * lineLength
         }
       } else if (labelDir == 'oct') {
         ang <- atan2(dy, dx)
         ang <- round(ang * 4 / pi)
-        ax <- cospi(ang / 4) * 75
-        ay <- -sinpi(ang / 4) * 75
+        ax <- cospi(ang / 4) * lineLength
+        ay <- -sinpi(ang / 4) * lineLength
       }
 
       if (j <= length(current_xy)) {

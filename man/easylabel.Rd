@@ -22,10 +22,13 @@ easylabel(
   ylab = y,
   xlim = NULL,
   ylim = NULL,
+  xticks = NULL,
+  yticks = NULL,
   showOutliers = TRUE,
   outlier_shape = 5,
   outline_col = "white",
   outline_lwd = 0.5,
+  plotly_filter = NULL,
   width = 800,
   height = 600,
   showgrid = FALSE,
@@ -38,6 +41,7 @@ easylabel(
   LRtitle_side = 1,
   labelDir = "radial",
   labCentre = NULL,
+  lineLength = 75,
   text_col = "black",
   line_col = "black",
   rectangles = FALSE,
@@ -45,6 +49,8 @@ easylabel(
   border_col = "black",
   padding = 3,
   border_radius = 5,
+  showLegend = TRUE,
+  legendxy = c(1.02, 1),
   filename = NULL,
   panel.last = NULL,
   fullGeneNames = FALSE,
@@ -54,7 +60,7 @@ easylabel(
 )
 }
 \arguments{
-\item{data}{Dataset to use for plot.}
+\item{data}{Dataset (data.frame or data.table) to use for plot.}
 
 \item{x}{Specifies column of x coordinates in \code{data}.}
 
@@ -96,6 +102,16 @@ Set \code{cex.axis} to alter the font size of the axis numbering (default 1).}
 
 \item{ylim}{The y limits of the plot.}
 
+\item{xticks}{List of custom x axis ticks and labels specified as a list of
+two named vectors \code{at = ...} and \code{labels = ...}. Another method is to use
+\code{xaxp} as a vector of the form \code{c(x1, x2, n)} giving the coordinates of the
+extreme tick marks and the number of intervals between tick-marks.}
+
+\item{yticks}{List of custom y axis ticks and labels specified as a list of
+two named vectors \code{at = ...} and \code{labels = ...}. Another method is to use
+\code{yaxp} as a vector of the form \code{c(y1, y2, n)} giving the coordinates of the
+extreme tick marks and the number of intervals between tick-marks.}
+
 \item{showOutliers}{Logical whether to show outliers on the margins of the
 plot.}
 
@@ -104,6 +120,13 @@ plot.}
 \item{outline_col}{Colour of symbol outlines. Set to \code{NA} for no outlines.}
 
 \item{outline_lwd}{Line width of symbol outlines.}
+
+\item{plotly_filter}{Refers to a column of logical values in \code{data} used to
+filter rows to reduce the number of points shown by plotly. We recommend
+using this for datasets with >100,000 rows. When saving to pdf, the full
+original dataset is still plotted. This is useful for plots with millions of
+points such as Manhattan plots where a subset of points to be labelled is
+already known.}
 
 \item{width}{Width of the plot in pixels. Saving to pdf scales 100 pixels to
 1 inch.}
@@ -143,6 +166,8 @@ arranged in an elliptical way around the centre,
 \item{labCentre}{Coordinates in x/y units of the central point towards which
 radial labels converge. Defaults to the centre of the plot.}
 
+\item{lineLength}{Initial length of label lines in pixels.}
+
 \item{text_col}{Colour of label text. (Not supported by plotly.)}
 
 \item{line_col}{Colour of label lines. (Not supported by plotly.)}
@@ -160,7 +185,20 @@ borders. (Not supported by plotly.)}
 \item{border_radius}{Amount of roundedness in pixels to apply to label
 rectangles. (Not supported by plotly.)}
 
-\item{filename}{Filename for saving plots to pdf.}
+\item{showLegend}{Logical whether to show or hide the legend.}
+
+\item{legendxy}{Vector of coordinates for the position of the legend.
+Coordinates are in plotly paper reference with \code{c(0, 0)} being the bottom
+left corner and \code{c(1, 1)} being the top right corner of the plot window.
+Plotly has unusual behaviour in that the x coordinate always aligns the left
+side of the legend. However, the y coordinate aligns the top, middle or
+bottom of the legend dependent on whether it is in the top, middle or bottom
+1/3 of the plot window. So \code{c(1, 0)} positions the legend in the bottom right
+corner outside the right margin of the plot, while \code{c(1, 0.5)} centre aligns
+the legend around the centre of y axis.}
+
+\item{filename}{Filename for saving plots to pdf in a browser. Rstudio opens
+its own pdf file.}
 
 \item{panel.last}{An expression to be evaluated after plotting has taken
 place but before the axes, title and box are added. This can be useful for
@@ -205,7 +243,6 @@ move label positions.
 
 To export an SVG from plotly:
 \itemize{
-\item You can move the legend as well.
 \item Switch to SVG when finalised (only do this at last moment as otherwise
 editing is very slow).
 \item Press camera button in modebar to save image as SVG.

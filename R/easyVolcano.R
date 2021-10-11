@@ -271,3 +271,98 @@ easyMAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
             labelDir = labelDir,
             custom_annotation = custom_annotation, ...)
 }
+
+
+#' Interactive Manhattan plot labels
+#'
+#' Interactive labelling of Manhattan plots using 'shiny' and 'plotly' 
+#' interface.
+#'
+#' @param data The dataset for the plot.
+#' @param chrom The column of chomosome values in `data`.
+#' @param pos The column of SNP positions in `data`.
+#' @param p The column of p values in `data`.
+#' @param labs The column of labels in `data`.
+#' @param pcutoff Cut-off for p value significance.
+#' @param colScheme A vector of colours for points.
+#' @param alpha Transparency for points.
+#' @param labelDir Option for label lines. See [easylabel()].
+#' @param xlab x axis title. Accepts expressions.
+#' @param ylab y axis title. Accepts expressions.
+#' @param outline_col Colour of symbol outlines. Passed to [easylabel()].
+#' @param shapeScheme A single symbol for points or a vector of symbols. Passed 
+#' to [easylabel()].
+#' @param size Specifies point size. Passed to [easylabel()].
+#' @param width Width of the plot in pixels. Saving to pdf scales 100 pixels to 
+#' 1 inch.
+#' @param lineLength Initial length of label lines in pixels.
+#' @param npoints Maximum number of points to plot when saving to pdf. Defaults 
+#' to plot the top 1 million points by p value. Setting a value of NA will 
+#' plot all points.
+#' @param nplotly Maximum number of points to display via plotly. We recommend 
+#' the default setting of 100,000 points (or fewer).
+#' @param filename Filename for saving to pdf.
+#' @param ... Other arguments passed to [easylabel()].
+#' @seealso [easylabel()] [easyVolcano()]
+#' @return No return value
+#' @importFrom gtools mixedsort
+#' @export
+
+easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
+                          labs = 'rsid',
+                          pcutoff = 5E-8,
+                          colScheme = c('royalblue', 'skyblue', 'red'),
+                          alpha = 0.7,
+                          labelDir = 'horiz',
+                          xlab = "Chromosome position",
+                          ylab = expression("-log"[10] ~ "P"),
+                          outline_col = NA,
+                          shapeScheme = 16,
+                          size = 6,
+                          width = 1000,
+                          lineLength = 60,
+                          npoints = 1E6,
+                          nplotly = 1E5,
+                          filename = NULL, ...) {
+  if (is.null(filename)) filename <- paste0("manhattan_",
+                                            deparse(substitute(data)))
+  index <- order(data[,p])
+  data$plotly_filter <- FALSE
+  data$plotly_filter[index[1:nplotly]] <- TRUE
+  if (!is.na(npoints)) {
+    data <- data[index[1:npoints], ]  # shrink dataset
+  }
+  data$logP <- -log10(data[, p])
+  max_chrom <- max(as.numeric(data[, chrom]), na.rm = TRUE)
+  chrom_list <- mixedsort(unique(data[, chrom]), na.last = NA)
+  data[, chrom] <- factor(data[, chrom], levels=chrom_list)
+  maxpos <- tapply(data[, pos], data[, chrom], max, na.rm = TRUE)
+  maxpos <- maxpos[chrom_list]  # reorder
+  chrom_cumsum <- c(0, cumsum(as.numeric(maxpos)))
+  chrom_cumsum <- chrom_cumsum[1:length(maxpos)]
+  data$genome_pos <- data[, pos] + chrom_cumsum[as.numeric(data[, chrom])]
+  data$col <- (as.numeric(data[, chrom]) %% 2) + 1
+  data$col[data[, p] < pcutoff] <- 3
+  data$col <-factor(data$col, levels = 1:3, 
+                        labels = c("1", "2", paste("p <", pcutoff)))
+  if (length(chrom_list) > 1) {
+    xticks <- list(at = chrom_cumsum + 0.5 * maxpos, 
+                   labels = levels(data[, chrom]))
+  } else xticks <- NULL
+  easylabel(data, x = 'genome_pos', y = 'logP',
+            labs = labs,
+            xlab = xlab, ylab = ylab,
+            xticks = xticks,
+            labelDir = labelDir,
+            col = 'col', colScheme = colScheme, alpha = alpha,
+            outline_col = outline_col,
+            shapeScheme = shapeScheme,
+            size = size,
+            width = width,
+            lineLength = lineLength,
+            zeroline=FALSE,
+            plotly_filter = 'plotly_filter',
+            showLegend = FALSE,
+            filename = filename,
+            bty = 'n', las = 2, cex.axis = 0.9, ...)
+}

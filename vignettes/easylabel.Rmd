@@ -6,7 +6,7 @@ output:
     toc: true
     toc_float:
       collapsed: false
-    toc_depth: 2
+    toc_depth: 3
     number_sections: true
 fig_width: 6
 vignette: >
@@ -94,7 +94,6 @@ knitr::include_graphics("scatter1.png")
 * Click the save button to export a PDF in base graphics.
 
 ## Export SVG from plotly
-* You can move the legend as well.
 * Switch to SVG when finalised (only do this at last moment as otherwise
   editing can very slow, particularly with large numbers of points).
 * Press the camera button in the plotly modebar to save image as SVG.
@@ -159,14 +158,16 @@ By default, `easylabel()` takes the rownames of the main dataframe as the label
 names. Any column can be selected for label names by setting `labs` to the name 
 of a column within `data`, as for example in the Gapminder dataset plots above.
 
-## Axis titles
+## Controlling axes
+
+### Axis titles
 
 Axis titles can be set using `xlab` and `ylab`. These accept R expressions to 
 allow maths symbols. This is primarily designed to work when exporting plots to 
 pdf via base graphics, since plotly does not natively understand expressions.
 
 ```{r eval = FALSE}
-easylabel(ymatrix, x = 'x', y = 'y', col = 'col',
+easylabel(xymatrix, x = 'x', y = 'y', col = 'col',
           colScheme = c('darkgrey', 'green3', 'gold3', 'blue'),
           xlab = expression("log"[2] ~ " fold change post-Rituximab"),
           ylab = expression("log"[2] ~ " fold change post-Tocilizumab"),
@@ -177,6 +178,38 @@ easylabel(ymatrix, x = 'x', y = 'y', col = 'col',
 knitr::include_graphics("plot1.png")
 ```
 
+### Axis limits and outliers
+
+`xlim` and `ylim` allow control over the range of each axis. Outlying points are
+shown as diamonds. Outliers can be toggled off using 
+`showOutliers = FALSE`. Outlier symbol, colour and line width can be set using 
+`outlier_shape`, `outlier_col` and `outlier_lwd` respectively.
+
+### Axis tick marks
+
+Axis tick marks can be controlled by setting `xaxp` or `yaxp` to a vector of 
+form `c(x1, x2, n)` where `x1` and `x2` are the limits of the tick marks and 
+`n` is the number of intervals between tick marks.
+
+For full customisation of axis tick coordinates and labels use `xticks` or
+`yticks`, which are specified as a list of two named vectors `at = ...` and 
+`labels = ...`.
+
+```{r eval = FALSE}
+# example axis ticks
+if(!require(gapminder)) {install.packages("gapminder")}
+library(gapminder)
+easylabel(gapminder[gapminder$year == 2007, ], x = 'gdpPercap', y = 'lifeExp',
+          col = 'continent', shape = 'continent',
+          size = 10,
+          labs = 'country', 
+          zeroline = FALSE,
+          xaxp = c(0, 50000, 10),
+          yaxp = c(40, 85, 9)
+          )
+```
+
+
 ## Gridlines
 
 Gridlines can be shown by setting `showgrid = TRUE`. Black lines through the 
@@ -184,6 +217,62 @@ origin can be controlled by setting `zeroline` to `TRUE` or `FALSE`. Dashed grey
 horizontal lines can be added at specific levels by setting `hline` with a 
 vector of values. Similarly dashed grey vertical lines can be added by setting 
 `vline` with a vector of values.
+
+## Legends
+
+Setting `showLegend` to `TRUE` or `FALSE` can be used to show or hide the 
+legend.
+
+Legends can be positioned by setting `legendxy`. This gives a vector of 
+coordinates for the position of the legend in plotly paper reference with 
+`c(0, 0)` being the bottom left corner and `c(1, 1)` being the top right corner 
+of the plot window.
+
+Plotly has unusual behaviour in that the x coordinate always aligns the left
+side of the legend. However, the y coordinate aligns the top, middle or
+bottom of the legend dependent on whether it is in the top, middle or bottom
+1/3 of the plot window. So `c(1, 0)` positions the legend in the bottom right
+corner outside the right margin of the plot, while `c(1, 0.5)` centre aligns
+the legend around the centre of y axis.
+
+## Further control of plotting
+
+Further control of plotting can be achieved by passing other arguments to 
+plot() via R's `...` argument. For example, a box around the plot can be added 
+using `bty='o'` (see `par()`). Note this method only works for saving to pdf 
+since it is not supported by plotly. 
+
+## panel.last
+
+Base graphics' `panel.last` argument is a flexible way to add plotting commands.
+This provides a way to add trend lines, loess lines or any additional features 
+such as extra legends to the plot after the points are plotted, but before 
+labels are drawn. Note that `panel.last` only works when saving to pdf, and is 
+not available in plotly.
+
+```{r eval = FALSE}
+# example adding a trend line using panel.last
+fit <- lm(xymatrix$y ~ xymatrix$x)
+easylabel(xymatrix, x = 'x', y = 'y', col = 'col',
+          colScheme = c('darkgrey', 'green3', 'gold3', 'blue'),
+          xlab = expression("log"[2] ~ " fold change post-Rituximab"),
+          ylab = expression("log"[2] ~ " fold change post-Tocilizumab"),
+          showgrid = TRUE, fullGeneNames = TRUE,
+          panel.last = {
+            abline(fit, col='red')
+          })
+```
+
+## plotly_filter
+
+This argument is used to reduce the number of scatter points displayed by 
+plotly, to prevent plotly becoming sluggish or unusable, which happens anywhere 
+between 200,000 to 400,000 or more points. To plot large datasets such as 
+genomic data, we recommend adding a logical column to your dataset which 
+filters out points of interest for inspecting and labelling via plotly. 
+`plotly_filter` specifies the name of this column. Saving to pdf retains the 
+full dataset and all points will be plotted. This argument is used by the 
+`easyManhattan()` function (see [Manhattan plot]).
 
 # Volcano plots
 
@@ -306,8 +395,6 @@ shown as diamonds (see example above). Outliers can be toggled off using
 `showOutliers = FALSE`. Outlier symbol, colour and line width can be set using 
 `outlier_shape`, `outlier_col` and `outlier_lwd` respectively.
 
-Axes can be further customised by using `panel.last`, see [panel.last].
-
 ## Complex colour schemes
 
 The colour scheme system has been expanded to allow multiple fold change
@@ -355,38 +442,6 @@ easyMAplot(volc2, fdrcutoff = c(0.05, 0.01, 0.001), size = 6, useQ = TRUE,
 
 ```{r easyMAplot2, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
 knitr::include_graphics("MAplot2.png")
-```
-
-# Further control of plotting
-
-Further control of plotting can be achieved by passing other arguments to 
-plot() via R's `...` argument. For example, a box around the plot can be added 
-using `bty='o'` (see `par()`). Note this method only works for saving to pdf 
-since it is not supported by plotly. 
-
-## panel.last
-
-Base graphics' `panel.last` argument is a flexible way to add plotting commands.
-This provides a way to add trend lines, loess lines or any additional features 
-such as extra legends to the plot after the points are plotted, but before 
-labels are drawn.
-
-The code below uses `panel.last` to completely customise the numbering of the 
-axis ticks. Note that `panel.last` only works when saving to pdf, and is not 
-available in plotly.
-
-Axes can be customised by first suppressing the initial axis using `xaxt='n'` or
-`yaxt='n'` and then adding an `axis()` call using `panel.last`.
-
-```{r eval = FALSE}
-easyVolcano(volc1, useQ = TRUE, fdrcutoff = 0.2, ylim = c(0,8), xlim = c(-6,6),
-            size = 4.8,
-            xaxt = 'n', yaxt = 'n', bty = 'o',
-            main = "DEG volcano plot",
-            panel.last = {
-              axis(side = 1, at = -6:6)
-              axis(side = 2, at = 0:8)
-            })
 ```
 
 # Controlling labels
@@ -453,13 +508,38 @@ easyVolcano(volc2, useQ = TRUE, fullGeneNames = TRUE,
 knitr::include_graphics("rect_invert.png")
 ```
 
+# Manhattan plot
+
+Manhattan plots can be labelled using the function `easyManhattan()`. Plotly 
+struggles with more than about 100,000 points, so we use a filtering system to 
+reduce the number of points shown in the plotly interactive plot, while the full 
+plot with all points is produced when saving to PDF. An example is shown below:
+
+```{r eval = FALSE}
+# Example Manhattan plot using SLE data Bentham et al 2015
+# FTP download full summary statistics from
+# https://www.ebi.ac.uk/gwas/studies/GCST003156
+library(data.table)
+SLE_gwas <- fread('../bentham_2015_26502338_sle_efo0002690_1_gwas.sumstats.tsv')
+easyManhattan(SLE_gwas)
+```
+
+```{r manhat, echo = FALSE, message=FALSE, fig.show='hold', out.width='80%', out.extra='style="border: 0;"'}
+knitr::include_graphics("manhattan.png")
+```
+
+By default Manhattan plots display only the top 100,000 points by p value in 
+the plotly window and plot the top 1 million SNPs when saving to pdf. These 
+defaults can be altered by setting `npoints` and `nplotly`. Setting `npoints` 
+to `NA` will plot all points when saving to pdf.
 
 # Known issues
 
 * Plotly's `scattergl` function, which uses webGL, seems to have a limit of 
-  around 400,000 scatter points per plot. Above this level, at around 500,000 
-  points the shiny/plotly app becomes sluggish and at >600,000 points it tends 
-  to freeze and becomes unusable.
+  around 400,000 scatter points per plot. Above this level, the shiny/plotly 
+  app becomes sluggish or freezes and becomes unusable. We try to limit plots 
+  to around 100,000 points using the `plotly_filter` argument. See 
+  [plotly_filter].
 * Currently `easylabel()` relies on plotly for the interactive scatter plot
   and uses webGL for speed as a plotly scattergl trace. A known bug exists in 
   the current version 4.9.4.1 of plotly for R which is still using plotly.js 
