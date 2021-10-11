@@ -14,7 +14,6 @@
 #' * The Table tab shows a table view of the dataset to help with annotation.
 #'
 #' To export an SVG from plotly:
-#' * You can move the legend as well.
 #' * Switch to SVG when finalised (only do this at last moment as otherwise
 #'   editing is very slow).
 #' * Press camera button in modebar to save image as SVG.
@@ -99,7 +98,17 @@
 #' @param border_radius Amount of roundedness in pixels to apply to label
 #' rectangles. (Not supported by plotly.)
 #' @param showLegend Logical whether to show or hide the legend.
-#' @param filename Filename for saving plots to pdf.
+#' @param legendxy Vector of coordinates for the position of the legend. 
+#' Coordinates are in plotly paper reference with `c(0, 0)` being the bottom 
+#' left corner and `c(1, 1)` being the top right corner of the plot window.
+#' Plotly has unusual behaviour in that the x coordinate always aligns the left 
+#' side of the legend. However, the y coordinate aligns the top, middle or 
+#' bottom of the legend dependent on whether it is in the top, middle or bottom 
+#' 1/3 of the plot window. So `c(1, 0)` positions the legend in the bottom right 
+#' corner outside the right margin of the plot, while `c(1, 0.5)` centre aligns 
+#' the legend around the centre of y axis.
+#' @param filename Filename for saving plots to pdf in a browser. Rstudio opens 
+#' its own pdf file.
 #' @param panel.last An expression to be evaluated after plotting has taken
 #' place but before the axes, title and box are added. This can be useful for
 #' adding extra titles, legends or trend lines. Currently only works when saving
@@ -179,6 +188,7 @@ easylabel <- function(data, x, y,
                       rect_col = 'white', border_col = 'black',
                       padding = 3, border_radius = 5,
                       showLegend = TRUE,
+                      legendxy = c(1.02, 1),
                       filename = NULL,
                       panel.last = NULL,
                       fullGeneNames = FALSE,
@@ -519,9 +529,11 @@ easylabel <- function(data, x, y,
       ) %>%
         layout(annotations = c(annot, LRtitles, custom_annotation),
                hovermode = 'closest',
-               legend = list(font = list(color = 'black')),
+               legend = list(font = list(color = 'black'),
+                             x = legendxy[1], y = legendxy[2]),
+               showlegend = showLegend,
                shapes = pshapes) %>%
-        config(edits = list(annotationTail = TRUE, legendPosition = TRUE),
+        config(edits = list(annotationTail = TRUE),
                toImageButtonOptions = list(format = "svg")) %>%
         event_register(event = 'plotly_click')
 
@@ -531,10 +543,11 @@ easylabel <- function(data, x, y,
     output$save_plot <- downloadHandler(filename = function()
     {paste0(input$filename, ".pdf")}, content = function(file) {
       
-      show_modal_spinner(spin = "self-building-square",
-                         text = "Saving pdf ...", color = "royalblue")
-      on.exit(remove_modal_spinner(), add = TRUE)
-      
+      if (nrow(data) > 80000) {
+        show_modal_spinner(spin = "self-building-square",
+                           text = "Saving pdf ...", color = "royalblue")
+        on.exit(remove_modal_spinner(), add = TRUE)
+      }
       labs <- labels$list
       current_xy <- labelsxy$list
       xrange <- range(c(data[, x], xlim), na.rm = TRUE)
@@ -558,15 +571,19 @@ easylabel <- function(data, x, y,
         # expand xlim, ylim for labels on the edges
         if (is.null(xlim)) {
           xlim <- range(c(xrange, annotdf$ax), na.rm = TRUE)
+          xspan <- xlim[2] - xlim[1]
           xlim[1] <- xlim[1] - xspan * 0.025
           xlim[2] <- xlim[2] + xspan * 0.025
         }
         if (is.null(ylim)) {
           ylim <- range(c(yrange, annotdf$ay), na.rm = TRUE)
+          yspan <- ylim[2] - ylim[1]
           ylim[1] <- ylim[1] - yspan * 0.025
           ylim[2] <- ylim[2] + yspan * 0.025
         }
       }
+      leg_xy <- c(legendxy[1] * xspan * 1.05 + xrange[1] - xspan * 0.025,
+                  legendxy[2] * yspan * 1.05 + yrange[1] - yspan * 0.025)
       colScheme2 <- adjustcolor(colScheme, alpha.f = alpha)
       if (!is.null(col)) data <- data[order(data[, col]), ]
       legenddist <- max(
@@ -678,11 +695,15 @@ easylabel <- function(data, x, y,
              col = text_col, xpd = NA, cex = cex.text)
       }
       if (!is.null(c(col, shape)) & showLegend) {
-        legend(x = xrange[2] + xspan * 0.04, y = yrange[2],
+        legend(x = leg_xy[1], y = leg_xy[2],
                legend = legtext, pt.bg = legbg,
                pt.lwd = pt.lwd, pt.cex = 0.9,
                col = legcol, pch = legpch, bty = 'n',
-               cex = 0.75, xjust = 0, yjust = 0.5, xpd = NA)
+               cex = 0.75, xjust = 0, xpd = NA,
+               yjust = c(0, 0.5, 1)[cut(legendxy[2], 
+                                        breaks = c(-Inf, 1/3, 2/3, Inf))]
+               )
+               # yjust needed for complex plotly behaviour
       }
       if (!is.null(custom_annotation) & showLegend) {
         custtext <- custom_annotation[[1]]$text
