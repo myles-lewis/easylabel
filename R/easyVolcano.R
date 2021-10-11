@@ -295,6 +295,7 @@ easyMAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
 #' @param size Specifies point size. Passed to [easylabel()].
 #' @param width Width of the plot in pixels. Saving to pdf scales 100 pixels to 
 #' 1 inch.
+#' @param lineLength Initial length of label lines in pixels.
 #' @param npoints Maximum number of points to plot when saving to pdf. Defaults 
 #' to plot the top 1 million points by p value. Setting a value of NA will 
 #' plot all points.
@@ -319,6 +320,7 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
                           shapeScheme = 16,
                           size = 6,
                           width = 1000,
+                          lineLength = 60,
                           npoints = 1E6,
                           nplotly = 1E5,
                           filename = NULL, ...) {
@@ -357,6 +359,7 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
             shapeScheme = shapeScheme,
             size = size,
             width = width,
+            lineLength = lineLength,
             zeroline=FALSE,
             plotly_filter = 'plotly_filter',
             showLegend = FALSE,

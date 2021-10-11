@@ -87,6 +87,7 @@
 #' 'oct' for lines in 8 directions around the centre.
 #' @param labCentre Coordinates in x/y units of the central point towards which
 #' radial labels converge. Defaults to the centre of the plot.
+#' @param lineLength Initial length of label lines in pixels.
 #' @param text_col Colour of label text. (Not supported by plotly.)
 #' @param line_col Colour of label lines. (Not supported by plotly.)
 #' @param rectangles Logical whether to show rectangles around labels.
@@ -183,6 +184,7 @@ easylabel <- function(data, x, y,
                       LRtitle_side = 1,
                       labelDir = "radial",
                       labCentre = NULL,
+                      lineLength = 75,
                       text_col = 'black', line_col = 'black',
                       rectangles = FALSE,
                       rect_col = 'white', border_col = 'black',
@@ -356,7 +358,8 @@ easylabel <- function(data, x, y,
                             labelchoices = labelchoices,
                             labSize = labSize,
                             labelDir = labelDir, labCentre = labCentre,
-                            xyspan = xyspan)
+                            xyspan = xyspan,
+                            lineLength = lineLength)
   start_xy <- lapply(start_annot, function(i) list(ax = i$ax, ay = i$ay))
   names(start_xy) <- startLabels
   hovertext <- labelchoices
@@ -444,7 +447,8 @@ easylabel <- function(data, x, y,
       annot <- annotation(labs, plotly_data, x, y,
                           labelchoices = labelchoices,
                           labSize = labSize, labelDir = ldir,
-                          labCentre = labCentre, xyspan = xyspan)
+                          labCentre = labCentre, xyspan = xyspan,
+                          lineLength = lineLength)
       if (!is.null(hline)) {
         pshapes = lapply(hline, function(i) {
           list(type = "line",
@@ -557,7 +561,8 @@ easylabel <- function(data, x, y,
       if (length(labs) > 0) {
         annot <- annotation(labs, plotly_data, x, y, current_xy,
                             labelchoices = labelchoices,
-                            labSize = labSize)
+                            labSize = labSize,
+                            lineLength = lineLength)
         annotdf <- data.frame(x = unlist(lapply(annot, '[', 'x')),
                               y = unlist(lapply(annot, '[', 'y')),
                               ax = unlist(lapply(annot, '[', 'ax')),
@@ -765,7 +770,8 @@ easylabel <- function(data, x, y,
                           labelchoices = labelchoices,
                           labSize = labSize,
                           labelDir = input$labDir, labCentre = labCentre,
-                          xyspan = xyspan)
+                          xyspan = xyspan,
+                          lineLength = lineLength)
       labelsxy$list <- lapply(annot, function(i) list(ax = i$ax, ay = i$ay))
       names(labelsxy$list) <- labs
       plotlyProxy('plotly', session) %>%
@@ -853,7 +859,8 @@ easylabel <- function(data, x, y,
                           labelchoices = labelchoices,
                           labSize = labSize,
                           labelDir = input$labDir, labCentre = labCentre,
-                          xyspan = xyspan)
+                          xyspan = xyspan,
+                          lineLength = lineLength)
       labelsxy$list <- lapply(annot, function(i) list(ax = i$ax, ay = i$ay))
       names(labelsxy$list) <- labs
       plotlyProxy('plotly', session) %>%
@@ -880,7 +887,8 @@ names(labDir_choices) <- c('Radial centre', 'Radial origin',
 annotation <- function(labels, data, x, y, current_xy = NULL,
                        labelchoices,
                        labSize = 12, labelDir = "radial",
-                       labCentre = c(0,0), xyspan = c(1,1)) {
+                       labCentre = c(0,0), xyspan = c(1,1),
+                       lineLength = 75) {
   if (length(labels)!= 0) {
     annot <- lapply(1:length(labels), function(j) {
       i <- labels[j]
@@ -891,46 +899,46 @@ annotation <- function(labels, data, x, y, current_xy = NULL,
       dy <- (sy - labCentre[2]) / xyspan[2]
       z <- sqrt(dx^2 + dy^2)
       if (labelDir == 'radial') {
-        ax <- dx/z*75
-        ay <- -dy/z*75
+        ax <- dx/z * lineLength
+        ay <- -dy/z * lineLength
       } else if (labelDir == 'origin') {
         ox <- sx / xyspan[1]
         oy <- sy / xyspan[2]
         z <- sqrt(ox^2 + oy^2)
-        ax <- ox/z*75
-        ay <- -oy/z*75
+        ax <- ox/z * lineLength
+        ay <- -oy/z * lineLength
       } else if (labelDir == 'xellipse') {
         dy <- dy / 4
         z <- sqrt(dx^2 + dy^2)
-        ax <- dx/z*75
-        ay <- -dy/z*75
+        ax <- dx/z * lineLength
+        ay <- -dy/z * lineLength
       } else if (labelDir == 'yellipse') {
         dx <- dx / 5
         z <- sqrt(dx^2 + dy^2)
-        ax <- dx/z*75
-        ay <- -dy/z*75
+        ax <- dx/z * lineLength
+        ay <- -dy/z * lineLength
       } else if (labelDir == 'horiz') {
-        ax <- sign(dx) * 75
+        ax <- sign(dx) * lineLength
         ay <- 0
       } else if (labelDir == 'vert') {
         ax <- 0
-        ay <- -sign(dy) * 75
+        ay <- -sign(dy) * lineLength
       } else if (labelDir == 'x') {
-        ax <- sign(dx) * 75
-        ay <- -sign(dy) * 75
+        ax <- sign(dx) * lineLength
+        ay <- -sign(dy) * lineLength
       } else if (labelDir == 'rect') {
         if (abs(dx) > abs(dy)) {
-          ax <- sign(dx) * 75
+          ax <- sign(dx) * lineLength
           ay <- 0
         } else {
           ax <- 0
-          ay <- -sign(dy) * 75
+          ay <- -sign(dy) * lineLength
         }
       } else if (labelDir == 'oct') {
         ang <- atan2(dy, dx)
         ang <- round(ang * 4 / pi)
-        ax <- cospi(ang / 4) * 75
-        ay <- -sinpi(ang / 4) * 75
+        ax <- cospi(ang / 4) * lineLength
+        ay <- -sinpi(ang / 4) * lineLength
       }
 
       if (j <= length(current_xy)) {

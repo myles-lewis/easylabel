@@ -20,6 +20,7 @@ easyManhattan(
   shapeScheme = 16,
   size = 6,
   width = 1000,
+  lineLength = 50,
   npoints = 1e+06,
   nplotly = 1e+05,
   filename = NULL,
@@ -58,6 +59,8 @@ to \code{\link[=easylabel]{easylabel()}}.}
 
 \item{width}{Width of the plot in pixels. Saving to pdf scales 100 pixels to
 1 inch.}
+
+\item{lineLength}{Initial length of label lines in pixels.}
 
 \item{npoints}{Maximum number of points to plot when saving to pdf. Defaults
 to plot the top 1 million points by p value. Setting a value of NA will

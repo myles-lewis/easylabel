@@ -41,6 +41,7 @@ easylabel(
   LRtitle_side = 1,
   labelDir = "radial",
   labCentre = NULL,
+  lineLength = 75,
   text_col = "black",
   line_col = "black",
   rectangles = FALSE,
@@ -164,6 +165,8 @@ arranged in an elliptical way around the centre,
 
 \item{labCentre}{Coordinates in x/y units of the central point towards which
 radial labels converge. Defaults to the centre of the plot.}
+
+\item{lineLength}{Initial length of label lines in pixels.}
 
 \item{text_col}{Colour of label text. (Not supported by plotly.)}
 
