@@ -285,7 +285,9 @@ easyMAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
 #' @param labs The column of labels in `data`.
 #' @param pcutoff Cut-off for p value significance.
 #' @param chromGap Size of gap between chromosomes along the x axis.
-#' @param colScheme A vector of colours for points.
+#' @param chromCols A vector of colours for points by chromosome. Colours are 
+#' recycled dependent on the length of the vector.
+#' @param sigCol Colour for statistically significant points.
 #' @param alpha Transparency for points.
 #' @param labelDir Option for label lines. See [easylabel()].
 #' @param xlab x axis title. Accepts expressions.
@@ -314,7 +316,8 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
                           labs = 'rsid',
                           pcutoff = 5E-8,
                           chromGap = 3E7,
-                          colScheme = c('royalblue', 'skyblue', 'red'),
+                          chromCols = c('royalblue', 'skyblue'),
+                          sigCol = 'red',
                           alpha = 0.7,
                           labelDir = 'horiz',
                           xlab = "Chromosome position",
@@ -365,10 +368,10 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
   chrom_cumsum <- chrom_cumsum[1:length(maxpos)]
   chrom_cumsum2 <- chrom_cumsum2[1:length(maxpos)]
   data$genome_pos <- data[, pos] + chrom_cumsum2[as.numeric(data[, chrom])]
-  data$col <- (as.numeric(data[, chrom]) %% 2) + 1
-  data$col[data[, p] < pcutoff] <- 3
-  data$col <-factor(data$col, levels = 1:3, 
-                        labels = c("1", "2", paste("p <", pcutoff)))
+  data$col <- ((as.numeric(data[, chrom]) - 1) %% length(chromCols)) + 1
+  data$col[data[, p] < pcutoff] <- length(chromCols) + 1
+  # data$col <-factor(data$col, levels = 1:3, 
+  #                       labels = c("1", "2", paste("p <", pcutoff)))
   if (length(chrom_list) > 1) {
     xticks <- list(at = chrom_cumsum + 0.5 * (maxpos - minpos), 
                    labels = levels(data[, chrom]))
@@ -379,7 +382,7 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
             xlab = xlab, ylab = ylab,
             xticks = xticks,
             labelDir = labelDir,
-            col = 'col', colScheme = colScheme, alpha = alpha,
+            col = 'col', colScheme = c(chromCols, sigCol), alpha = alpha,
             outline_col = outline_col,
             shapeScheme = shapeScheme,
             size = size,
@@ -391,12 +394,16 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
             filename = filename,
             bty = 'n', las = 2, cex.axis = 0.9, ...)
   } else {
+    if (!is.null(xticks)) {
+      data$genome_pos <- -data$genome_pos
+      xticks$at <- -xticks$at
+    }
     easylabel(data, y = 'genome_pos', x = 'logP',
               labs = labs,
               xlab = ylab, ylab = xlab,
               yticks = xticks,
               labelDir = labelDir,
-              col = 'col', colScheme = colScheme, alpha = alpha,
+              col = 'col', colScheme = c(chromCols, sigCol), alpha = alpha,
               outline_col = outline_col,
               shapeScheme = shapeScheme,
               size = size,
