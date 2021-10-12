@@ -284,6 +284,7 @@ easyMAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
 #' @param p The column of p values in `data`.
 #' @param labs The column of labels in `data`.
 #' @param pcutoff Cut-off for p value significance.
+#' @param chromGap Size of gap between chromosomes along the x axis.
 #' @param colScheme A vector of colours for points.
 #' @param alpha Transparency for points.
 #' @param labelDir Option for label lines. See [easylabel()].
@@ -301,6 +302,7 @@ easyMAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
 #' plot all points.
 #' @param nplotly Maximum number of points to display via plotly. We recommend 
 #' the default setting of 100,000 points (or fewer).
+#' @param transpose Logical whether to transpose the plot.
 #' @param filename Filename for saving to pdf.
 #' @param ... Other arguments passed to [easylabel()].
 #' @seealso [easylabel()] [easyVolcano()]
@@ -311,6 +313,7 @@ easyMAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
 easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
                           labs = 'rsid',
                           pcutoff = 5E-8,
+                          chromGap = 3E7,
                           colScheme = c('royalblue', 'skyblue', 'red'),
                           alpha = 0.7,
                           labelDir = 'horiz',
@@ -323,6 +326,7 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
                           lineLength = 60,
                           npoints = 1E6,
                           nplotly = 1E5,
+                          transpose = FALSE,
                           filename = NULL, ...) {
   if (is.null(filename)) filename <- paste0("manhattan_",
                                             deparse(substitute(data)))
@@ -350,23 +354,27 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
     data <- data[index[1:npoints], ]  # shrink dataset
   }
   data$logP <- -log10(data[, p])
-  max_chrom <- max(as.numeric(data[, chrom]), na.rm = TRUE)
   chrom_list <- mixedsort(unique(data[, chrom]), na.last = NA)
   data[, chrom] <- factor(data[, chrom], levels=chrom_list)
   maxpos <- tapply(data[, pos], data[, chrom], max, na.rm = TRUE)
   maxpos <- maxpos[chrom_list]  # reorder
-  chrom_cumsum <- c(0, cumsum(as.numeric(maxpos)))
+  minpos <- tapply(data[, pos], data[, chrom], min, na.rm = TRUE)
+  minpos <- minpos[chrom_list]  # reorder
+  chrom_cumsum <- c(0, cumsum(maxpos - minpos + chromGap))
+  chrom_cumsum2 <- chrom_cumsum - c(minpos, 0)
   chrom_cumsum <- chrom_cumsum[1:length(maxpos)]
-  data$genome_pos <- data[, pos] + chrom_cumsum[as.numeric(data[, chrom])]
+  chrom_cumsum2 <- chrom_cumsum2[1:length(maxpos)]
+  data$genome_pos <- data[, pos] + chrom_cumsum2[as.numeric(data[, chrom])]
   data$col <- (as.numeric(data[, chrom]) %% 2) + 1
   data$col[data[, p] < pcutoff] <- 3
   data$col <-factor(data$col, levels = 1:3, 
                         labels = c("1", "2", paste("p <", pcutoff)))
   if (length(chrom_list) > 1) {
-    xticks <- list(at = chrom_cumsum + 0.5 * maxpos, 
+    xticks <- list(at = chrom_cumsum + 0.5 * (maxpos - minpos), 
                    labels = levels(data[, chrom]))
   } else xticks <- NULL
-  easylabel(data, x = 'genome_pos', y = 'logP',
+  if (!transpose) {
+    easylabel(data, x = 'genome_pos', y = 'logP',
             labs = labs,
             xlab = xlab, ylab = ylab,
             xticks = xticks,
@@ -377,9 +385,27 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
             size = size,
             width = width,
             lineLength = lineLength,
-            zeroline=FALSE,
+            zeroline = FALSE,
             plotly_filter = 'plotly_filter',
             showLegend = FALSE,
             filename = filename,
             bty = 'n', las = 2, cex.axis = 0.9, ...)
+  } else {
+    easylabel(data, y = 'genome_pos', x = 'logP',
+              labs = labs,
+              xlab = ylab, ylab = xlab,
+              yticks = xticks,
+              labelDir = labelDir,
+              col = 'col', colScheme = colScheme, alpha = alpha,
+              outline_col = outline_col,
+              shapeScheme = shapeScheme,
+              size = size,
+              width = width,
+              lineLength = lineLength,
+              zeroline = FALSE,
+              plotly_filter = 'plotly_filter',
+              showLegend = FALSE,
+              filename = filename,
+              bty = 'n', las = 2, cex.axis = 0.9, ...)
+  }
 }

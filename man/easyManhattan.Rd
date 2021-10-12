@@ -11,6 +11,7 @@ easyManhattan(
   p = "p",
   labs = "rsid",
   pcutoff = 5e-08,
+  chromGap = 3e+07,
   colScheme = c("royalblue", "skyblue", "red"),
   alpha = 0.7,
   labelDir = "horiz",
@@ -23,6 +24,7 @@ easyManhattan(
   lineLength = 60,
   npoints = 1e+06,
   nplotly = 1e+05,
+  transpose = FALSE,
   filename = NULL,
   ...
 )
@@ -39,6 +41,8 @@ easyManhattan(
 \item{labs}{The column of labels in \code{data}.}
 
 \item{pcutoff}{Cut-off for p value significance.}
+
+\item{chromGap}{Size of gap between chromosomes along the x axis.}
 
 \item{colScheme}{A vector of colours for points.}
 
@@ -68,6 +72,8 @@ plot all points.}
 
 \item{nplotly}{Maximum number of points to display via plotly. We recommend
 the default setting of 100,000 points (or fewer).}
+
+\item{transpose}{Logical whether to transpose the plot.}
 
 \item{filename}{Filename for saving to pdf.}
 
