@@ -542,6 +542,9 @@ easyManhattan(SLE_gwas, chromCols = RColorBrewer::brewer.pal(4, 'Paired'))
 easyManhattan(SLE_gwas, chromCols = RColorBrewer::brewer.pal(12, 'Paired'), 
               sigCol = NA)
 
+# Label peaks automatically
+easyManhattan(SLE_gwas, npeaks = 25)
+
 # Vertical version
 easyManhattan(SLE_gwas, transpose = TRUE, height = 1000, width = 600)
 

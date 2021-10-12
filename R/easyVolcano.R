@@ -284,7 +284,9 @@ easyMAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
 #' @param p The column of p values in `data`.
 #' @param labs The column of labels in `data`.
 #' @param pcutoff Cut-off for p value significance. Defaults to 5E-08.
-#' @param chromGap Size of gap between chromosomes along the x axis.
+#' @param chromGap Size of gap between chromosomes along the x axis. This 
+#' defaults to a value appropriate for a human genome, but may need to be 
+#' reduced for smaller genomes.
 #' @param chromCols A vector of colours for points by chromosome. Colours are 
 #' recycled dependent on the length of the vector.
 #' @param sigCol Colour for statistically significant points. Ignored if set to 
@@ -389,7 +391,8 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
   
   # find local maxima
   if (!is.null(npeaks)) {
-    cat("Finding peaks\n")
+    cat("Finding peaks...\n")
+    span <- span + 1 - (span %% 2)
     pks <- splus2R::peaks(data$logP, span = span)
     pks_index <- which(pks)
     sort_pks <- pks_index[order(data$logP[pks_index], decreasing = TRUE, 
