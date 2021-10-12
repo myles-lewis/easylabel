@@ -893,7 +893,7 @@ names(labDir_choices) <- c('Radial centre', 'Radial origin',
 annotation <- function(labels, data, x, y, current_xy = NULL,
                        labelchoices,
                        labSize = 12, labelDir = "radial",
-                       labCentre = c(0,0), xyspan = c(1,1),
+                       labCentre = c(0, 0), xyspan = c(1, 1),
                        lineLength = 75) {
   if (length(labels)!= 0) {
     annot <- lapply(1:length(labels), function(j) {
