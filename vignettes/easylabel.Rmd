@@ -516,7 +516,7 @@ reduce the number of points shown in the plotly interactive plot, while the full
 plot with all points is produced when saving to PDF. An example is shown below:
 
 ```{r eval = FALSE}
-# Example Manhattan plot using SLE data Bentham et al 2015
+# Manhattan plot using SLE GWAS data from Bentham et al 2015
 # FTP download full summary statistics from
 # https://www.ebi.ac.uk/gwas/studies/GCST003156
 library(data.table)
@@ -532,6 +532,22 @@ By default Manhattan plots display only the top 100,000 points by p value in
 the plotly window and plot the top 1 million SNPs when saving to pdf. These 
 defaults can be altered by setting `npoints` and `nplotly`. Setting `npoints` 
 to `NA` will plot all points when saving to pdf.
+
+```{r eval = FALSE}
+# Examples
+# 4 colours for chromosomes
+easyManhattan(SLE_gwas, chromCols = RColorBrewer::brewer.pal(4, 'Paired'))
+
+# 12 colours for chromosomes, no separate colour for significant points
+easyManhattan(SLE_gwas, chromCols = RColorBrewer::brewer.pal(12, 'Paired'), 
+              sigCol = NA)
+
+# Vertical version
+easyManhattan(SLE_gwas, transpose = TRUE, height = 1000, width = 600)
+
+# chr1 only
+easyManhattan(SLE_gwas[SLE_gwas$chrom == 1, ])
+```
 
 # Known issues
 
