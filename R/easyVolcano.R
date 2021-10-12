@@ -278,16 +278,17 @@ easyMAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
 #' Interactive labelling of Manhattan plots using 'shiny' and 'plotly' 
 #' interface.
 #'
-#' @param data The dataset for the plot.
+#' @param data The dataset (data.frame or data.table) for the plot.
 #' @param chrom The column of chomosome values in `data`.
 #' @param pos The column of SNP positions in `data`.
 #' @param p The column of p values in `data`.
 #' @param labs The column of labels in `data`.
-#' @param pcutoff Cut-off for p value significance.
+#' @param pcutoff Cut-off for p value significance. Defaults to 5E-08.
 #' @param chromGap Size of gap between chromosomes along the x axis.
 #' @param chromCols A vector of colours for points by chromosome. Colours are 
 #' recycled dependent on the length of the vector.
-#' @param sigCol Colour for statistically significant points.
+#' @param sigCol Colour for statistically significant points. Ignored if set to 
+#' `NA`.
 #' @param alpha Transparency for points.
 #' @param labelDir Option for label lines. See [easylabel()].
 #' @param xlab x axis title. Accepts expressions.
@@ -357,7 +358,7 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
     data <- data[index[1:npoints], ]  # shrink dataset
   }
   data$logP <- -log10(data[, p])
-  chrom_list <- mixedsort(unique(data[, chrom]), na.last = NA)
+  chrom_list <- gtools::mixedsort(unique(data[, chrom]), na.last = NA)
   data[, chrom] <- factor(data[, chrom], levels=chrom_list)
   maxpos <- tapply(data[, pos], data[, chrom], max, na.rm = TRUE)
   maxpos <- maxpos[chrom_list]  # reorder
@@ -369,9 +370,11 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
   chrom_cumsum2 <- chrom_cumsum2[1:length(maxpos)]
   data$genome_pos <- data[, pos] + chrom_cumsum2[as.numeric(data[, chrom])]
   data$col <- ((as.numeric(data[, chrom]) - 1) %% length(chromCols)) + 1
-  data$col[data[, p] < pcutoff] <- length(chromCols) + 1
-  # data$col <-factor(data$col, levels = 1:3, 
-  #                       labels = c("1", "2", paste("p <", pcutoff)))
+  colScheme <- chromCols
+  if (!is.na(sigCol)) {
+    data$col[data[, p] < pcutoff] <- length(chromCols) + 1
+    colScheme <- c(chromCols, sigCol)
+  }
   if (length(chrom_list) > 1) {
     xticks <- list(at = chrom_cumsum + 0.5 * (maxpos - minpos), 
                    labels = levels(data[, chrom]))
@@ -382,7 +385,7 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
             xlab = xlab, ylab = ylab,
             xticks = xticks,
             labelDir = labelDir,
-            col = 'col', colScheme = c(chromCols, sigCol), alpha = alpha,
+            col = 'col', colScheme = colScheme, alpha = alpha,
             outline_col = outline_col,
             shapeScheme = shapeScheme,
             size = size,
@@ -403,7 +406,7 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
               xlab = ylab, ylab = xlab,
               yticks = xticks,
               labelDir = labelDir,
-              col = 'col', colScheme = c(chromCols, sigCol), alpha = alpha,
+              col = 'col', colScheme = colScheme, alpha = alpha,
               outline_col = outline_col,
               shapeScheme = shapeScheme,
               size = size,

@@ -12,7 +12,8 @@ easyManhattan(
   labs = "rsid",
   pcutoff = 5e-08,
   chromGap = 3e+07,
-  colScheme = c("royalblue", "skyblue", "red"),
+  chromCols = c("royalblue", "skyblue"),
+  sigCol = "red",
   alpha = 0.7,
   labelDir = "horiz",
   xlab = "Chromosome position",
@@ -30,7 +31,7 @@ easyManhattan(
 )
 }
 \arguments{
-\item{data}{The dataset for the plot.}
+\item{data}{The dataset (data.frame or data.table) for the plot.}
 
 \item{chrom}{The column of chomosome values in \code{data}.}
 
@@ -40,11 +41,15 @@ easyManhattan(
 
 \item{labs}{The column of labels in \code{data}.}
 
-\item{pcutoff}{Cut-off for p value significance.}
+\item{pcutoff}{Cut-off for p value significance. Defaults to 5E-08.}
 
 \item{chromGap}{Size of gap between chromosomes along the x axis.}
 
-\item{colScheme}{A vector of colours for points.}
+\item{chromCols}{A vector of colours for points by chromosome. Colours are
+recycled dependent on the length of the vector.}
+
+\item{sigCol}{Colour for statistically significant points. Ignored if set to
+\code{NA}.}
 
 \item{alpha}{Transparency for points.}
 
