@@ -20,9 +20,11 @@
 #' @param data Dataset (data.frame or data.table) to use for plot.
 #' @param x Specifies column of x coordinates in `data`.
 #' @param y Specifies column of y coordinates in `data`.
-#' @param labs Specifies the column in `data` with label names for points.
-#' If `NULL` defaults to `rownames(data)`.
-#' @param startLabels Vector of initial labels.
+#' @param labs Specifies the column in `data` with label names for points. 
+#' Label names do not have to be unique. If `NULL` defaults to `rownames(data)`.
+#' @param startLabels Vector of initial labels. With a character vector, labels 
+#' are identified in the column specified by `labs`. With a numeric vector,
+#' points to be labelled are referred to by row number.
 #' @param cex.text Font size for labels. Default 0.72 to match plotly font size.
 #' See [text()].
 #' @param col Specifies which column in `data` affects point colour. Must be
@@ -349,7 +351,13 @@ easylabel <- function(data, x, y,
   
   # initialise labelchoices
   labelchoices <- if (is.null(labs)) rownames(plotly_data) else plotly_data[, labs]
-  startLabels <- which(labelchoices %in% startLabels)
+  if (is.character(startLabels)) {
+    startLabels <- which(labelchoices %in% startLabels)
+  } else if (!is.null(plotly_filter)) {
+    rownum <- 1:nrow(data)
+    rownum <- rownum[data[, plotly_filter]]
+    startLabels <- which(rownum %in% startLabels)
+  }
   pkey <- 1:length(labelchoices)
   labSize <- cex.text / 0.72 * 12
   start_annot <- annotation(startLabels, plotly_data, x, y,

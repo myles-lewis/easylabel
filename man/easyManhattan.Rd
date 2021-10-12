@@ -25,6 +25,8 @@ easyManhattan(
   lineLength = 60,
   npoints = 1e+06,
   nplotly = 1e+05,
+  npeaks = NULL,
+  span = 10001,
   transpose = FALSE,
   filename = NULL,
   ...
@@ -77,6 +79,11 @@ plot all points.}
 
 \item{nplotly}{Maximum number of points to display via plotly. We recommend
 the default setting of 100,000 points (or fewer).}
+
+\item{npeaks}{Number of peaks to label initially.}
+
+\item{span}{a peak is defined as the most significant SNP within a window of
+width span SNPs centred at that SNP. Large numbers take significantly longer.}
 
 \item{transpose}{Logical whether to transpose the plot.}
 

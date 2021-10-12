@@ -305,12 +305,16 @@ easyMAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
 #' plot all points.
 #' @param nplotly Maximum number of points to display via plotly. We recommend 
 #' the default setting of 100,000 points (or fewer).
+#' @param npeaks Number of peaks to label initially.
+#' @param span a peak is defined as the most significant SNP within a window of 
+#' width span SNPs centred at that SNP. Large numbers take significantly longer.
 #' @param transpose Logical whether to transpose the plot.
 #' @param filename Filename for saving to pdf.
 #' @param ... Other arguments passed to [easylabel()].
 #' @seealso [easylabel()] [easyVolcano()]
 #' @return No return value
 #' @importFrom gtools mixedsort
+#' @importFrom splus2R peaks
 #' @export
 
 easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
@@ -330,6 +334,8 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
                           lineLength = 60,
                           npoints = 1E6,
                           nplotly = 1E5,
+                          npeaks = NULL,
+                          span = 10001,
                           transpose = FALSE,
                           filename = NULL, ...) {
   if (is.null(filename)) filename <- paste0("manhattan_",
@@ -369,6 +375,7 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
   chrom_cumsum <- chrom_cumsum[1:length(maxpos)]
   chrom_cumsum2 <- chrom_cumsum2[1:length(maxpos)]
   data$genome_pos <- data[, pos] + chrom_cumsum2[as.numeric(data[, chrom])]
+  data <- data[order(data$genome_pos), ]
   data$col <- ((as.numeric(data[, chrom]) - 1) %% length(chromCols)) + 1
   colScheme <- chromCols
   if (!is.na(sigCol)) {
@@ -379,12 +386,24 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
     xticks <- list(at = chrom_cumsum + 0.5 * (maxpos - minpos), 
                    labels = levels(data[, chrom]))
   } else xticks <- NULL
+  
+  # find local maxima
+  if (!is.null(npeaks)) {
+    cat("Finding peaks")
+    pks <- splus2R::peaks(data$logP, span = span)
+    pks_index <- which(pks)
+    sort_pks <- pks_index[order(data$logP[pks_index], decreasing = TRUE, 
+                                na.last = NA)]
+    startLabels <- sort_pks[1:npeaks]
+  } else startLabels <- NULL
+  
   if (!transpose) {
     easylabel(data, x = 'genome_pos', y = 'logP',
             labs = labs,
             xlab = xlab, ylab = ylab,
             xticks = xticks,
             labelDir = labelDir,
+            startLabels = startLabels,
             col = 'col', colScheme = colScheme, alpha = alpha,
             outline_col = outline_col,
             shapeScheme = shapeScheme,
@@ -406,6 +425,7 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
               xlab = ylab, ylab = xlab,
               yticks = xticks,
               labelDir = labelDir,
+              startLabels = startLabels,
               col = 'col', colScheme = colScheme, alpha = alpha,
               outline_col = outline_col,
               shapeScheme = shapeScheme,

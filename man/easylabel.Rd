@@ -67,9 +67,11 @@ easylabel(
 \item{y}{Specifies column of y coordinates in \code{data}.}
 
 \item{labs}{Specifies the column in \code{data} with label names for points.
-If \code{NULL} defaults to \code{rownames(data)}.}
+Label names do not have to be unique. If \code{NULL} defaults to \code{rownames(data)}.}
 
-\item{startLabels}{Vector of initial labels.}
+\item{startLabels}{Vector of initial labels. With a character vector, labels
+are identified in the column specified by \code{labs}. With a numeric vector,
+points to be labelled are referred to by row number.}
 
 \item{cex.text}{Font size for labels. Default 0.72 to match plotly font size.
 See \code{\link[=text]{text()}}.}

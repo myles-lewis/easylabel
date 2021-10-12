@@ -39,7 +39,8 @@ Imports:
     shinybusy,
     RColorBrewer,
     DT,
-    gtools
+    gtools,
+    splus2R
 RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
