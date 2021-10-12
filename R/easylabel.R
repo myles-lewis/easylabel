@@ -749,7 +749,7 @@ easylabel <- function(data, x, y,
     })
 
     # selectize genes
-    input_label <- reactive({input$label}) %>% debounce(200)
+    input_label <- reactive({input$label}) %>% debounce(500)
 
     # Update labels from selectize
     observeEvent(input_label(), {
