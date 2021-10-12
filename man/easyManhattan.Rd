@@ -45,7 +45,9 @@ easyManhattan(
 
 \item{pcutoff}{Cut-off for p value significance. Defaults to 5E-08.}
 
-\item{chromGap}{Size of gap between chromosomes along the x axis.}
+\item{chromGap}{Size of gap between chromosomes along the x axis. This
+defaults to a value appropriate for a human genome, but may need to be
+reduced for smaller genomes.}
 
 \item{chromCols}{A vector of colours for points by chromosome. Colours are
 recycled dependent on the length of the vector.}
