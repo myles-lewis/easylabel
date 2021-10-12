@@ -26,7 +26,7 @@ easyManhattan(
   npoints = 1e+06,
   nplotly = 1e+05,
   npeaks = NULL,
-  span = 10001,
+  span = min(c(nrow(data), npoints), na.rm = TRUE)/200,
   transpose = FALSE,
   filename = NULL,
   ...

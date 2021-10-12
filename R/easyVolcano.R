@@ -335,7 +335,7 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
                           npoints = 1E6,
                           nplotly = 1E5,
                           npeaks = NULL,
-                          span = 10001,
+                          span = min(c(nrow(data), npoints), na.rm = TRUE) / 200,
                           transpose = FALSE,
                           filename = NULL, ...) {
   if (is.null(filename)) filename <- paste0("manhattan_",
@@ -360,7 +360,7 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
   index <- order(data[,p])
   data$plotly_filter <- FALSE
   data$plotly_filter[index[1:nplotly]] <- TRUE
-  if (!is.na(npoints)) {
+  if (!is.na(npoints) & nrow(data) > npoints) {
     data <- data[index[1:npoints], ]  # shrink dataset
   }
   data$logP <- -log10(data[, p])
@@ -389,7 +389,7 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
   
   # find local maxima
   if (!is.null(npeaks)) {
-    cat("Finding peaks")
+    cat("Finding peaks\n")
     pks <- splus2R::peaks(data$logP, span = span)
     pks_index <- which(pks)
     sort_pks <- pks_index[order(data$logP[pks_index], decreasing = TRUE, 
