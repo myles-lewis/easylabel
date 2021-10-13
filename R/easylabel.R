@@ -946,15 +946,13 @@ annotation <- function(labels, data, x, y, current_xy = NULL,
   }
   lapply(seq_along(labels), function(j) {
     i <- labels[j]
-    axj <- ax[j]
-    ayj <- ay[j]
     if (j <= length(current_xy)) {
       if (!is.null(current_xy[[j]])) {
-        axj <- current_xy[[j]]$ax
-        ayj <- current_xy[[j]]$ay
+        ax[j] <- current_xy[[j]]$ax
+        ay[j] <- current_xy[[j]]$ay
       }
     }
-    list(x = sx[j], y = sy[j], ax = axj, ay = ayj,
+    list(x = sx[j], y = sy[j], ax = ax[j], ay = ay[j],
          text = labelchoices[as.numeric(i)], textangle = 0,
          font = list(color = "black", size = labSize),
          arrowcolor = "black", arrowwidth = 1, arrowhead = 0, arrowsize = 1.5,
