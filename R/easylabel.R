@@ -895,72 +895,71 @@ annotation <- function(labels, data, x, y, current_xy = NULL,
                        labSize = 12, labelDir = "radial",
                        labCentre = c(0, 0), xyspan = c(1, 1),
                        lineLength = 75) {
-  if (length(labels)!= 0) {
-    annot <- lapply(1:length(labels), function(j) {
-      i <- labels[j]
-      row <- data[as.numeric(i), ]
-      sx <- row[, x]
-      sy <- row[, y]
-      dx <- (sx - labCentre[1]) / xyspan[1]
-      dy <- (sy - labCentre[2]) / xyspan[2]
-      z <- sqrt(dx^2 + dy^2)
-      if (labelDir == 'radial') {
-        ax <- dx/z * lineLength
-        ay <- -dy/z * lineLength
-      } else if (labelDir == 'origin') {
-        ox <- sx / xyspan[1]
-        oy <- sy / xyspan[2]
-        z <- sqrt(ox^2 + oy^2)
-        ax <- ox/z * lineLength
-        ay <- -oy/z * lineLength
-      } else if (labelDir == 'xellipse') {
-        dy <- dy / 4
-        z <- sqrt(dx^2 + dy^2)
-        ax <- dx/z * lineLength
-        ay <- -dy/z * lineLength
-      } else if (labelDir == 'yellipse') {
-        dx <- dx / 5
-        z <- sqrt(dx^2 + dy^2)
-        ax <- dx/z * lineLength
-        ay <- -dy/z * lineLength
-      } else if (labelDir == 'horiz') {
-        ax <- sign(dx) * lineLength
-        ay <- 0
-      } else if (labelDir == 'vert') {
-        ax <- 0
-        ay <- -sign(dy) * lineLength
-      } else if (labelDir == 'x') {
-        ax <- sign(dx) * lineLength
-        ay <- -sign(dy) * lineLength
-      } else if (labelDir == 'rect') {
-        if (abs(dx) > abs(dy)) {
-          ax <- sign(dx) * lineLength
-          ay <- 0
-        } else {
-          ax <- 0
-          ay <- -sign(dy) * lineLength
-        }
-      } else if (labelDir == 'oct') {
-        ang <- atan2(dy, dx)
-        ang <- round(ang * 4 / pi)
-        ax <- cospi(ang / 4) * lineLength
-        ay <- -sinpi(ang / 4) * lineLength
+  if (length(labels)== 0) return(list())
+  row <- data[as.numeric(labels), ]
+  sx <- row[, x]
+  sy <- row[, y]
+  dx <- (sx - labCentre[1]) / xyspan[1]
+  dy <- (sy - labCentre[2]) / xyspan[2]
+  z <- sqrt(dx^2 + dy^2)
+  if (labelDir == 'radial') {
+    ax <- dx/z * lineLength
+    ay <- -dy/z * lineLength
+  } else if (labelDir == 'origin') {
+    ox <- sx / xyspan[1]
+    oy <- sy / xyspan[2]
+    z <- sqrt(ox^2 + oy^2)
+    ax <- ox/z * lineLength
+    ay <- -oy/z * lineLength
+  } else if (labelDir == 'xellipse') {
+    dy <- dy / 4
+    z <- sqrt(dx^2 + dy^2)
+    ax <- dx/z * lineLength
+    ay <- -dy/z * lineLength
+  } else if (labelDir == 'yellipse') {
+    dx <- dx / 5
+    z <- sqrt(dx^2 + dy^2)
+    ax <- dx/z * lineLength
+    ay <- -dy/z * lineLength
+  } else if (labelDir == 'horiz') {
+    ax <- sign(dx) * lineLength
+    ay <- 0
+  } else if (labelDir == 'vert') {
+    ax <- 0
+    ay <- -sign(dy) * lineLength
+  } else if (labelDir == 'x') {
+    ax <- sign(dx) * lineLength
+    ay <- -sign(dy) * lineLength
+  } else if (labelDir == 'rect') {
+    if (abs(dx) > abs(dy)) {
+      ax <- sign(dx) * lineLength
+      ay <- 0
+    } else {
+      ax <- 0
+      ay <- -sign(dy) * lineLength
+    }
+  } else if (labelDir == 'oct') {
+    ang <- atan2(dy, dx)
+    ang <- round(ang * 4 / pi)
+    ax <- cospi(ang / 4) * lineLength
+    ay <- -sinpi(ang / 4) * lineLength
+  }
+  lapply(1:length(labels), function(j) {
+    i <- labels[j]
+    axj <- ax[j]
+    ayj <- ay[j]
+    if (j <= length(current_xy)) {
+      if (!is.null(current_xy[[j]])) {
+        axj <- current_xy[[j]]$ax
+        ayj <- current_xy[[j]]$ay
       }
-
-      if (j <= length(current_xy)) {
-        if (!is.null(current_xy[[j]])) {
-          ax = current_xy[[j]]$ax
-          ay = current_xy[[j]]$ay
-        }
-      }
-      list(x = sx, y = sy, ax = ax, ay = ay,
-           text = labelchoices[as.numeric(i)], textangle = 0,
-           font = list(color = "black", size = labSize),
-           arrowcolor = "black", arrowwidth = 1, arrowhead = 0, arrowsize = 1.5,
-           xanchor = "auto", yanchor = "auto")
-    })
-  } else {annot <- list()}
-  annot
+    }
+    list(x = sx[j], y = sy[j], ax = axj, ay = ayj,
+         text = labelchoices[as.numeric(i)], textangle = 0,
+         font = list(color = "black", size = labSize),
+         arrowcolor = "black", arrowwidth = 1, arrowhead = 0, arrowsize = 1.5,
+         xanchor = "auto", yanchor = "auto")
+  })
 }
 
 # Plot shorter label lines that avoid hitting text
