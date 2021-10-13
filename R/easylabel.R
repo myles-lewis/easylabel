@@ -895,7 +895,7 @@ annotation <- function(labels, data, x, y, current_xy = NULL,
                        labSize = 12, labelDir = "radial",
                        labCentre = c(0, 0), xyspan = c(1, 1),
                        lineLength = 75) {
-  if (length(labels)== 0) return(list())
+  if (length(labels) == 0) return(list())
   row <- data[as.numeric(labels), ]
   sx <- row[, x]
   sy <- row[, y]
@@ -923,9 +923,9 @@ annotation <- function(labels, data, x, y, current_xy = NULL,
     ay <- -dy/z * lineLength
   } else if (labelDir == 'horiz') {
     ax <- sign(dx) * lineLength
-    ay <- 0
+    ay <- rep.int(0, length(labels))
   } else if (labelDir == 'vert') {
-    ax <- 0
+    ax <- rep.int(0, length(labels))
     ay <- -sign(dy) * lineLength
   } else if (labelDir == 'x') {
     ax <- sign(dx) * lineLength
@@ -933,9 +933,9 @@ annotation <- function(labels, data, x, y, current_xy = NULL,
   } else if (labelDir == 'rect') {
     if (abs(dx) > abs(dy)) {
       ax <- sign(dx) * lineLength
-      ay <- 0
+      ay <- rep.int(0, length(labels))
     } else {
-      ax <- 0
+      ax <- rep.int(0, length(labels))
       ay <- -sign(dy) * lineLength
     }
   } else if (labelDir == 'oct') {
