@@ -944,7 +944,7 @@ annotation <- function(labels, data, x, y, current_xy = NULL,
     ax <- cospi(ang / 4) * lineLength
     ay <- -sinpi(ang / 4) * lineLength
   }
-  lapply(1:length(labels), function(j) {
+  lapply(seq_along(labels), function(j) {
     i <- labels[j]
     axj <- ax[j]
     ayj <- ay[j]
