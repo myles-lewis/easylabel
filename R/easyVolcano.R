@@ -284,9 +284,10 @@ easyMAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
 #' @param p The column of p values in `data`.
 #' @param labs The column of labels in `data`.
 #' @param pcutoff Cut-off for p value significance. Defaults to 5E-08.
-#' @param chromGap Size of gap between chromosomes along the x axis. This 
-#' defaults to a value appropriate for a human genome, but may need to be 
-#' reduced for smaller genomes.
+#' @param chromGap Size of gap between chromosomes along the x axis in base 
+#' pairs. If `NULL` this is automatically calculated dependent on the size of 
+#' the genome. Default is around 3E07 for a human genome, and smaller for 
+#' smaller genomes.
 #' @param chromCols A vector of colours for points by chromosome. Colours are 
 #' recycled dependent on the length of the vector.
 #' @param sigCol Colour for statistically significant points. Ignored if set to 
@@ -321,8 +322,8 @@ easyMAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
 
 easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
                           labs = 'rsid',
-                          pcutoff = 5E-8,
-                          chromGap = 3E7,
+                          pcutoff = 5e-08,
+                          chromGap = NULL,
                           chromCols = c('royalblue', 'skyblue'),
                           sigCol = 'red',
                           alpha = 0.7,
@@ -372,6 +373,10 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
   maxpos <- maxpos[chrom_list]  # reorder
   minpos <- tapply(data[, pos], data[, chrom], min, na.rm = TRUE)
   minpos <- minpos[chrom_list]  # reorder
+  # calculate gap
+  if (is.null(chromGap)) {
+    chromGap <- sum(maxpos - minpos) / length(chrom_list) / 4.15
+  }
   chrom_cumsum <- c(0, cumsum(maxpos - minpos + chromGap))
   chrom_cumsum2 <- chrom_cumsum - c(minpos, 0)
   chrom_cumsum <- chrom_cumsum[1:length(maxpos)]
