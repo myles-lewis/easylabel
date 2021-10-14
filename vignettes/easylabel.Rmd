@@ -521,7 +521,11 @@ plot with all points is produced when saving to PDF. An example is shown below:
 # https://www.ebi.ac.uk/gwas/studies/GCST003156
 library(data.table)
 SLE_gwas <- fread('../bentham_2015_26502338_sle_efo0002690_1_gwas.sumstats.tsv')
+# Simple Manhattan plot
 easyManhattan(SLE_gwas)
+
+# 4 colours for chromosomes
+easyManhattan(SLE_gwas, chromCols = RColorBrewer::brewer.pal(4, 'Paired'))
 ```
 
 ```{r manhat, echo = FALSE, message=FALSE, fig.show='hold', out.width='80%', out.extra='style="border: 0;"'}
@@ -535,21 +539,24 @@ to `NA` will plot all points when saving to pdf.
 
 ```{r eval = FALSE}
 # Examples
-# 4 colours for chromosomes
-easyManhattan(SLE_gwas, chromCols = RColorBrewer::brewer.pal(4, 'Paired'))
-
 # 12 colours for chromosomes, no separate colour for significant points
 easyManhattan(SLE_gwas, chromCols = RColorBrewer::brewer.pal(12, 'Paired'), 
               sigCol = NA)
 
 # Label peaks automatically
-easyManhattan(SLE_gwas, npeaks = 25)
+easyManhattan(SLE_gwas, npeaks = 20)
 
 # Vertical version
 easyManhattan(SLE_gwas, transpose = TRUE, height = 1000, width = 600)
 
-# chr1 only
+# Chr1 only
 easyManhattan(SLE_gwas[SLE_gwas$chrom == 1, ])
+
+# Add symbols for the significant SNPs
+easyManhattan(SLE_gwas, chromCols = RColorBrewer::brewer.pal(4, 'Paired'),
+              size = 8,
+              shape = 'col',
+              shapeScheme = c(rep(20, 4), 18))
 ```
 
 # Known issues
