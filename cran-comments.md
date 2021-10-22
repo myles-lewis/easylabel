@@ -1,6 +1,14 @@
 ## R CMD check results
 0 errors ✓ | 0 warnings ✓ | 0 notes ✓
 
+## Update
+This is an update to new version 0.2.1. In this version I have:
+
+* Added a new feature to plot Manhattan plots using a new function 
+  easyManhattan()
+  
+* Improved stability in the shiny app
+
 ## Resubmission
 This is a resubmission. In this version I have:
 

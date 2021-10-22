@@ -11,7 +11,7 @@ easyManhattan(
   p = "p",
   labs = "rsid",
   pcutoff = 5e-08,
-  chromGap = 3e+07,
+  chromGap = NULL,
   chromCols = c("royalblue", "skyblue"),
   sigCol = "red",
   alpha = 0.7,
@@ -45,9 +45,10 @@ easyManhattan(
 
 \item{pcutoff}{Cut-off for p value significance. Defaults to 5E-08.}
 
-\item{chromGap}{Size of gap between chromosomes along the x axis. This
-defaults to a value appropriate for a human genome, but may need to be
-reduced for smaller genomes.}
+\item{chromGap}{Size of gap between chromosomes along the x axis in base
+pairs. If \code{NULL} this is automatically calculated dependent on the size of
+the genome. Default is around 3E07 for a human genome, and smaller for
+smaller genomes.}
 
 \item{chromCols}{A vector of colours for points by chromosome. Colours are
 recycled dependent on the length of the vector.}
