@@ -48,14 +48,6 @@ devtools::install_github("myles-lewis/easylabel")
 library(easylabel)
 ```
 
-We recommend installing at least version 4.9.4.9 (currently the development 
-version) of plotly which has much better on-screen resolution of scatter plots 
-for a better user experience. Note that exporting to pdf is unaffected by this.
-
-```{r eval = FALSE}
-remotes::install_github("ropensci/plotly")
-```
-
 If you wish to use the optional `useQ` argument with `easyVolcano()` and 
 `easyMAplot()`, you will need to install additional package `qvalue` from 
 Bioconductor:
@@ -591,21 +583,12 @@ easyManhattan(SLE_gwas, chromCols = RColorBrewer::brewer.pal(4, 'Paired'),
 
 # Known issues
 
+* We recommend installing at least version 4.10.0 of plotly/R which has much 
+  better on-screen resolution of scatter plots for a better user experience. 
+  Note that exporting to pdf is unaffected by this.
+
 * Plotly's `scattergl` function, which uses webGL, seems to have a limit of 
   around 400,000 scatter points per plot. Above this level, the shiny/plotly 
-  app becomes sluggish or freezes and becomes unusable. We try to limit plots 
-  to around 100,000 points using the `plotly_filter` argument. See 
+  app becomes sluggish or freezes and becomes unusable. We recommend limiting 
+  plots to around 100,000 points using the `plotly_filter` argument. See 
   [plotly_filter].
-* Currently `easylabel()` relies on plotly for the interactive scatter plot
-  and uses webGL for speed as a plotly scattergl trace. A known bug exists in 
-  the current version 4.9.4.1 of plotly for R which is still using plotly.js 
-  version 2.0. This older version of plotly.js has a problem with poor 
-  pixellation of scatter plots, particularly on highDPI (retina) displays. This 
-  issue has been fixed in plotly.js version 2.5 and plotly/r version 4.9.4.9,
-  which can be installed via Github:
-  
-```{r eval = FALSE}
-remotes::install_github("ropensci/plotly")
-```
-
-  

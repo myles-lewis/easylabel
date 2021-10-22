@@ -33,7 +33,7 @@ Suggests:
     qvalue,
     rmarkdown
 Imports:
-    plotly,
+    plotly (>= 4.10.0),
     shiny,
     shinycssloaders,
     shinybusy,
