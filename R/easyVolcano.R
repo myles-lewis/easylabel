@@ -11,8 +11,8 @@
 #' @param y Name of the column containing p values. For DESeq2 and limma objects
 #' this is automatically set.
 #' @param padj Name of the column containing adjusted p values (optional). If 
-#' left blank, assumes use of nominal p values for cut-off for significance 
-#' instead of adjusted p values.
+#' `y` is specified and `padj` is left blank or equal to `y`, nominal unadjusted 
+#' p values are used for cut-off for significance instead of adjusted p values.
 #' @param fdrcutoff Cut-off for FDR significance. Defaults to FDR < 0.05. If `y` 
 #' is specified manually and `padj` is left blank then this refers to the 
 #' cut-off for significant points using nominal unadjusted p values. 
@@ -94,7 +94,6 @@ easyVolcano <- function(data, x = NULL, y = NULL, padj = y,
   
   # if using nominal p values
   fdr_or_p <- if (y == padj) "P<" else "FDR<"
-  
   if (is.null(fccut)) {
     data$col <- factor(siggenes, levels = c(F, T),
                        labels = c('ns', paste0(fdr_or_p, fdrcutoff)))
@@ -164,10 +163,13 @@ easyVolcano <- function(data, x = NULL, y = NULL, padj = y,
 #' objects this is automatically set.
 #' @param y Name of the column containing log fold change. For DESeq2 and limma
 #' objects this is automatically set.
-#' @param padj Name of the column containing adjusted p values. For DESeq2 and
-#' limma objects this is automatically set.
+#' @param padj Name of the column containing adjusted p values (optional). For DESeq2 and
+#' limma objects this is automatically set. If `y` is specified and `padj` is 
+#' left blank or equal to `y`, nominal unadjusted p values are used for cut-off 
+#' for significance.
 #' @param fdrcutoff Cut-off for FDR significance. Defaults to FDR < 0.05. Can
-#' be vector with multiple cut-offs.
+#' be vector with multiple cut-offs. To use nominal P values instead of adjusted 
+#' p values, set `y` but leave `padj` blank.
 #' @param colScheme Colour colScheme. Length must match either length(fdrcutoff) + 1
 #' to allow for non-significant genes, or match length(fdrcutoff) * 2 + 1 to
 #' accommodates asymmetric colour colSchemes for positive & negative fold change.
@@ -188,7 +190,7 @@ easyVolcano <- function(data, x = NULL, y = NULL, padj = y,
 #' @export
 
 
-easyMAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
+easyMAplot <- function(data, x = NULL, y = NULL, padj = y, fdrcutoff = 0.05,
                        colScheme = c('darkgrey', 'blue', 'red'),
                        hline = 0,
                        labelDir = 'yellipse',
@@ -249,7 +251,9 @@ easyMAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
                                    xref = 'paper', yref = 'paper',
                                    showarrow = F))
   } else custom_annotation = NULL
-
+  
+  # if using nominal p values
+  fdr_or_p <- if (y == padj) "P<" else "FDR<"
   if (!(length(colScheme) - 1) %in% (length(fdrcutoff) * 1:2)) {
     stop("Number of colours in 'colScheme' does not fit with number of cuts in 'fdrcut'")
   }
@@ -265,8 +269,8 @@ easyMAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
     fc <- data[, y] > 0
     siggenes[fc & siggenes != 0] <- siggenes[fc & siggenes != 0] + length(fdrcutoff)
     data$col <- factor(siggenes, levels = 0:(length(fdrcutoff) * 2),
-                       labels = c('ns', paste0('FC<0, FDR<', fdrcutoff),
-                                  paste0('FC>0, FDR<', fdrcutoff)))
+                       labels = c('ns', paste0('FC<0, ', fdr_or_p, fdrcutoff),
+                                  paste0('FC>0, ', fdr_or_p, fdrcutoff)))
   }
 
   easylabel(data, x, y, col = 'col',

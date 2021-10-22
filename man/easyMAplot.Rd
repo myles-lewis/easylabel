@@ -8,7 +8,7 @@ easyMAplot(
   data,
   x = NULL,
   y = NULL,
-  padj = NULL,
+  padj = y,
   fdrcutoff = 0.05,
   colScheme = c("darkgrey", "blue", "red"),
   hline = 0,
@@ -31,11 +31,14 @@ objects this is automatically set.}
 \item{y}{Name of the column containing log fold change. For DESeq2 and limma
 objects this is automatically set.}
 
-\item{padj}{Name of the column containing adjusted p values. For DESeq2 and
-limma objects this is automatically set.}
+\item{padj}{Name of the column containing adjusted p values (optional). For DESeq2 and
+limma objects this is automatically set. If \code{y} is specified and \code{padj} is
+left blank or equal to \code{y}, nominal unadjusted p values are used for cut-off
+for significance.}
 
 \item{fdrcutoff}{Cut-off for FDR significance. Defaults to FDR < 0.05. Can
-be vector with multiple cut-offs.}
+be vector with multiple cut-offs. To use nominal P values instead of adjusted
+p values, set \code{y} but leave \code{padj} blank.}
 
 \item{colScheme}{Colour colScheme. Length must match either length(fdrcutoff) + 1
 to allow for non-significant genes, or match length(fdrcutoff) * 2 + 1 to

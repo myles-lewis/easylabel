@@ -31,8 +31,8 @@ objects this is automatically set.}
 this is automatically set.}
 
 \item{padj}{Name of the column containing adjusted p values (optional). If
-left blank, assumes use of nominal p values for cut-off for significance
-instead of adjusted p values.}
+\code{y} is specified and \code{padj} is left blank or equal to \code{y}, nominal unadjusted
+p values are used for cut-off for significance instead of adjusted p values.}
 
 \item{fdrcutoff}{Cut-off for FDR significance. Defaults to FDR < 0.05. If \code{y}
 is specified manually and \code{padj} is left blank then this refers to the
