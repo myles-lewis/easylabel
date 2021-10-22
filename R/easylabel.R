@@ -216,6 +216,8 @@ easylabel <- function(data, x, y,
                  showgrid = grepl("y", showgrid, ignore.case = TRUE),
                  color = 'black', ticklen = 5, 
                  showline = TRUE, zeroline = zeroline)
+  xgrid <- pretty(data[, x])
+  ygrid <- pretty(data[, y])
   if (!is.null(xticks)) {
     pxaxis <- c(pxaxis, tickmode = list('array'),
                 tickvals = list(xticks$at),
@@ -223,6 +225,7 @@ easylabel <- function(data, x, y,
   } else if (!is.null(args$xaxp)) {
     pxaxis <- c(pxaxis, tick0 = args$xaxp[1],
                 dtick = (args$xaxp[2] - args$xaxp[1]) / args$xaxp[3])
+    xgrid <- seq(args$xaxp[1], args$xaxp[2], length.out = args$xaxp[3] + 1)
   }
   if (!is.null(yticks)) {
     pyaxis <- c(pyaxis, tickmode = list('array'),
@@ -231,6 +234,7 @@ easylabel <- function(data, x, y,
   } else if (!is.null(args$yaxp)) {
     pyaxis <- c(pyaxis, tick0 = args$yaxp[1],
                 dtick = (args$yaxp[2] - args$yaxp[1]) / args$yaxp[3])
+    ygrid <- seq(args$yaxp[1], args$yaxp[2], length.out = args$yaxp[3] + 1)
   }
   
   # determine outliers
@@ -631,10 +635,10 @@ easylabel <- function(data, x, y,
            panel.first = {
              if (showgrid != "") {
                if (grepl("x", showgrid, ignore.case = TRUE)) {
-                 abline(v = pretty(data[, x]), col = 'grey80', lwd = 0.5)
+                 abline(v = xgrid, col = 'grey80', lwd = 0.5)
                }
                if (grepl("y", showgrid, ignore.case = TRUE)) {
-                 abline(h = pretty(data[, y]), col = 'grey80', lwd = 0.5)
+                 abline(h = ygrid, col = 'grey80', lwd = 0.5)
                }
              }
              if (zeroline) abline(h = 0, v = 0)

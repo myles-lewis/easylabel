@@ -197,15 +197,16 @@ easylabel(gapminder[gapminder$year == 2007, ], x = 'gdpPercap', y = 'lifeExp',
           labs = 'country', 
           zeroline = FALSE,
           xaxp = c(0, 50000, 10),
-          yaxp = c(40, 85, 9)
-          )
+          yaxp = c(40, 85, 9),
+          showgrid = TRUE)
 ```
 
 
 ## Gridlines
 
 Gridlines can be shown by setting `showgrid = TRUE`. If `showgrid` is set to 
-`"x"` or `"y"` then gridlines are shown only for that axis.
+`"x"` or `"y"` then gridlines are shown only for that axis. Density of gridlines 
+can be controlled by setting `xaxp` or `yaxp` (see [Axis tick marks]).
 
 Black lines through the origin can be controlled by setting `zeroline` to 
 `TRUE` or `FALSE`.
