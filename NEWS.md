@@ -1,8 +1,8 @@
 News
 =====
 
-# easylabel 0.2.1
-###### 13/10/2021
+# easylabel 0.2.2
+###### 22/10/2021
 
 * Added `easyManhattan()` function
 * Added `plotly_filter` argument to allow massive datasets to be labelled
