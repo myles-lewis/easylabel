@@ -10,14 +10,17 @@
 #' objects this is automatically set.
 #' @param y Name of the column containing p values. For DESeq2 and limma objects
 #' this is automatically set.
-#' @param padj Name of the column containing adjusted p values. Cannot be NULL
-#' when y is not NULL.
-#' @param fdrcutoff Cut-off for FDR significance. Defaults to FDR < 0.05
+#' @param padj Name of the column containing adjusted p values (optional). If 
+#' left blank, assumes use of nominal p values for cut-off for significance 
+#' instead of adjusted p values.
+#' @param fdrcutoff Cut-off for FDR significance. Defaults to FDR < 0.05. If `y` 
+#' is specified manually and `padj` is left blank then this refers to the 
+#' cut-off for significant points using nominal unadjusted p values. 
 #' @param fccut Optional vector of log fold change cut-offs.
 #' @param colScheme Colour scheme. If no fold change cut-off is set, 2 colours
 #' need to be specified. With a single fold change cut-off, 3 or 5 colours are
 #' required, depending on whether the colours are symmetrical about x = 0.
-#' Accommodates asymmetric colour colSchemes with multiple fold change cut-offs
+#' Accommodates asymmetric colour schemes with multiple fold change cut-offs
 #' (see examples).
 #' @param xlab x axis title. Accepts expressions.
 #' @param ylab y axis title. Accepts expressions.
@@ -33,7 +36,7 @@
 #' @export
 
 
-easyVolcano <- function(data, x = NULL, y = NULL, padj = NULL,
+easyVolcano <- function(data, x = NULL, y = NULL, padj = y,
                         fdrcutoff = 0.05, fccut = NULL,
                         colScheme = c('darkgrey', 'blue', 'red'),
                         xlab = expression("log"[2] ~ " fold change"),
@@ -88,10 +91,13 @@ easyVolcano <- function(data, x = NULL, y = NULL, padj = NULL,
                                    xref = 'paper', yref = 'paper',
                                    showarrow = F))
   } else custom_annotation = NULL
-
+  
+  # if using nominal p values
+  fdr_or_p <- if (y == padj) "P<" else "FDR<"
+  
   if (is.null(fccut)) {
     data$col <- factor(siggenes, levels = c(F, T),
-                       labels = c('ns', paste0('FDR<', fdrcutoff)))
+                       labels = c('ns', paste0(fdr_or_p, fdrcutoff)))
     colScheme <- colScheme[1:2]
   } else {
     fccut <- abs(fccut)
@@ -105,17 +111,17 @@ easyVolcano <- function(data, x = NULL, y = NULL, padj = NULL,
       siggenes[siggenes == 1] <- as.numeric(fc[siggenes == 1])
       data$col <- factor(siggenes, levels = 0:(length(fccut) + 1),
                          labels = c('ns',
-                                    paste0('FDR<', fdrcutoff, ', FC<0'),
-                                    paste0('FDR<', fdrcutoff, ', FC>0')))
+                                    paste0(fdr_or_p, fdrcutoff, ', FC<0'),
+                                    paste0(fdr_or_p, fdrcutoff, ', FC>0')))
     } else if (length(colScheme) - 1 == length(fccut) + 1) {
       # symmetric colours
       fc <- cut(abs(data[, x]), c(-1, fccut, Inf))
       siggenes[siggenes == 1] <- as.numeric(fc[siggenes == 1])
       data$col <- factor(siggenes, levels = 0:(length(fccut) + 1),
                          labels = c('ns',
-                                    paste0('FDR<', fdrcutoff,
+                                    paste0(fdr_or_p, fdrcutoff,
                                            ', FC<', fccut[1]),
-                                    paste0('FDR<', fdrcutoff, ', FC>', fccut)))
+                                    paste0(fdr_or_p, fdrcutoff, ', FC>', fccut)))
     } else {
       # asymmetric colours
       fccut <- sort(unique(c(fccut, 0, -fccut)))
@@ -123,12 +129,12 @@ easyVolcano <- function(data, x = NULL, y = NULL, padj = NULL,
       siggenes[siggenes == 1] <- as.numeric(fc[siggenes == 1])
       data$col <- factor(siggenes, levels = 0:(length(fccut)+1),
                          labels = c('ns',
-                                    paste0('FDR<', fdrcutoff,
+                                    paste0(fdr_or_p, fdrcutoff,
                                            ', FC<', fccut[1]),
-                                    paste0('FDR<', fdrcutoff, ', ',
+                                    paste0(fdr_or_p, fdrcutoff, ', ',
                                            fccut[-length(fccut)],
                                            '<FC<', fccut[-1]),
-                                    paste0('FDR<', fdrcutoff, ', FC>',
+                                    paste0(fdr_or_p, fdrcutoff, ', FC>',
                                            fccut[length(fccut)])))
     }
   }
@@ -253,7 +259,7 @@ easyMAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
   if ((length(colScheme) - 1 == length(fdrcutoff))) {
     # symmetric colours
     data$col <- factor(siggenes, levels = 0:length(fdrcutoff),
-                       labels = c('ns', paste0('FDR<', fdrcutoff)))
+                       labels = c('ns', paste0(fdr_or_p, fdrcutoff)))
   } else {
     # asymmetric colours
     fc <- data[, y] > 0

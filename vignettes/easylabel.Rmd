@@ -29,9 +29,9 @@ export directly to pdf for publication.
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
+  collapse = TRUE
 )
+library(easylabel)
 ```
 
 # Installation
@@ -283,11 +283,37 @@ full dataset and all points will be plotted. This argument is used by the
 Use the `easyVolcano()` function to quickly plot a volcano plot from DESeq2 or
 EdgeR objects. The `useQ` argument will switch to using q values for FDR.
 
+```{r}
+# Example DESeq2 object
+head(volc1)
+
+# Example limma object
+head(volc2)
+```
+
 ```{r eval = FALSE}
-# typical DESeq2 workflow
+# Typical DESeq2 workflow
 volc1 <- results(dds)
 easyVolcano(volc1, useQ = TRUE)
 ```
+
+If you want to specify your own columns within the dataset set `x` to the column 
+containing log fold change, `y` to the column containing raw p values and `padj` 
+to the column containing adjusted p values.
+`labs` can be used to specify the column containing label names, otherwise this 
+defaults to `rownames(data)`.
+
+```{r eval = FALSE}
+# Manually specify columns
+easyVolcano(volc1, x = 'log2FoldChange', y = 'pvalue', padj = 'padj')
+
+# To use nominal unadjusted p value for significant genes
+easyVolcano(volc1, x = 'log2FoldChange', y = 'pvalue')
+```
+
+Note that if you specify `y` for a column of p values but leave `padj` blank, 
+the function assumes you are using nominal unadjusted p values for the cutoff 
+for significance.
 
 ## MA plots
 

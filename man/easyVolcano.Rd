@@ -8,7 +8,7 @@ easyVolcano(
   data,
   x = NULL,
   y = NULL,
-  padj = NULL,
+  padj = y,
   fdrcutoff = 0.05,
   fccut = NULL,
   colScheme = c("darkgrey", "blue", "red"),
@@ -30,17 +30,20 @@ objects this is automatically set.}
 \item{y}{Name of the column containing p values. For DESeq2 and limma objects
 this is automatically set.}
 
-\item{padj}{Name of the column containing adjusted p values. Cannot be NULL
-when y is not NULL.}
+\item{padj}{Name of the column containing adjusted p values (optional). If
+left blank, assumes use of nominal p values for cut-off for significance
+instead of adjusted p values.}
 
-\item{fdrcutoff}{Cut-off for FDR significance. Defaults to FDR < 0.05}
+\item{fdrcutoff}{Cut-off for FDR significance. Defaults to FDR < 0.05. If \code{y}
+is specified manually and \code{padj} is left blank then this refers to the
+cut-off for significant points using nominal unadjusted p values.}
 
 \item{fccut}{Optional vector of log fold change cut-offs.}
 
 \item{colScheme}{Colour scheme. If no fold change cut-off is set, 2 colours
 need to be specified. With a single fold change cut-off, 3 or 5 colours are
 required, depending on whether the colours are symmetrical about x = 0.
-Accommodates asymmetric colour colSchemes with multiple fold change cut-offs
+Accommodates asymmetric colour schemes with multiple fold change cut-offs
 (see examples).}
 
 \item{xlab}{x axis title. Accepts expressions.}
