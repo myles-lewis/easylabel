@@ -135,7 +135,9 @@ already known.}
 
 \item{height}{Height of the plot in pixels.}
 
-\item{showgrid}{Logical whether to show gridlines.}
+\item{showgrid}{Either logical whether to show gridlines, or a character
+value where "x" means showing x axis gridlines and "y" means showing y axis
+gridlines.}
 
 \item{zeroline}{Logical whether to show lines at x = 0 and y = 0.}
 

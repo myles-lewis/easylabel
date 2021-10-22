@@ -212,11 +212,15 @@ easylabel(gapminder[gapminder$year == 2007, ], x = 'gdpPercap', y = 'lifeExp',
 
 ## Gridlines
 
-Gridlines can be shown by setting `showgrid = TRUE`. Black lines through the 
-origin can be controlled by setting `zeroline` to `TRUE` or `FALSE`. Dashed grey 
-horizontal lines can be added at specific levels by setting `hline` with a 
-vector of values. Similarly dashed grey vertical lines can be added by setting 
-`vline` with a vector of values.
+Gridlines can be shown by setting `showgrid = TRUE`. If `showgrid` is set to 
+`"x"` or `"y"` then gridlines are shown only for that axis.
+
+Black lines through the origin can be controlled by setting `zeroline` to 
+`TRUE` or `FALSE`.
+
+Dashed grey horizontal lines can be added at specific levels by setting `hline` 
+with a vector of values. Similarly dashed grey vertical lines can be added by 
+setting `vline` with a vector of values.
 
 ## Legends
 
@@ -543,8 +547,8 @@ to `NA` will plot all points when saving to pdf.
 easyManhattan(SLE_gwas, chromCols = RColorBrewer::brewer.pal(12, 'Paired'), 
               sigCol = NA)
 
-# Label peaks automatically
-easyManhattan(SLE_gwas, npeaks = 20)
+# Label peaks automatically, add horizontal gridlines
+easyManhattan(SLE_gwas, npeaks = 20, showgrid = "y")
 
 # Vertical version
 easyManhattan(SLE_gwas, transpose = TRUE, height = 1000, width = 600)

@@ -66,7 +66,9 @@
 #' @param width Width of the plot in pixels. Saving to pdf scales 100 pixels to
 #' 1 inch.
 #' @param height Height of the plot in pixels.
-#' @param showgrid Logical whether to show gridlines.
+#' @param showgrid Either logical whether to show gridlines, or a character 
+#' value where "x" means showing x axis gridlines and "y" means showing y axis 
+#' gridlines.
 #' @param zeroline Logical whether to show lines at x = 0 and y = 0.
 #' @param hline Adds horizontal lines at values of y.
 #' @param vline Adds vertical lines at values of x.
@@ -203,14 +205,17 @@ easylabel <- function(data, x, y,
   args <- list(...)
   if (!inherits(data, 'data.frame') | inherits(data, 'tbl')) data <- as.data.frame(data)
   # plotly axes
+  if (is.logical(showgrid)) {
+    showgrid <- if (showgrid) "xy" else ""
+  }
   pxaxis <- list(title = exprToHtml(xlab),
-                 showgrid = showgrid,
+                 showgrid = grepl("x", showgrid, ignore.case = TRUE),
                  color = 'black', ticklen = 5,
                  showline = TRUE, zeroline = zeroline)
   pyaxis <- list(title = exprToHtml(ylab),
-                 showgrid = showgrid, color = 'black',
-                 ticklen = 5, showline = TRUE,
-                 zeroline = zeroline)
+                 showgrid = grepl("y", showgrid, ignore.case = TRUE),
+                 color = 'black', ticklen = 5, 
+                 showline = TRUE, zeroline = zeroline)
   if (!is.null(xticks)) {
     pxaxis <- c(pxaxis, tickmode = list('array'),
                 tickvals = list(xticks$at),
@@ -624,10 +629,14 @@ easylabel <- function(data, x, y,
            xaxt = xaxt, yaxt = yaxt,
            xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, ...,
            panel.first = {
-             if (showgrid) {
-               abline(h = pretty(data[, y]), v = pretty(data[, x]),
-                      col = 'grey80', lwd = 0.5)
+             if (showgrid != "") {
+               if (grepl("x", showgrid, ignore.case = TRUE)) {
+                 abline(v = pretty(data[, x]), col = 'grey80', lwd = 0.5)
                }
+               if (grepl("y", showgrid, ignore.case = TRUE)) {
+                 abline(h = pretty(data[, y]), col = 'grey80', lwd = 0.5)
+               }
+             }
              if (zeroline) abline(h = 0, v = 0)
            },
            panel.last = panel.last)

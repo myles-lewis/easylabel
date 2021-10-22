@@ -9,6 +9,7 @@ News
 * Legend can be repositioned by setting `legendxy`
 * Improved click stability in the shiny app
 * Added support for custom tick marks and tick labels
+* Allow gridlines for x or y axis alone
 
 # easylabel 0.1.0
 ###### 03/10/2021
