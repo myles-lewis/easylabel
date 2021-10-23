@@ -609,8 +609,8 @@ easylabel <- function(data, x, y,
       yaxt <- if (is.null(yticks)) 's' else 'n'
       
       # Grid lines
-      xgrid <- pretty(xlim, n = 7)
-      ygrid <- pretty(ylim, n = 7)
+      xgrid <- pretty(c(xrange, xlim), n = 7)
+      ygrid <- pretty(c(yrange, ylim), n = 7)
       if (!is.null(args$xaxp)) {
         xgrid <- seq(args$xaxp[1], args$xaxp[2], length.out = args$xaxp[3] + 1)
       }
