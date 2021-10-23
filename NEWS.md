@@ -5,7 +5,7 @@ News
 ###### 22/10/2021
 
 * Added `easyManhattan()` function
-* Added `plotly_filter` argument to allow massive datasets to be labelled
+* Added `plotly_filter` argument to allow large datasets to be labelled
 * Legend can be repositioned by setting `legendxy`
 * Improved click stability in the shiny app
 * Added support for custom tick marks and tick labels

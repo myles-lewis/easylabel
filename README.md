@@ -8,7 +8,7 @@ and plotly interface, users can hover over points to see where specific points
 are located and click on points to easily label them. Labels can be toggled 
 on/off simply by clicking. An input box and batch input window provides an easy 
 way to label points by name. Labels can be dragged around the plot to place 
-them optimally. Notably we provide an easy way to export directly to pdf for 
+them optimally. Notably we provide an easy way to export directly to PDF for 
 publication.
 
 ## Installation

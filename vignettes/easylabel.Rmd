@@ -25,7 +25,7 @@ where specific points are located and click on points to easily label them.
 Labels can be toggled on/off simply by clicking. An input box and batch input 
 window provides an easy way to label points by name. Labels can be dragged 
 around the plot to place them optimally. Notably we provide an easy way to 
-export directly to pdf for publication.
+export directly to PDF for publication.
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
@@ -156,7 +156,7 @@ of a column within `data`, as for example in the Gapminder dataset plots above.
 
 Axis titles can be set using `xlab` and `ylab`. These accept R expressions to 
 allow maths symbols. This is primarily designed to work when exporting plots to 
-pdf via base graphics, since plotly does not natively understand expressions.
+PDF via base graphics, since plotly does not natively understand expressions.
 
 ```{r eval = FALSE}
 easylabel(xymatrix, x = 'x', y = 'y', col = 'col',
@@ -236,7 +236,7 @@ the legend around the centre of y axis.
 
 Further control of plotting can be achieved by passing other arguments to 
 plot() via R's `...` argument. For example, a box around the plot can be added 
-using `bty='o'` (see `par()`). Note this method only works for saving to pdf 
+using `bty='o'` (see `par()`). Note this method only works for saving to PDF 
 since it is not supported by plotly. 
 
 ## panel.last
@@ -244,7 +244,7 @@ since it is not supported by plotly.
 Base graphics' `panel.last` argument is a flexible way to add plotting commands.
 This provides a way to add trend lines, loess lines or any additional features 
 such as extra legends to the plot after the points are plotted, but before 
-labels are drawn. Note that `panel.last` only works when saving to pdf, and is 
+labels are drawn. Note that `panel.last` only works when saving to PDF, and is 
 not available in plotly.
 
 ```{r eval = FALSE}
@@ -263,13 +263,13 @@ easylabel(xymatrix, x = 'x', y = 'y', col = 'col',
 ## plotly_filter
 
 This argument is used to reduce the number of scatter points displayed by 
-plotly, to prevent plotly becoming sluggish or unusable, which happens anywhere 
-between 200,000 to 400,000 or more points. To plot large datasets such as 
-genomic data, we recommend adding a logical column to your dataset which 
-filters out points of interest for inspecting and labelling via plotly. 
-`plotly_filter` specifies the name of this column. Saving to pdf retains the 
-full dataset and all points will be plotted. This argument is used by the 
-`easyManhattan()` function (see [Manhattan plot]).
+plotly, to prevent plotly becoming sluggish or unusable, which happens above 
+about 200,000 points. To plot large datasets such as genomic data, we recommend 
+adding a logical column to your dataset which filters out points of interest 
+for inspecting and labelling via plotly. `plotly_filter` specifies the name of 
+this column. Saving to PDF retains the full dataset and all points will be 
+plotted. This argument is used by the `easyManhattan()` function (see 
+[Manhattan plot]).
 
 # Volcano plots
 
@@ -368,14 +368,14 @@ knitr::include_graphics("plot7.png")
 ## Titles
 
 A title can be added using `main = "Title"`. The font size of the title can be 
-modified using `cex.main = 2` (default 1.2) if saving to pdf.
+modified using `cex.main = 2` (default 1.2) if saving to PDF.
 
 ## Adding left/right subtitles
 
 You can add left and right sided titles using `Ltitle` and `Rtitle` to explain
 the direction of effect for up/downregulation. The use of `expression` in the
 example below shows how to add left/right arrow symbols to the titles. The 
-symbols only appear in the saved pdf - they are not compatible with plotly.
+symbols only appear in the saved PDF - they are not compatible with plotly.
 
 `LRtitle_side = 1` puts these titles on the bottom while `LRtitle_side = 3` puts
 them on the top.
@@ -556,9 +556,9 @@ knitr::include_graphics("manhattan.png")
 ```
 
 By default Manhattan plots display only the top 100,000 points by p value in 
-the plotly window and plot the top 1 million SNPs when saving to pdf. These 
+the plotly window and plot the top 1 million SNPs when saving to PDF. These 
 defaults can be altered by setting `npoints` and `nplotly`. Setting `npoints` 
-to `NA` will plot all points when saving to pdf.
+to `NA` will plot all points when saving to PDF.
 
 ```{r eval = FALSE}
 # Examples
@@ -583,10 +583,6 @@ easyManhattan(SLE_gwas, chromCols = RColorBrewer::brewer.pal(4, 'Paired'),
 ```
 
 # Known issues
-
-* We recommend installing at least version 4.10.0 of plotly/R which has much 
-  better on-screen resolution of scatter plots for a better user experience. 
-  Note that exporting to pdf is unaffected by this.
 
 * Plotly's `scattergl` function, which uses webGL, seems to have a limit of 
   around 400,000 scatter points per plot. Above this level, the shiny/plotly 
