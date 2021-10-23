@@ -586,16 +586,15 @@ easylabel <- function(data, x, y,
           annotdf$ay / height * yspan * 1.2
         # expand xlim, ylim for labels on the edges
         if (is.null(xlim)) {
-          xlim <- range(c(xrange, annotdf$ax), na.rm = TRUE)
+          xlim <- xrange <- range(c(xrange, annotdf$ax), na.rm = TRUE)
           xspan <- xlim[2] - xlim[1]
-          xlim[1] <- xlim[1] - xspan * 0.025
-          xlim[2] <- xlim[2] + xspan * 0.025
+          xlim[1] <- xrange[1] <- xlim[1] - xspan * 0.01
+          xlim[2] <- xrange[2] <- xlim[2] + xspan * 0.01
+          xspan <- xspan * 1.02
         }
         if (is.null(ylim)) {
-          ylim <- range(c(yrange, annotdf$ay), na.rm = TRUE)
+          ylim <- yrange <- range(c(yrange, annotdf$ay), na.rm = TRUE)
           yspan <- ylim[2] - ylim[1]
-          ylim[1] <- ylim[1] - yspan * 0.025
-          ylim[2] <- ylim[2] + yspan * 0.025
         }
       }
       leg_xy <- c(legendxy[1] * xspan * 1.05 + xrange[1] - xspan * 0.025,
