@@ -216,8 +216,6 @@ easylabel <- function(data, x, y,
                  showgrid = grepl("y", showgrid, ignore.case = TRUE),
                  color = 'black', ticklen = 5, 
                  showline = TRUE, zeroline = zeroline)
-  xgrid <- pretty(data[, x])
-  ygrid <- pretty(data[, y])
   if (!is.null(xticks)) {
     pxaxis <- c(pxaxis, tickmode = list('array'),
                 tickvals = list(xticks$at),
@@ -225,7 +223,6 @@ easylabel <- function(data, x, y,
   } else if (!is.null(args$xaxp)) {
     pxaxis <- c(pxaxis, tick0 = args$xaxp[1],
                 dtick = (args$xaxp[2] - args$xaxp[1]) / args$xaxp[3])
-    xgrid <- seq(args$xaxp[1], args$xaxp[2], length.out = args$xaxp[3] + 1)
   }
   if (!is.null(yticks)) {
     pyaxis <- c(pyaxis, tickmode = list('array'),
@@ -234,7 +231,6 @@ easylabel <- function(data, x, y,
   } else if (!is.null(args$yaxp)) {
     pyaxis <- c(pyaxis, tick0 = args$yaxp[1],
                 dtick = (args$yaxp[2] - args$yaxp[1]) / args$yaxp[3])
-    ygrid <- seq(args$yaxp[1], args$yaxp[2], length.out = args$yaxp[3] + 1)
   }
   
   # determine outliers
@@ -611,6 +607,16 @@ easylabel <- function(data, x, y,
          + 3) * 0.37, 6)
       xaxt <- if (is.null(xticks)) 's' else 'n'
       yaxt <- if (is.null(yticks)) 's' else 'n'
+      
+      # Grid lines
+      xgrid <- pretty(xlim, n = 7)
+      ygrid <- pretty(ylim, n = 7)
+      if (!is.null(args$xaxp)) {
+        xgrid <- seq(args$xaxp[1], args$xaxp[2], length.out = args$xaxp[3] + 1)
+      }
+      if (!is.null(args$yaxp)) {
+        ygrid <- seq(args$yaxp[1], args$yaxp[2], length.out = args$yaxp[3] + 1)
+      }
       
       pdf(file, width = width/100, height = height/100 + 0.75)
       oldpar <- par(no.readonly = TRUE)
