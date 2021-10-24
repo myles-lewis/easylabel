@@ -715,7 +715,9 @@ easylabel <- function(data, x, y,
         annotdf$texth <- strheight(annotdf$text, cex = cex.text) + 2 * pxy[2]
         annotdf$textw <- strwidth(annotdf$text, cex = cex.text) + 2 * pxy[1]
         # plot label line
-        linerect(annotdf, line_col)
+        if (line_col == "match") {
+          linerect(annotdf, annotdf$col)
+        } else linerect(annotdf, line_col)
         if (rectangles) {
           roundRect(annotdf$ax - annotdf$textw/2, annotdf$ay - annotdf$texth/2,
                     annotdf$ax + annotdf$textw/2, annotdf$ay + annotdf$texth/2,
@@ -996,9 +998,10 @@ linerect <- function(df, line_col = 'black') {
   inside <- df$x >= df$ax - df$textw/2 & df$x <= df$ax + df$textw/2 &
     df$y >= df$ay - df$texth/2 & df$y <= df$ay + df$texth/2
   df$ax2[inside] <- NA
+  if (length(line_col) < nrow(df)) line_col <- rep_len(line_col, nrow(df))
   for (i in 1:nrow(df)) {
     lines(c(df$x[i], df$ax2[i]), c(df$y[i], df$ay2[i]),
-          col = line_col, xpd = NA)
+          col = line_col[i], xpd = NA)
   }
 }
 
