@@ -720,7 +720,10 @@ easylabel <- function(data, x, y,
         if (rectangles) {
           roundRect(annotdf$ax - annotdf$textw/2, annotdf$ay - annotdf$texth/2,
                     annotdf$ax + annotdf$textw/2, annotdf$ay + annotdf$texth/2,
-                    col = rect_col, border = border_col,
+                    col = if (rect_col != "match" | is.na(rect_col)) {
+                      rect_col} else annotdf$col,
+                    border = if (border_col != "match" | is.na(border_col)) {
+                      border_col} else annotdf$col,
                     border_radius = border_radius, xpd = NA)
         }
         text(annotdf$ax, annotdf$ay, annotdf$text,
@@ -1018,6 +1021,7 @@ exprToHtml <- function(x) {
 
 # Plots rounded rectangles for labels
 roundRect <- function(xleft, ybottom, xright, ytop,
+                      col = 'white', border = 'black',
                       border_radius = 8, n = 20, ...) {
   if (border_radius == 0) {
     return(rect(xleft, ybottom, xright, ytop, ...))
@@ -1031,6 +1035,8 @@ roundRect <- function(xleft, ybottom, xright, ytop,
   yi <- border_radius
   xi <- border_radius * diff(par("usr")[1:2]) / diff(par("usr")[3:4])
   xi <- xi * figheight / (par("din")[1] - sum(par("mai")[c(2, 4)]))
+  if (length(col) < length(xleft)) col <- rep_len(col, length(xleft))
+  if (length(border) < length(xleft)) border <- rep_len(border, length(xleft))
   for (i in 1:length(xleft)) {
     x <- c(xright[i] - xi + xi * cx(0, pi/2, n),        # corner TR
            xleft[i] + xi + xi * cx(pi/2, pi, n),        # corner TL
@@ -1040,7 +1046,7 @@ roundRect <- function(xleft, ybottom, xright, ytop,
            ytop[i] - yi + yi * cy(pi/2, pi, n),         # corner TL
            ybottom[i] + yi + yi * cy(pi, 3*pi/2, n),    # corner BL
            ybottom[i] + yi + yi * cy(3*pi/2, 2*pi, n))  # corner BR
-    polygon(x, y, ...)
+    polygon(x, y, col = col[i], border = border[i], ...)
   }
 }
 
