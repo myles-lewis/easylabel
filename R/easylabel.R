@@ -1027,7 +1027,7 @@ roundRect <- function(xleft, ybottom, xright, ytop,
                       col = 'white', border = 'black',
                       border_radius = 8, n = 20, ...) {
   if (border_radius == 0) {
-    return(rect(xleft, ybottom, xright, ytop, ...))
+    return(rect(xleft, ybottom, xright, ytop, col = col, border = border, ...))
   }
   # convert pixels to y axis units
   figheight <- (par("din")[2] - sum(par("mai")[c(1, 3)]))  # inches
