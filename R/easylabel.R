@@ -715,9 +715,8 @@ easylabel <- function(data, x, y,
         annotdf$texth <- strheight(annotdf$text, cex = cex.text) + 2 * pxy[2]
         annotdf$textw <- strwidth(annotdf$text, cex = cex.text) + 2 * pxy[1]
         # plot label line
-        if (line_col == "match") {
-          linerect(annotdf, annotdf$col)
-        } else linerect(annotdf, line_col)
+        linerect(annotdf,
+                 line_col = if (line_col == "match") annotdf$col else line_col)
         if (rectangles) {
           roundRect(annotdf$ax - annotdf$textw/2, annotdf$ay - annotdf$texth/2,
                     annotdf$ax + annotdf$textw/2, annotdf$ay + annotdf$texth/2,
