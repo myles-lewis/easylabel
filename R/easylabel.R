@@ -94,12 +94,15 @@
 #' @param lineLength Initial length of label lines in pixels.
 #' @param text_col Colour of label text (not supported by plotly). If set to 
 #' `"match"` label text will match the colour of each point.
-#' @param line_col Colour of label lines (not supported by plotly).
-#' @param rectangles Logical whether to show rectangles around labels.
-#' (Not supported by plotly.)
-#' @param rect_col Colour for filling rectangles. (Not supported by plotly.)
-#' @param border_col Colour of rectangle borders. Use `border_col = NA` to omit
-#' borders. (Not supported by plotly.)
+#' @param line_col Colour of label lines (not supported by plotly). If set to 
+#' `"match"` label line will match the colour of each point.
+#' @param rectangles Logical whether to show rectangles around labels
+#' (not supported by plotly).
+#' @param rect_col Colour for filling rectangles (not supported by plotly). If 
+#' set to `"match"` rectangle fill colour will match the colour of each point.
+#' @param border_col Colour of rectangle borders (not supported by plotly). 
+#' Use `border_col = NA` to omit borders. If set to `"match"` rectangle border 
+#' colour will match the colour of each point.
 #' @param padding Amount of padding in pixels around label text.
 #' @param border_radius Amount of roundedness in pixels to apply to label
 #' rectangles. (Not supported by plotly.)
