@@ -92,16 +92,20 @@
 #' @param labCentre Coordinates in x/y units of the central point towards which
 #' radial labels converge. Defaults to the centre of the plot.
 #' @param lineLength Initial length of label lines in pixels.
-#' @param text_col Colour of label text. (Not supported by plotly.)
-#' @param line_col Colour of label lines. (Not supported by plotly.)
-#' @param rectangles Logical whether to show rectangles around labels.
-#' (Not supported by plotly.)
-#' @param rect_col Colour for filling rectangles. (Not supported by plotly.)
-#' @param border_col Colour of rectangle borders. Use `border_col = NA` to omit
-#' borders. (Not supported by plotly.)
+#' @param text_col Colour of label text (not supported by plotly). If set to 
+#' `"match"` label text will match the colour of each point.
+#' @param line_col Colour of label lines (not supported by plotly). If set to 
+#' `"match"` label line will match the colour of each point.
+#' @param rectangles Logical whether to show rectangles around labels
+#' (not supported by plotly).
+#' @param rect_col Colour for filling rectangles (not supported by plotly). If 
+#' set to `"match"` rectangle fill colour will match the colour of each point.
+#' @param border_col Colour of rectangle borders (not supported by plotly). 
+#' Use `border_col = NA` to omit borders. If set to `"match"` rectangle border 
+#' colour will match the colour of each point.
 #' @param padding Amount of padding in pixels around label text.
 #' @param border_radius Amount of roundedness in pixels to apply to label
-#' rectangles. (Not supported by plotly.)
+#' rectangles (not supported by plotly).
 #' @param showLegend Logical whether to show or hide the legend.
 #' @param legendxy Vector of coordinates for the position of the legend. 
 #' Coordinates are in plotly paper reference with `c(0, 0)` being the bottom 
@@ -579,6 +583,7 @@ easylabel <- function(data, x, y,
                               ax = unlist(lapply(annot, '[', 'ax')),
                               ay = unlist(lapply(annot, '[', 'ay')),
                               text = unlist(lapply(annot, '[', 'text')))
+        annotdf$col <- colScheme[data[as.numeric(labs), col]]
         # convert plotly ax,ay to x,y coords
         annotdf$ax <- annotdf$x +
           annotdf$ax / (width - 150) * xspan * 1.2
@@ -713,15 +718,20 @@ easylabel <- function(data, x, y,
         annotdf$texth <- strheight(annotdf$text, cex = cex.text) + 2 * pxy[2]
         annotdf$textw <- strwidth(annotdf$text, cex = cex.text) + 2 * pxy[1]
         # plot label line
-        linerect(annotdf, line_col)
+        linerect(annotdf,
+                 line_col = if (line_col == "match") annotdf$col else line_col)
         if (rectangles) {
           roundRect(annotdf$ax - annotdf$textw/2, annotdf$ay - annotdf$texth/2,
                     annotdf$ax + annotdf$textw/2, annotdf$ay + annotdf$texth/2,
-                    col = rect_col, border = border_col,
+                    col = if (rect_col != "match" | is.na(rect_col)) {
+                      rect_col} else annotdf$col,
+                    border = if (border_col != "match" | is.na(border_col)) {
+                      border_col} else annotdf$col,
                     border_radius = border_radius, xpd = NA)
         }
         text(annotdf$ax, annotdf$ay, annotdf$text,
-             col = text_col, xpd = NA, cex = cex.text)
+             xpd = NA, cex = cex.text,
+             col = if (text_col == "match") annotdf$col else text_col)
       }
       if (!is.null(c(col, shape)) & showLegend) {
         legend(x = leg_xy[1], y = leg_xy[2],
@@ -993,9 +1003,10 @@ linerect <- function(df, line_col = 'black') {
   inside <- df$x >= df$ax - df$textw/2 & df$x <= df$ax + df$textw/2 &
     df$y >= df$ay - df$texth/2 & df$y <= df$ay + df$texth/2
   df$ax2[inside] <- NA
+  if (length(line_col) < nrow(df)) line_col <- rep_len(line_col, nrow(df))
   for (i in 1:nrow(df)) {
     lines(c(df$x[i], df$ax2[i]), c(df$y[i], df$ay2[i]),
-          col = line_col, xpd = NA)
+          col = line_col[i], xpd = NA)
   }
 }
 
@@ -1013,9 +1024,10 @@ exprToHtml <- function(x) {
 
 # Plots rounded rectangles for labels
 roundRect <- function(xleft, ybottom, xright, ytop,
+                      col = 'white', border = 'black',
                       border_radius = 8, n = 20, ...) {
   if (border_radius == 0) {
-    return(rect(xleft, ybottom, xright, ytop, ...))
+    return(rect(xleft, ybottom, xright, ytop, col = col, border = border, ...))
   }
   # convert pixels to y axis units
   figheight <- (par("din")[2] - sum(par("mai")[c(1, 3)]))  # inches
@@ -1026,6 +1038,8 @@ roundRect <- function(xleft, ybottom, xright, ytop,
   yi <- border_radius
   xi <- border_radius * diff(par("usr")[1:2]) / diff(par("usr")[3:4])
   xi <- xi * figheight / (par("din")[1] - sum(par("mai")[c(2, 4)]))
+  if (length(col) < length(xleft)) col <- rep_len(col, length(xleft))
+  if (length(border) < length(xleft)) border <- rep_len(border, length(xleft))
   for (i in 1:length(xleft)) {
     x <- c(xright[i] - xi + xi * cx(0, pi/2, n),        # corner TR
            xleft[i] + xi + xi * cx(pi/2, pi, n),        # corner TL
@@ -1035,7 +1049,7 @@ roundRect <- function(xleft, ybottom, xright, ytop,
            ytop[i] - yi + yi * cy(pi/2, pi, n),         # corner TL
            ybottom[i] + yi + yi * cy(pi, 3*pi/2, n),    # corner BL
            ybottom[i] + yi + yi * cy(3*pi/2, 2*pi, n))  # corner BR
-    polygon(x, y, ...)
+    polygon(x, y, col = col[i], border = border[i], ...)
   }
 }
 
