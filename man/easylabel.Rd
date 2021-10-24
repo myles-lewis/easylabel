@@ -191,7 +191,7 @@ colour will match the colour of each point.}
 \item{padding}{Amount of padding in pixels around label text.}
 
 \item{border_radius}{Amount of roundedness in pixels to apply to label
-rectangles. (Not supported by plotly.)}
+rectangles (not supported by plotly).}
 
 \item{showLegend}{Logical whether to show or hide the legend.}
 

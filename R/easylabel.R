@@ -105,7 +105,7 @@
 #' colour will match the colour of each point.
 #' @param padding Amount of padding in pixels around label text.
 #' @param border_radius Amount of roundedness in pixels to apply to label
-#' rectangles. (Not supported by plotly.)
+#' rectangles (not supported by plotly).
 #' @param showLegend Logical whether to show or hide the legend.
 #' @param legendxy Vector of coordinates for the position of the legend. 
 #' Coordinates are in plotly paper reference with `c(0, 0)` being the bottom 
