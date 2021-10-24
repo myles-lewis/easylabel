@@ -579,6 +579,7 @@ easylabel <- function(data, x, y,
                               ax = unlist(lapply(annot, '[', 'ax')),
                               ay = unlist(lapply(annot, '[', 'ay')),
                               text = unlist(lapply(annot, '[', 'text')))
+        annotdf$col <- colScheme[data[as.numeric(labs), col]]
         # convert plotly ax,ay to x,y coords
         annotdf$ax <- annotdf$x +
           annotdf$ax / (width - 150) * xspan * 1.2
@@ -721,7 +722,8 @@ easylabel <- function(data, x, y,
                     border_radius = border_radius, xpd = NA)
         }
         text(annotdf$ax, annotdf$ay, annotdf$text,
-             col = text_col, xpd = NA, cex = cex.text)
+             xpd = NA, cex = cex.text,
+             col = if (text_col == "match") annotdf$col else text_col)
       }
       if (!is.null(c(col, shape)) & showLegend) {
         legend(x = leg_xy[1], y = leg_xy[2],
