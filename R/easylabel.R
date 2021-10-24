@@ -92,8 +92,9 @@
 #' @param labCentre Coordinates in x/y units of the central point towards which
 #' radial labels converge. Defaults to the centre of the plot.
 #' @param lineLength Initial length of label lines in pixels.
-#' @param text_col Colour of label text. (Not supported by plotly.)
-#' @param line_col Colour of label lines. (Not supported by plotly.)
+#' @param text_col Colour of label text (not supported by plotly). If set to 
+#' `"match"` label text will match the colour of each point.
+#' @param line_col Colour of label lines (not supported by plotly).
 #' @param rectangles Logical whether to show rectangles around labels.
 #' (Not supported by plotly.)
 #' @param rect_col Colour for filling rectangles. (Not supported by plotly.)
