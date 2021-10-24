@@ -470,7 +470,8 @@ knitr::include_graphics("MAplot2.png")
 # Controlling labels
 
 Label lines can be altered using the argument `labelDir` or by selecting the
-Label direction pulldown menu in the shiny app. Options are shown below:
+Label direction pulldown menu in the shiny app. A couple of examples are shown 
+below:
 
 ```{r eval = FALSE}
 easyVolcano(volc1, labelDir = "horiz")
@@ -483,7 +484,13 @@ knitr::include_graphics(c("labdir_horiz.png", "labdir_vert.png"))
 
 ## Adding label boxes
 
-Rectangles can be drawn around the label text, using `rectangles = TRUE`.
+Rectangles can be drawn around the label text, using `rectangles = TRUE`, and 
+will appear when saving to PDF (they are not supported in plotly). Rectangle 
+fill colour can be set using `rect_col` and rectangle border colour can be set 
+using `border_col`. Use `border_col = NA` to turn off rectangle borders. The 
+amount of padding in pixels around label text can be specified by setting 
+`padding`. The amount of roundedness in pixels of rectangle corners is specified 
+by `border_radius`.
 
 ```{r eval = FALSE}
 # Simple outlines
@@ -530,6 +537,16 @@ easyVolcano(volc2, useQ = TRUE, fullGeneNames = TRUE,
 ```{r labrect4, echo = FALSE, message=FALSE, fig.show='hold', out.width='80%', out.extra='style="border: 0;"'}
 knitr::include_graphics("rect_invert.png")
 ```
+
+## Matching label & point colours
+
+While label text and label lines can be adjusted by setting `text_col` and 
+`line_col` to single colours, label text and label lines can also be set to 
+mirror the colour of each point by setting `text_col = "match"` and 
+`line_col = "match"` respectively. Rectangle fill colour or rectangle outline 
+colour can also be set to match each point's colour by setting 
+`rect_col = "match"` or `border_col = "match"` (not currently supported in 
+plotly).
 
 # Manhattan plot
 
