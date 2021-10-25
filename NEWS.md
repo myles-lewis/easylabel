@@ -1,6 +1,11 @@
 News
 =====
 
+# easylabel 0.2.3
+###### 25/10/2021
+
+* Add option for label text, line and box colours to match colour of each point
+
 # easylabel 0.2.2
 ###### 22/10/2021
 
