@@ -570,7 +570,7 @@ easylabel(gapminder[gapminder$year == 2007, ], x = 'gdpPercap', y = 'lifeExp',
           alpha = 0.6,
           line_col = "match", text_col = "white",
           rectangles = TRUE, border_col = NA,
-          rect_col = "match", border_radius = 0, padding = 5,
+          rect_col = "match", border_radius = 20, padding = 5,
           zeroline = FALSE, showgrid = "y")
 ```
 
