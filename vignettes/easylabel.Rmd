@@ -548,6 +548,36 @@ colour can also be set to match each point's colour by setting
 `rect_col = "match"` or `border_col = "match"` (not currently supported in 
 plotly).
 
+```{r eval = FALSE}
+# Label text and label lines match point colours
+easylabel(gapminder[gapminder$year == 2007, ], x = 'gdpPercap', y = 'lifeExp',
+          col = 'continent', labs = 'country', 
+          size = 'pop',
+          alpha = 0.6,
+          line_col = "match", text_col = "match",
+          zeroline = FALSE, showgrid = "y")
+```
+
+```{r labmatch1, echo = FALSE, message=FALSE, fig.show='hold', out.width='80%', out.extra='style="border: 0;"'}
+knitr::include_graphics("match1.png")
+```
+
+```{r eval = FALSE}
+# Rectangle fill colour and label line match point colours, rounded rectangles
+easylabel(gapminder[gapminder$year == 2007, ], x = 'gdpPercap', y = 'lifeExp',
+          col = 'continent', labs = 'country', 
+          size = 'pop',
+          alpha = 0.6,
+          line_col = "match", text_col = "white",
+          rectangles = TRUE, border_col = NA,
+          rect_col = "match", border_radius = 0, padding = 5,
+          zeroline = FALSE, showgrid = "y")
+```
+
+```{r labmatch2, echo = FALSE, message=FALSE, fig.show='hold', out.width='80%', out.extra='style="border: 0;"'}
+knitr::include_graphics("match2.png")
+```
+
 # Manhattan plot
 
 Manhattan plots can be labelled using the function `easyManhattan()`. Plotly 
