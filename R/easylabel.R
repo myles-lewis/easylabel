@@ -153,6 +153,7 @@
 #' @importFrom grDevices adjustcolor pdf dev.off
 #' @importFrom graphics abline legend lines mtext par points polygon rect
 #' strheight strwidth text axis
+#' @importFrom gplots col2hex
 #' @importFrom stats as.formula
 #' @importFrom shinycssloaders withSpinner
 #' @importFrom shinybusy show_modal_spinner remove_modal_spinner
@@ -316,6 +317,7 @@ easylabel <- function(data, x, y,
       }
     }
   }
+  colScheme <- gplots::col2hex(colScheme)
   
   # deal with case that col is NULL but label colours are set to "match"
   if (is.null(col)) {
