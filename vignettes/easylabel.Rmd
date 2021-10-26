@@ -482,6 +482,14 @@ easyMAplot(volc1, labelDir = "vert")
 knitr::include_graphics(c("labdir_horiz.png", "labdir_vert.png"))
 ```
 
+## Label line and text
+
+Label line colour can be set using `line_col`. Label text colour can be set 
+using `text_col`. Each of these can be set to match the colour of each point by 
+setting each to `"match"`. Default label line length can be altered by changing 
+`lineLength` (default 75 in pixels). `cex.text` can be changed to alter the 
+font size of labels (default 0.72).
+
 ## Adding label boxes
 
 Rectangles can be drawn around the label text, using `rectangles = TRUE`, and 
@@ -541,11 +549,11 @@ knitr::include_graphics("rect_invert.png")
 ## Matching label & point colours
 
 While label text and label lines can be adjusted by setting `text_col` and 
-`line_col` to single colours, label text and label lines can also be set to 
+`line_col` to individual colours, label text and label lines can also be set to 
 mirror the colour of each point by setting `text_col = "match"` and 
-`line_col = "match"` respectively. Rectangle fill colour or rectangle outline 
+`line_col = "match"` respectively. Label box fill colour or rectangle outline 
 colour can also be set to match each point's colour by setting 
-`rect_col = "match"` or `border_col = "match"` (not currently supported in 
+`rect_col = "match"` or `border_col = "match"` (label boxes are not supported in 
 plotly).
 
 ```{r eval = FALSE}
