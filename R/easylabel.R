@@ -316,6 +316,15 @@ easylabel <- function(data, x, y,
       }
     }
   }
+  
+  # deal with case that col is NULL but label colours are set to "match"
+  if (is.null(col)) {
+    if (line_col == "match") line_col <- colScheme[1]
+    if (text_col == "match") text_col <- colScheme[1]
+    if (rect_col == "match") rect_col <- colScheme[1]
+    if (border_col == "match") border_col <- colScheme[1]
+  }
+  ptext_col <- if (rectangles & text_col == "white") rect_col else text_col
 
   # plotly arguments
   psymbols <- pch2symbol[shapeScheme + 1]
@@ -374,7 +383,9 @@ easylabel <- function(data, x, y,
                             labSize = labSize,
                             labelDir = labelDir, labCentre = labCentre,
                             xyspan = xyspan,
-                            lineLength = lineLength)
+                            lineLength = lineLength,
+                            col = col, colScheme = colScheme, 
+                            text_col = ptext_col, line_col = line_col)
   start_xy <- lapply(start_annot, function(i) list(ax = i$ax, ay = i$ay))
   names(start_xy) <- startLabels
   hovertext <- labelchoices
@@ -463,7 +474,9 @@ easylabel <- function(data, x, y,
                           labelchoices = labelchoices,
                           labSize = labSize, labelDir = ldir,
                           labCentre = labCentre, xyspan = xyspan,
-                          lineLength = lineLength)
+                          lineLength = lineLength,
+                          col = col, colScheme = colScheme, 
+                          text_col = ptext_col, line_col = line_col)
       if (!is.null(hline)) {
         pshapes = lapply(hline, function(i) {
           list(type = "line",
@@ -577,13 +590,15 @@ easylabel <- function(data, x, y,
         annot <- annotation(labs, plotly_data, x, y, current_xy,
                             labelchoices = labelchoices,
                             labSize = labSize,
-                            lineLength = lineLength)
+                            lineLength = lineLength,
+                            col = col, colScheme = colScheme, 
+                            text_col = ptext_col, line_col = line_col)
         annotdf <- data.frame(x = unlist(lapply(annot, '[', 'x')),
                               y = unlist(lapply(annot, '[', 'y')),
                               ax = unlist(lapply(annot, '[', 'ax')),
                               ay = unlist(lapply(annot, '[', 'ay')),
                               text = unlist(lapply(annot, '[', 'text')))
-        annotdf$col <- colScheme[data[as.numeric(labs), col]]
+        if (!is.null(col)) annotdf$col <- colScheme[data[as.numeric(labs), col]]
         # convert plotly ax,ay to x,y coords
         annotdf$ax <- annotdf$x +
           annotdf$ax / (width - 150) * xspan * 1.2
@@ -805,7 +820,9 @@ easylabel <- function(data, x, y,
                           labSize = labSize,
                           labelDir = input$labDir, labCentre = labCentre,
                           xyspan = xyspan,
-                          lineLength = lineLength)
+                          lineLength = lineLength,
+                          col = col, colScheme = colScheme, 
+                          text_col = ptext_col, line_col = line_col)
       labelsxy$list <- lapply(annot, function(i) list(ax = i$ax, ay = i$ay))
       names(labelsxy$list) <- labs
       plotlyProxy('plotly', session) %>%
@@ -894,7 +911,9 @@ easylabel <- function(data, x, y,
                           labSize = labSize,
                           labelDir = input$labDir, labCentre = labCentre,
                           xyspan = xyspan,
-                          lineLength = lineLength)
+                          lineLength = lineLength,
+                          col = col, colScheme = colScheme, 
+                          text_col = ptext_col, line_col = line_col)
       labelsxy$list <- lapply(annot, function(i) list(ax = i$ax, ay = i$ay))
       names(labelsxy$list) <- labs
       plotlyProxy('plotly', session) %>%
@@ -920,11 +939,13 @@ names(labDir_choices) <- c('Radial centre', 'Radial origin',
 # Annotate gene labels
 annotation <- function(labels, data, x, y, current_xy = NULL,
                        labelchoices,
-                       labSize = 12, labelDir = "radial",
+                       labSize, labelDir = "radial",
                        labCentre = c(0, 0), xyspan = c(1, 1),
-                       lineLength = 75) {
+                       lineLength,
+                       col, colScheme, text_col = 'black', line_col = 'black') {
   if (length(labels) == 0) return(list())
   row <- data[as.numeric(labels), ]
+  if (!is.null(col)) datcol <- colScheme[row[, col]]
   sx <- row[, x]
   sy <- row[, y]
   dx <- (sx - labCentre[1]) / xyspan[1]
@@ -982,8 +1003,10 @@ annotation <- function(labels, data, x, y, current_xy = NULL,
     }
     list(x = sx[j], y = sy[j], ax = ax[j], ay = ay[j],
          text = labelchoices[as.numeric(i)], textangle = 0,
-         font = list(color = "black", size = labSize),
-         arrowcolor = "black", arrowwidth = 1, arrowhead = 0, arrowsize = 1.5,
+         font = list(color = if (text_col == "match") datcol[j] else text_col,
+                     size = labSize),
+         arrowcolor = if (line_col == "match") datcol[j] else line_col,
+         arrowwidth = 1, arrowhead = 0, arrowsize = 1.5,
          xanchor = "auto", yanchor = "auto")
   })
 }
