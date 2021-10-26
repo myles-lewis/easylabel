@@ -172,10 +172,10 @@ radial labels converge. Defaults to the centre of the plot.}
 
 \item{lineLength}{Initial length of label lines in pixels.}
 
-\item{text_col}{Colour of label text (not supported by plotly). If set to
+\item{text_col}{Colour of label text. If set to
 \code{"match"} label text will match the colour of each point.}
 
-\item{line_col}{Colour of label lines (not supported by plotly). If set to
+\item{line_col}{Colour of label lines. If set to
 \code{"match"} label line will match the colour of each point.}
 
 \item{rectangles}{Logical whether to show rectangles around labels
