@@ -598,7 +598,7 @@ easylabel <- function(data, x, y,
                               ax = unlist(lapply(annot, '[', 'ax')),
                               ay = unlist(lapply(annot, '[', 'ay')),
                               text = unlist(lapply(annot, '[', 'text')))
-        if (!is.null(col)) annotdf$col <- colScheme[data[as.numeric(labs), col]]
+        if (!is.null(col)) annotdf$col <- colScheme[plotly_data[as.numeric(labs), col]]
         # convert plotly ax,ay to x,y coords
         annotdf$ax <- annotdf$x +
           annotdf$ax / (width - 150) * xspan * 1.2
