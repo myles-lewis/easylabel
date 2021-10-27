@@ -9,7 +9,9 @@ are located and click on points to easily label them. Labels can be toggled
 on/off simply by clicking. An input box and batch input window provides an easy 
 way to label points by name. Labels can be dragged around the plot to place 
 them optimally. Notably we provide an easy way to export directly to PDF for 
-publication.
+publication. Plots and labels are highly customisable allowing for control over 
+label and line colour with options including rounded label boxes and matching 
+of label colours to point colours.
 
 ## Installation
 
