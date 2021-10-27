@@ -150,10 +150,9 @@
 #' event_register config plotlyProxy plotlyProxyInvoke add_markers %>%
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom DT dataTableOutput datatable formatSignif
-#' @importFrom grDevices adjustcolor pdf dev.off
+#' @importFrom grDevices adjustcolor pdf dev.off col2rgb rgb
 #' @importFrom graphics abline legend lines mtext par points polygon rect
 #' strheight strwidth text axis
-#' @importFrom gplots col2hex
 #' @importFrom stats as.formula
 #' @importFrom shinycssloaders withSpinner
 #' @importFrom shinybusy show_modal_spinner remove_modal_spinner
@@ -317,7 +316,7 @@ easylabel <- function(data, x, y,
       }
     }
   }
-  colScheme <- gplots::col2hex(colScheme)
+  colScheme <- col2hex(colScheme)
   
   # deal with case that col is NULL but label colours are set to "match"
   if (is.null(col)) {
@@ -1106,3 +1105,8 @@ pch2symbol <- c('square-open', 'circle-open',
             'circle', 'circle',
             'square', 'diamond',
             'arrow-up', 'arrow-down')
+
+col2hex <- function (cname) {
+  colMat <- col2rgb(cname)
+  rgb(red = colMat[1, ]/255, green = colMat[2, ]/255, blue = colMat[3, ]/255)
+}
