@@ -40,7 +40,6 @@ Imports:
     RColorBrewer,
     DT,
     gtools,
-    gplots,
     splus2R
 RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE)
