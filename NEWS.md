@@ -5,7 +5,7 @@ News
 ###### 26/10/2021
 
 * Add option for label text, line and box colours to match colour of each point
-* Label text & line colours now also works in plotly
+* Label text & line colours now also work in plotly
 
 # easylabel 0.2.2
 ###### 22/10/2021
