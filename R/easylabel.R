@@ -981,13 +981,8 @@ annotation <- function(labels, data, x, y, current_xy = NULL,
     ax <- sign(dx) * lineLength
     ay <- -sign(dy) * lineLength
   } else if (labelDir == 'rect') {
-    if (abs(dx) > abs(dy)) {
-      ax <- sign(dx) * lineLength
-      ay <- rep.int(0, length(labels))
-    } else {
-      ax <- rep.int(0, length(labels))
-      ay <- -sign(dy) * lineLength
-    }
+    ax <- ifelse(abs(dx) > abs(dy), sign(dx) * lineLength, 0)
+    ay <- ifelse(abs(dx) > abs(dy), 0, -sign(dy) * lineLength)
   } else if (labelDir == 'oct') {
     ang <- atan2(dy, dx)
     ang <- round(ang * 4 / pi)
