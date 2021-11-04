@@ -90,6 +90,33 @@ knitr::include_graphics("scatter1.png")
   editing can very slow, particularly with large numbers of points).
 * Press the camera button in the plotly modebar to save image as SVG.
 
+## Export as plotly 
+
+The `output_shiny` option enables users to switch between using shiny and plotly 
+outputs. For example to extract a plotly figure with interactive annotations: 
+
+```{r, eval=FALSE}
+data(mtcars)
+
+p1 <- easylabel(mtcars, x = 'mpg', y = 'wt', col = 'cyl', 
+          startLabels = rownames(mtcars)[mtcars$gear == 5], 
+          output_shiny=FALSE) %>% 
+  layout(yaxis=list(zeroline=FALSE))
+
+p2 <- easylabel(mtcars, x = 'mpg', y = 'drat', col = 'vs', 
+                colScheme=c("dodgerblue", "orange"), 
+                startLabels = rownames(mtcars)[mtcars$gear == 5], 
+                output_shiny=FALSE) %>% 
+  layout(xaxis=list(zeroline=FALSE))
+
+
+plotly::subplot(p1, p2, nrows=2, shareY = T, titleX = T, margin=0.05)
+```
+
+```{r plotlyOutput, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
+knitr::include_graphics("plotly_output.png")
+```
+
 ## Colour
 
 Similar to ggplot2 and plotly, colour can either be set as a single colour, 
@@ -270,6 +297,8 @@ for inspecting and labelling via plotly. `plotly_filter` specifies the name of
 this column. Saving to PDF retains the full dataset and all points will be 
 plotted. This argument is used by the `easyManhattan()` function (see 
 [Manhattan plot]).
+
+
 
 # Volcano plots
 

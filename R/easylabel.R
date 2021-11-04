@@ -130,6 +130,8 @@
 #' Defaults to human gene database `AnnotationDb = org.Hs.eg.db`.
 #' @param custom_annotation List of annotations to be added via
 #' [plotly::layout()].
+#' @param output_shiny Logical whether to output a shiny app. If FALSE a plotly
+#' figure will be returned.
 #' @param ... Further graphical parameters passed to `plot()` when saving via
 #' base graphics. The most useful for most users are likely to be `cex.lab`
 #' which alters axis title font size (default 1, see [par()]), `cex.axis` which
@@ -203,7 +205,9 @@ easylabel <- function(data, x, y,
                       panel.last = NULL,
                       fullGeneNames = FALSE,
                       AnnotationDb = NULL,
-                      custom_annotation = NULL, ...) {
+                      custom_annotation = NULL, 
+                      output_shiny = TRUE, 
+                      ...) {
   name_data <- deparse(substitute(data))
   if (is.null(filename)) filename <- paste0("label_", name_data)
   args <- list(...)
@@ -412,6 +416,24 @@ easylabel <- function(data, x, y,
                                plotly_data$gene_fullname[notNA])
   }
   
+  if (!is.null(hline)) {
+    pshapes = lapply(hline, function(i) {
+      list(type = "line",
+           line = list(width = 1, color = '#AAAAAA', dash = 'dash'),
+           x0 = 0, x1 = 1, y0 = i, y1 = i, xref = "paper")
+    })
+  } else {
+    pshapes = list()
+  }
+  if (!is.null(vline)) {
+    pshapes = c(pshapes, lapply(vline, function(i) {
+      list(type = "line",
+           line = list(width = 1, color = '#AAAAAA', dash = 'dash'),
+           y0 = 0, y1 = 1, x0 = i, x1 = i, yref = "paper")
+    }))
+  }
+  
+  if(output_shiny){
   ui <- fluidPage(
     tabsetPanel(
       tabPanel("Plot",
@@ -478,22 +500,6 @@ easylabel <- function(data, x, y,
                           lineLength = lineLength,
                           col = col, colScheme = colScheme, 
                           text_col = ptext_col, line_col = line_col)
-      if (!is.null(hline)) {
-        pshapes = lapply(hline, function(i) {
-          list(type = "line",
-               line = list(width = 1, color = '#AAAAAA', dash = 'dash'),
-               x0 = 0, x1 = 1, y0 = i, y1 = i, xref = "paper")
-        })
-      } else {
-        pshapes = list()
-      }
-      if (!is.null(vline)) {
-        pshapes = c(pshapes, lapply(vline, function(i) {
-          list(type = "line",
-               line = list(width = 1, color = '#AAAAAA', dash = 'dash'),
-               y0 = 0, y1 = 1, x0 = i, x1 = i, yref = "paper")
-        }))
-      }
 
       switch(showOutliers,
              # no outliers
@@ -926,6 +932,91 @@ easylabel <- function(data, x, y,
   }
 
   shinyApp(ui, server)
+  } else {
+    labs <- startLabels
+    annot <- annotation(labs, plotly_data, x, y,
+                        labelchoices = labelchoices,
+                        labSize = labSize, labelDir = labelDir,
+                        labCentre = labCentre, xyspan = xyspan,
+                        lineLength = lineLength,
+                        col = col, colScheme = colScheme, 
+                        text_col = ptext_col, line_col = line_col)
+    
+    switch(showOutliers,
+           # no outliers
+           plot_ly(data = plotly_data, x = as.formula(paste0('~', x)),
+                   y = as.formula(paste0('~', y)),
+                   type = 'scattergl',
+                   mode = 'markers',
+                   color = if (!is.null(col)) {
+                     as.formula(paste0('~', col))
+                   } else I(colScheme),
+                   colors = colScheme,
+                   size = switch(sizeSwitch, I(size), ~plotly_size),
+                   marker = pmarker,
+                   sizes = sizeRange,
+                   symbol = if (!is.null(shape)) {
+                     as.formula(paste0('~', shape))
+                   } else I(psymbols),
+                   symbols = psymbols,
+                   text = hovertext, hoverinfo = 'text',
+                   key = pkey, source = 'lab_plotly',
+                   width = width, height = height) %>%
+             layout(
+               title = args$main,
+               xaxis = pxaxis,
+               yaxis = pyaxis),
+           # with outliers
+           plot_ly(data = plotly_data[!plotly_data$outlier,],
+                   x = as.formula(paste0('~', x)),
+                   y = as.formula(paste0('~', y)),
+                   type = 'scattergl',
+                   mode = 'markers',
+                   color = if (!is.null(col)) {
+                     as.formula(paste0('~', col))
+                   } else I(colScheme),
+                   colors = colScheme,
+                   size = switch(sizeSwitch, I(size), ~plotly_size),
+                   marker = pmarker,
+                   symbol = if (!is.null(shape)) {
+                     ~comb_symbol
+                   } else I(psymbols),
+                   symbols = psymbols,
+                   text = hovertext[!plotly_data$outlier], hoverinfo = 'text',
+                   key = pkey[!plotly_data$outlier], source = 'lab_plotly',
+                   legendgroup = 'Main',
+                   width = width, height = height) %>%
+             add_markers(data = plotly_data[plotly_data$outlier, ],
+                         x = as.formula(paste0('~', x)),
+                         y = as.formula(paste0('~', y)),
+                         type = switch(pt, 'scattergl', 'scatter'),
+                         color = as.formula(paste0('~', col)),
+                         colors = colScheme,
+                         marker = pmarker,
+                         symbol = if (!is.null(shape)) {
+                           ~comb_symbol
+                         } else I(outlier_psymbol),
+                         symbols = psymbols,
+                         inherit = F,
+                         text = hovertext[plotly_data$outlier],
+                         hoverinfo = 'text',
+                         key = pkey[plotly_data$outlier],
+                         legendgroup = 'outlier', name = 'outlier') %>%
+             layout(
+               title = args$main,
+               xaxis = pxaxis,
+               yaxis = pyaxis)
+    ) %>%
+      layout(annotations = c(annot, LRtitles, custom_annotation),
+             hovermode = 'closest',
+             legend = list(font = list(color = 'black'),
+                           x = legendxy[1], y = legendxy[2]),
+             showlegend = showLegend,
+             shapes = pshapes) %>%
+      config(edits = list(annotationTail = TRUE),
+             toImageButtonOptions = list(format = "svg")) %>%
+      event_register(event = 'plotly_click')
+  }
 
 }
 

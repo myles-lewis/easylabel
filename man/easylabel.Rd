@@ -56,6 +56,7 @@ easylabel(
   fullGeneNames = FALSE,
   AnnotationDb = NULL,
   custom_annotation = NULL,
+  output_shiny = TRUE,
   ...
 )
 }
