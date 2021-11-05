@@ -82,12 +82,12 @@ knitr::include_graphics("scatter1.png")
 ## Export plot to PDF
 * Hover over and click on/off genes which you want to label.
 * When you have selected all your chosen genes, then drag gene names to move
-  label positions.
+label positions.
 * Click the save button to export a PDF in base graphics.
 
 ## Export SVG from plotly
 * Switch to SVG when finalised (only do this at last moment as otherwise
-  editing can very slow, particularly with large numbers of points).
+editing can very slow, particularly with large numbers of points).
 * Press the camera button in the plotly modebar to save image as SVG.
 
 ## Export as plotly 
@@ -99,8 +99,8 @@ outputs. For example to extract a plotly figure with interactive annotations:
 data(mtcars)
 
 p1 <- easylabel(mtcars, x = 'mpg', y = 'wt', col = 'cyl', 
-          startLabels = rownames(mtcars)[mtcars$gear == 5], 
-          output_shiny=FALSE) %>% 
+                startLabels = rownames(mtcars)[mtcars$gear == 5], 
+                output_shiny=FALSE) %>% 
   layout(yaxis=list(zeroline=FALSE))
 
 p2 <- easylabel(mtcars, x = 'mpg', y = 'drat', col = 'vs', 
@@ -374,8 +374,8 @@ which can make it easier to label points of interest. For mouse genes, install
 BiocManager::install("org.Mm.eg.db")
 library(org.Mm.eg.db)
 easyVolcano(volc1,
-          fullGeneNames = TRUE,
-          AnnotationDb = org.Mm.eg.db)
+            fullGeneNames = TRUE,
+            AnnotationDb = org.Mm.eg.db)
 ```
 
 ## Colour schemes
@@ -488,8 +488,8 @@ Similarly 6 colours can be applied to MA plots using 3 levels of cut-off for FDR
 ```{r eval = FALSE}
 colScheme <- c('darkgrey', brewer.pal(9, 'RdYlBu')[c(7:9, 3:1)])
 easyMAplot(volc2, fdrcutoff = c(0.05, 0.01, 0.001), size = 6, useQ = TRUE,
-       alpha = 0.75, outline_col = NA,
-       colScheme = colScheme)
+           alpha = 0.75, outline_col = NA,
+           colScheme = colScheme)
 ```
 
 ```{r easyMAplot2, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
@@ -551,14 +551,14 @@ knitr::include_graphics("rect_red_outline.png")
 ```{r eval = FALSE}
 # Transparent grey rectangles, rounded ends
 easyMAplot(volc2, fdrcut = c(0.05, 0.01, 0.001), size = 6, useQ = TRUE,
-       alpha = 0.75, outline_col = NA,
-       fullGeneNames = TRUE,
-       colScheme = c('darkgrey', brewer.pal(9, 'RdYlBu')[c(7:9, 3:1)]),
-       rectangles = TRUE,
-       border_col = NA,
-       padding = 5,
-       rect_col = adjustcolor('grey', alpha.f = 0.6),
-       border_radius = 20)
+           alpha = 0.75, outline_col = NA,
+           fullGeneNames = TRUE,
+           colScheme = c('darkgrey', brewer.pal(9, 'RdYlBu')[c(7:9, 3:1)]),
+           rectangles = TRUE,
+           border_col = NA,
+           padding = 5,
+           rect_col = adjustcolor('grey', alpha.f = 0.6),
+           border_radius = 20)
 
 # White text on black background, no rounding
 easyVolcano(volc2, useQ = TRUE, fullGeneNames = TRUE,
@@ -666,10 +666,52 @@ easyManhattan(SLE_gwas, chromCols = RColorBrewer::brewer.pal(4, 'Paired'),
               shapeScheme = c(rep(20, 4), 18))
 ```
 
+## Locus plots
+
+To look in a specific genomic region
+
+```{r, eval=FALSE}
+# Create a locus plot over one chromosomal region
+library(plotly)
+p1 = easyManhattan(SLE_gwas[SLE_gwas$chrom == 6 & 
+                              SLE_gwas$pos >= 28e6 & 
+                              SLE_gwas$pos <= 34e6, ], 
+                   output_shiny = FALSE, labs = "rsid", 
+                   startLabels=c("rs115466242", "rs2853999"), 
+                   npeaks = 3)
+
+
+
+# To annotate genes in that region
+source("https://raw.githubusercontent.com/KatrionaGoldmann/BioOutputs/master/R/bio_gene_locations.R")
+library(ggbio)
+library(gginnards)
+library(ggrepel)
+if (! "EnsDb.Hsapiens.v75" %in% rownames(installed.packages()))
+  BiocManager::install("EnsDb.Hsapiens.v75")
+
+p2 = bio_gene_locations(6, c(28e6, 34e6),  
+                        subset_genes = c('HLA-F', 'HLA-G', 'HLA-A', 'HLA-E', 
+                                         'HLA-C', 'HLA-B', 'HLA-DRA', 
+                                         'HLA-DRB5', 'HLA-DRB1', 'HLA-DQA1', 
+                                         'HLA-DQB1', 'HLA-DQA2', 'HLA-DQB2', 
+                                         'HLA-DOB', 'HLA-DMB', 'HLA-DMA', 
+                                         'HLA-DOA', 'HLA-DPA1', 'HLA-DPB1')) 
+
+plotly::subplot(p1, p2$plotly_location %>% layout(yaxis=list(range=c(0.25, 2))), 
+                shareY = T, titleX = T, margin=0.05,
+                nrows=2, heights=c(0.7, 0.3)) 
+
+```
+
+```{r locusOutput, echo = FALSE, message=FALSE, fig.align='center', out.width='80%', out.extra='style="border: 0;"'}
+knitr::include_graphics("locus.png")
+```
+
 # Known issues
 
 * Plotly's `scattergl` function, which uses webGL, seems to have a limit of 
-  around 400,000 scatter points per plot. Above this level, the shiny/plotly 
-  app becomes sluggish or freezes and becomes unusable. We recommend limiting 
-  plots to around 100,000 points using the `plotly_filter` argument. See 
-  [plotly_filter].
+around 400,000 scatter points per plot. Above this level, the shiny/plotly 
+app becomes sluggish or freezes and becomes unusable. We recommend limiting 
+plots to around 100,000 points using the `plotly_filter` argument. See 
+[plotly_filter].

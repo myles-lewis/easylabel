@@ -293,6 +293,9 @@ easyMAplot <- function(data, x = NULL, y = NULL, padj = y, fdrcutoff = 0.05,
 #' @param pos The column of SNP positions in `data`.
 #' @param p The column of p values in `data`.
 #' @param labs The column of labels in `data`.
+#' @param startLabels Vector of initial labels. With a character vector, labels 
+#' are identified in the column specified by `labs`. With a numeric vector,
+#' points to be labelled are referred to by row number.
 #' @param pcutoff Cut-off for p value significance. Defaults to 5E-08.
 #' @param chromGap Size of gap between chromosomes along the x axis in base 
 #' pairs. If `NULL` this is automatically calculated dependent on the size of 
@@ -332,6 +335,7 @@ easyMAplot <- function(data, x = NULL, y = NULL, padj = y, fdrcutoff = 0.05,
 
 easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
                           labs = 'rsid',
+                          startLabels = NULL,
                           pcutoff = 5e-08,
                           chromGap = NULL,
                           chromCols = c('royalblue', 'skyblue'),
@@ -404,6 +408,11 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
                    labels = levels(data[, chrom]))
   } else xticks <- NULL
   
+  labelchoices <- if (is.null(labs)) rownames(data) else data[[labs]]
+  if (is.character(startLabels)) {
+    startLabels <- which(data[[labs]] %in% startLabels)
+  } 
+  
   # find local maxima
   if (!is.null(npeaks)) {
     cat("Finding peaks...\n")
@@ -412,16 +421,20 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
     pks_index <- which(pks)
     sort_pks <- pks_index[order(data$logP[pks_index], decreasing = TRUE, 
                                 na.last = NA)]
-    startLabels <- sort_pks[1:npeaks]
-  } else startLabels <- NULL
+    rsLabels <- c(startLabels, sort_pks[1:npeaks])
+  } else {rsLabels <- startLabels}
+  
+  # fix x axis for locus plots
+  if(length(unique(data$chrom)) == 1) data$genome_pos <- data$pos
   
   if (!transpose) {
     easylabel(data, x = 'genome_pos', y = 'logP',
             labs = labs,
-            xlab = xlab, ylab = ylab,
+            xlab = xlab, 
+            ylab = ylab,
             xticks = xticks,
             labelDir = labelDir,
-            startLabels = startLabels,
+            startLabels = rsLabels,
             col = 'col', colScheme = colScheme, alpha = alpha,
             outline_col = outline_col,
             shapeScheme = shapeScheme,

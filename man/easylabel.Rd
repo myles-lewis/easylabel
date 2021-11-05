@@ -225,6 +225,9 @@ Defaults to human gene database \code{AnnotationDb = org.Hs.eg.db}.}
 \item{custom_annotation}{List of annotations to be added via
 \code{\link[plotly:layout]{plotly::layout()}}.}
 
+\item{output_shiny}{Logical whether to output a shiny app. If FALSE a plotly
+figure will be returned.}
+
 \item{...}{Further graphical parameters passed to \code{plot()} when saving via
 base graphics. The most useful for most users are likely to be \code{cex.lab}
 which alters axis title font size (default 1, see \code{\link[=par]{par()}}), \code{cex.axis} which
