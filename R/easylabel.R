@@ -130,8 +130,8 @@
 #' Defaults to human gene database `AnnotationDb = org.Hs.eg.db`.
 #' @param custom_annotation List of annotations to be added via
 #' [plotly::layout()].
-#' @param output_shiny Logical whether to output a shiny app. If FALSE a plotly
-#' figure will be returned.
+#' @param output_shiny Logical whether to output a shiny app. If `FALSE` a 
+#' plotly figure will be returned.
 #' @param ... Further graphical parameters passed to `plot()` when saving via
 #' base graphics. The most useful for most users are likely to be `cex.lab`
 #' which alters axis title font size (default 1, see [par()]), `cex.axis` which
@@ -141,7 +141,8 @@
 #' addition of trend lines, extra titles or legends for example (see
 #' [plot.default()]).
 #' @seealso [easyVolcano()], [easyMAplot()]
-#' @return No return value
+#' @return  By default no return value. If `output_shiny = FALSE` a plotly 
+#' figure is returned.
 #' @importFrom shiny fluidPage tabsetPanel tabPanel fluidRow column
 #' radioButtons selectizeInput actionButton checkboxGroupInput observe
 #' updateSelectizeInput reactiveValues isolate reactive debounce

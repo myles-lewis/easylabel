@@ -31,7 +31,8 @@
 #' Requires the qvalue Bioconductor package.
 #' @param ... Other arguments passed to [easylabel()].
 #' @seealso [easylabel()] [easyMAplot()]
-#' @return No return value
+#' @return By default no return value. If `output_shiny = FALSE` a plotly 
+#' figure is returned. See [easylabel()].
 #' @importFrom stats p.adjust
 #' @export
 
@@ -185,7 +186,8 @@ easyVolcano <- function(data, x = NULL, y = NULL, padj = y,
 #' Requires the qvalue Bioconductor package.
 #' @param ... Other arguments passed to [easylabel()].
 #' @seealso [easylabel()] [easyVolcano()]
-#' @return No return value
+#' @return By default no return value. If `output_shiny = FALSE` a plotly 
+#' figure is returned. See [easylabel()].
 #' @importFrom stats p.adjust
 #' @export
 
