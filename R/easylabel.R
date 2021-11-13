@@ -641,8 +641,7 @@ easylabel <- function(data, x, y,
       if (!is.null(args$yaxp)) {
         ygrid <- seq(args$yaxp[1], args$yaxp[2], length.out = args$yaxp[3] + 1)
       }
-      print(xlim)
-      print(x)
+      
       pdf(file, width = width/100, height = height/100 + 0.75)
       oldpar <- par(no.readonly = TRUE)
       on.exit(par(oldpar), add = TRUE)
