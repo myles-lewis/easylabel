@@ -123,7 +123,7 @@ borders around label text, which are all shiny/ PDF output features, are not
 available from a pure plotly object.
 
 Plotly objects can also be exported as a return value by pressing the 
-'Export plotly & quit' button in the shiny app. In this case the object retains 
+'Export plotly & exit' button in the shiny app. In this case the object retains 
 the labelled points and their edited positions.
 
 ## Colour

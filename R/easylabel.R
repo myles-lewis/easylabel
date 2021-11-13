@@ -493,7 +493,7 @@ easylabel <- function(data, x, y,
                         actionButton("add_batch", "Add batch"),
                         actionButton("clear", "Clear all"),
                         downloadButton("save_plot", "Save pdf"),
-                        actionButton("stop", "Export plotly & quit")
+                        actionButton("stop", "Export plotly & exit")
                  )
                )
       ),
