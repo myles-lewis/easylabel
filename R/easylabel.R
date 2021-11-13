@@ -884,18 +884,18 @@ easylabel <- function(data, x, y,
     annot <- c(annot, LRtitles, custom_annotation)
     
     main_plotly(plotly_data, x, y, 
-                            col, colScheme,
-                            shape, psymbols, outlier_psymbol,
-                            sizeSwitch, size, sizeRange,
-                            showOutliers, pt = 1,
-                            pmarker,
-                            hovertext, pkey,
-                            width, height,
-                            args,
-                            pxaxis, pyaxis,
-                            annot,
-                            legendxy, showLegend,
-                            pshapes)
+                col, colScheme,
+                shape, psymbols, outlier_psymbol,
+                sizeSwitch, size, sizeRange,
+                showOutliers, pt = 1,
+                pmarker,
+                hovertext, pkey,
+                width, height,
+                args,
+                pxaxis, pyaxis,
+                annot,
+                legendxy, showLegend,
+                pshapes)
   }
 }
 
