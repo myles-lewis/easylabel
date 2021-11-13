@@ -61,8 +61,9 @@ Requires the qvalue Bioconductor package.}
 \item{...}{Other arguments passed to \code{\link[=easylabel]{easylabel()}}.}
 }
 \value{
-By default no return value. If \code{output_shiny = FALSE} a plotly
-figure is returned. See \code{\link[=easylabel]{easylabel()}}.
+By default no return value. If \code{output_shiny = FALSE} or the shiny
+button 'Export plotly & exit' is pressed, a plotly figure is returned.
+See \code{\link[=easylabel]{easylabel()}}.
 }
 \description{
 Interactive labelling of volcano plots using shiny/plotly interface.

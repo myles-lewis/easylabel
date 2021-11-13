@@ -31,8 +31,9 @@
 #' Requires the qvalue Bioconductor package.
 #' @param ... Other arguments passed to [easylabel()].
 #' @seealso [easylabel()] [easyMAplot()]
-#' @return By default no return value. If `output_shiny = FALSE` a plotly 
-#' figure is returned. See [easylabel()].
+#' @return By default no return value. If `output_shiny = FALSE` or the shiny 
+#' button 'Export plotly & exit' is pressed, a plotly figure is returned. 
+#' See [easylabel()].
 #' @importFrom stats p.adjust
 #' @export
 
@@ -186,8 +187,9 @@ easyVolcano <- function(data, x = NULL, y = NULL, padj = y,
 #' Requires the qvalue Bioconductor package.
 #' @param ... Other arguments passed to [easylabel()].
 #' @seealso [easylabel()] [easyVolcano()]
-#' @return By default no return value. If `output_shiny = FALSE` a plotly 
-#' figure is returned. See [easylabel()].
+#' @return By default no return value. If `output_shiny = FALSE` or the shiny 
+#' button 'Export plotly & exit' is pressed, a plotly figure is returned. 
+#' See [easylabel()].
 #' @importFrom stats p.adjust
 #' @export
 
@@ -330,7 +332,9 @@ easyMAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
 #' @param filename Filename for saving to pdf.
 #' @param ... Other arguments passed to [easylabel()].
 #' @seealso [easylabel()] [easyVolcano()]
-#' @return No return value
+#' @return By default no return value. If `output_shiny = FALSE` or the shiny 
+#' button 'Export plotly & exit' is pressed, a plotly figure is returned. 
+#' See [easylabel()].
 #' @importFrom gtools mixedsort
 #' @importFrom splus2R peaks
 #' @export

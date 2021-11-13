@@ -141,8 +141,8 @@
 #' addition of trend lines, extra titles or legends for example (see
 #' [plot.default()]).
 #' @seealso [easyVolcano()], [easyMAplot()]
-#' @return  By default no return value. If `output_shiny = FALSE` a plotly 
-#' figure is returned.
+#' @return  By default no return value. If `output_shiny = FALSE` or the shiny 
+#' button 'Export plotly & exit' is pressed, a plotly figure is returned.
 #' @importFrom shiny fluidPage tabsetPanel tabPanel fluidRow column
 #' radioButtons selectizeInput actionButton checkboxGroupInput observe
 #' updateSelectizeInput reactiveValues isolate reactive debounce

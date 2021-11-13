@@ -238,8 +238,8 @@ addition of trend lines, extra titles or legends for example (see
 \code{\link[=plot.default]{plot.default()}}).}
 }
 \value{
-By default no return value. If \code{output_shiny = FALSE} a plotly
-figure is returned.
+By default no return value. If \code{output_shiny = FALSE} or the shiny
+button 'Export plotly & exit' is pressed, a plotly figure is returned.
 }
 \description{
 Interactive labelling of scatter plots using shiny/plotly interface.

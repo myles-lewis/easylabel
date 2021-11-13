@@ -100,7 +100,9 @@ width span SNPs centred at that SNP. Large numbers take significantly longer.}
 \item{...}{Other arguments passed to \code{\link[=easylabel]{easylabel()}}.}
 }
 \value{
-No return value
+By default no return value. If \code{output_shiny = FALSE} or the shiny
+button 'Export plotly & exit' is pressed, a plotly figure is returned.
+See \code{\link[=easylabel]{easylabel()}}.
 }
 \description{
 Interactive labelling of Manhattan plots using 'shiny' and 'plotly'
