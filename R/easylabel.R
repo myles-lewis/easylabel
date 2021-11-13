@@ -434,7 +434,32 @@ easylabel <- function(data, x, y,
     }))
   }
   
-  if(output_shiny){
+  if (!output_shiny) {
+    labs <- startLabels
+    annot <- annotation(labs, plotly_data, x, y,
+                        labelchoices = labelchoices,
+                        labSize = labSize, labelDir = labelDir,
+                        labCentre = labCentre, xyspan = xyspan,
+                        lineLength = lineLength,
+                        col = col, colScheme = colScheme, 
+                        text_col = ptext_col, line_col = line_col)
+    annot <- c(annot, LRtitles, custom_annotation)
+    return(main_plotly(plotly_data, x, y, 
+                       col, colScheme,
+                       shape, psymbols, outlier_psymbol,
+                       sizeSwitch, size, sizeRange,
+                       showOutliers, pt = 1,
+                       pmarker,
+                       hovertext, pkey,
+                       width, height,
+                       args,
+                       pxaxis, pyaxis,
+                       annot,
+                       legendxy, showLegend,
+                       pshapes)
+    )
+  }
+  
   ui <- fluidPage(
     tabsetPanel(
       tabPanel("Plot",
@@ -467,7 +492,8 @@ easylabel <- function(data, x, y,
                         br(),
                         actionButton("add_batch", "Add batch"),
                         actionButton("clear", "Clear all"),
-                        downloadButton("save_plot", "Save pdf")
+                        downloadButton("save_plot", "Save pdf"),
+                        actionButton("stop", "Export plotly & quit")
                  )
                )
       ),
@@ -517,6 +543,37 @@ easylabel <- function(data, x, y,
                   legendxy, showLegend,
                   pshapes)
 
+    })
+    
+    # Exit and export plotly object
+    observeEvent(input$stop, {
+      labs <- labels$list
+      current_xy <- labelsxy$list
+      pt <- as.numeric(input$ptype)
+      ldir <- input$labDir
+      annot <- annotation(labs, plotly_data, x, y, current_xy,
+                          labelchoices = labelchoices,
+                          labSize = labSize, labelDir = ldir,
+                          labCentre = labCentre, xyspan = xyspan,
+                          lineLength = lineLength,
+                          col = col, colScheme = colScheme, 
+                          text_col = ptext_col, line_col = line_col)
+      annot <- c(annot, LRtitles, custom_annotation)
+      stopApp(
+        main_plotly(plotly_data, x, y,
+                    col, colScheme,
+                    shape, psymbols, outlier_psymbol,
+                    sizeSwitch, size, sizeRange,
+                    showOutliers, pt,
+                    pmarker,
+                    hovertext, pkey,
+                    width, height,
+                    args,
+                    pxaxis, pyaxis,
+                    annot,
+                    legendxy, showLegend,
+                    pshapes)
+      )
     })
 
     # download plot using base graphics
@@ -584,7 +641,8 @@ easylabel <- function(data, x, y,
       if (!is.null(args$yaxp)) {
         ygrid <- seq(args$yaxp[1], args$yaxp[2], length.out = args$yaxp[3] + 1)
       }
-      
+      print(xlim)
+      print(x)
       pdf(file, width = width/100, height = height/100 + 0.75)
       oldpar <- par(no.readonly = TRUE)
       on.exit(par(oldpar), add = TRUE)
@@ -872,32 +930,7 @@ easylabel <- function(data, x, y,
 
   }
 
-  shinyApp(ui, server)
-  } else {
-    labs <- startLabels
-    annot <- annotation(labs, plotly_data, x, y,
-                        labelchoices = labelchoices,
-                        labSize = labSize, labelDir = labelDir,
-                        labCentre = labCentre, xyspan = xyspan,
-                        lineLength = lineLength,
-                        col = col, colScheme = colScheme, 
-                        text_col = ptext_col, line_col = line_col)
-    annot <- c(annot, LRtitles, custom_annotation)
-    
-    main_plotly(plotly_data, x, y, 
-                col, colScheme,
-                shape, psymbols, outlier_psymbol,
-                sizeSwitch, size, sizeRange,
-                showOutliers, pt = 1,
-                pmarker,
-                hovertext, pkey,
-                width, height,
-                args,
-                pxaxis, pyaxis,
-                annot,
-                legendxy, showLegend,
-                pshapes)
-  }
+  runApp(list(ui = ui, server = server))
 }
 
 main_plotly <- function(plotly_data, x, y, 

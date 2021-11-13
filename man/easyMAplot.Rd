@@ -8,7 +8,7 @@ easyMAplot(
   data,
   x = NULL,
   y = NULL,
-  padj = y,
+  padj = NULL,
   fdrcutoff = 0.05,
   colScheme = c("darkgrey", "blue", "red"),
   hline = 0,
@@ -64,7 +64,8 @@ Requires the qvalue Bioconductor package.}
 \item{...}{Other arguments passed to \code{\link[=easylabel]{easylabel()}}.}
 }
 \value{
-No return value
+By default no return value. If \code{output_shiny = FALSE} a plotly
+figure is returned. See \code{\link[=easylabel]{easylabel()}}.
 }
 \description{
 Interactive labelling of MA plots using shiny/plotly interface.

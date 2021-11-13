@@ -218,7 +218,7 @@ easyMAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
   }
   if (is.null(x)) {
     if ('baseMean' %in% colnames(data)) {
-      data[, 'logmean'] <- log2(data[, 'baseMean'])  # DESeq2
+      data[, 'logmean'] <- log2(data[, 'baseMean'] + 0.125)  # DESeq2
       x <- 'logmean'
     }
     if ('AveExpr' %in% colnames(data))

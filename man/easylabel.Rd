@@ -225,8 +225,8 @@ Defaults to human gene database \code{AnnotationDb = org.Hs.eg.db}.}
 \item{custom_annotation}{List of annotations to be added via
 \code{\link[plotly:layout]{plotly::layout()}}.}
 
-\item{output_shiny}{Logical whether to output a shiny app. If FALSE a plotly
-figure will be returned.}
+\item{output_shiny}{Logical whether to output a shiny app. If \code{FALSE} a
+plotly figure will be returned.}
 
 \item{...}{Further graphical parameters passed to \code{plot()} when saving via
 base graphics. The most useful for most users are likely to be \code{cex.lab}
@@ -238,7 +238,8 @@ addition of trend lines, extra titles or legends for example (see
 \code{\link[=plot.default]{plot.default()}}).}
 }
 \value{
-No return value
+By default no return value. If \code{output_shiny = FALSE} a plotly
+figure is returned.
 }
 \description{
 Interactive labelling of scatter plots using shiny/plotly interface.
