@@ -147,8 +147,8 @@
 #' radioButtons selectizeInput actionButton checkboxGroupInput observe
 #' updateSelectizeInput reactiveValues isolate reactive debounce
 #' observeEvent modalDialog textAreaInput tagList modalButton showModal
-#' removeModal h4 h5 shinyApp downloadButton selectInput br textInput req
-#' downloadHandler
+#' removeModal h4 h5 runApp downloadButton selectInput br textInput req
+#' downloadHandler stopApp
 #' @importFrom plotly plot_ly layout plotlyOutput renderPlotly event_data
 #' event_register config plotlyProxy plotlyProxyInvoke add_markers %>%
 #' @importFrom RColorBrewer brewer.pal
