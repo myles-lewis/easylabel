@@ -190,7 +190,7 @@ easyVolcano <- function(data, x = NULL, y = NULL, padj = y,
 #' @export
 
 
-easyMAplot <- function(data, x = NULL, y = NULL, padj = y, fdrcutoff = 0.05,
+easyMAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
                        colScheme = c('darkgrey', 'blue', 'red'),
                        hline = 0,
                        labelDir = 'yellipse',
@@ -253,7 +253,7 @@ easyMAplot <- function(data, x = NULL, y = NULL, padj = y, fdrcutoff = 0.05,
   } else custom_annotation = NULL
   
   # if using nominal p values
-  fdr_or_p <- if (y == padj) "P<" else "FDR<"
+  fdr_or_p <- if (padj %in% c('pvalue', 'P.Value')) "P<" else "FDR<"
   if (!(length(colScheme) - 1) %in% (length(fdrcutoff) * 1:2)) {
     stop("Number of colours in 'colScheme' does not fit with number of cuts in 'fdrcut'")
   }

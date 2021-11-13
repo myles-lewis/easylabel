@@ -500,81 +500,21 @@ easylabel <- function(data, x, y,
                           lineLength = lineLength,
                           col = col, colScheme = colScheme, 
                           text_col = ptext_col, line_col = line_col)
-
-      switch(showOutliers,
-             # no outliers
-             plot_ly(data = plotly_data, x = as.formula(paste0('~', x)),
-                     y = as.formula(paste0('~', y)),
-                     type = switch(pt, 'scattergl', 'scatter'),
-                     mode = 'markers',
-                     color = if (!is.null(col)) {
-                       as.formula(paste0('~', col))
-                     } else I(colScheme),
-                     colors = colScheme,
-                     size = switch(sizeSwitch, I(size), ~plotly_size),
-                     marker = pmarker,
-                     sizes = sizeRange,
-                     symbol = if (!is.null(shape)) {
-                       as.formula(paste0('~', shape))
-                     } else I(psymbols),
-                     symbols = psymbols,
-                     text = hovertext, hoverinfo = 'text',
-                     key = pkey, source = 'lab_plotly',
-                     width = width, height = height) %>%
-               layout(
-                 title = args$main,
-                 xaxis = pxaxis,
-                 yaxis = pyaxis),
-             # with outliers
-             plot_ly(data = plotly_data[!plotly_data$outlier,],
-                     x = as.formula(paste0('~', x)),
-                     y = as.formula(paste0('~', y)),
-                     type = switch(pt, 'scattergl', 'scatter'),
-                     mode = 'markers',
-                     color = if (!is.null(col)) {
-                       as.formula(paste0('~', col))
-                     } else I(colScheme),
-                     colors = colScheme,
-                     size = switch(sizeSwitch, I(size), ~plotly_size),
-                     marker = pmarker,
-                     symbol = if (!is.null(shape)) {
-                       ~comb_symbol
-                     } else I(psymbols),
-                     symbols = psymbols,
-                     text = hovertext[!plotly_data$outlier], hoverinfo = 'text',
-                     key = pkey[!plotly_data$outlier], source = 'lab_plotly',
-                     legendgroup = 'Main',
-                     width = width, height = height) %>%
-               add_markers(data = plotly_data[plotly_data$outlier, ],
-                           x = as.formula(paste0('~', x)),
-                           y = as.formula(paste0('~', y)),
-                           type = switch(pt, 'scattergl', 'scatter'),
-                           color = as.formula(paste0('~', col)),
-                           colors = colScheme,
-                           marker = pmarker,
-                           symbol = if (!is.null(shape)) {
-                             ~comb_symbol
-                           } else I(outlier_psymbol),
-                           symbols = psymbols,
-                           inherit = F,
-                           text = hovertext[plotly_data$outlier],
-                           hoverinfo = 'text',
-                           key = pkey[plotly_data$outlier],
-                           legendgroup = 'outlier', name = 'outlier') %>%
-               layout(
-                 title = args$main,
-                 xaxis = pxaxis,
-                 yaxis = pyaxis)
-      ) %>%
-        layout(annotations = c(annot, LRtitles, custom_annotation),
-               hovermode = 'closest',
-               legend = list(font = list(color = 'black'),
-                             x = legendxy[1], y = legendxy[2]),
-               showlegend = showLegend,
-               shapes = pshapes) %>%
-        config(edits = list(annotationTail = TRUE),
-               toImageButtonOptions = list(format = "svg")) %>%
-        event_register(event = 'plotly_click')
+      annot <- c(annot, LRtitles, custom_annotation)
+      
+      main_plotly(plotly_data, x, y, 
+                  col, colScheme,
+                  shape, psymbols, outlier_psymbol,
+                  sizeSwitch, size, sizeRange,
+                  showOutliers, pt,
+                  pmarker,
+                  hovertext, pkey,
+                  width, height,
+                  args,
+                  pxaxis, pyaxis,
+                  annot,
+                  legendxy, showLegend,
+                  pshapes)
 
     })
 
@@ -941,83 +881,112 @@ easylabel <- function(data, x, y,
                         lineLength = lineLength,
                         col = col, colScheme = colScheme, 
                         text_col = ptext_col, line_col = line_col)
+    annot <- c(annot, LRtitles, custom_annotation)
     
-    switch(showOutliers,
-           # no outliers
-           plot_ly(data = plotly_data, x = as.formula(paste0('~', x)),
-                   y = as.formula(paste0('~', y)),
-                   type = 'scattergl',
-                   mode = 'markers',
-                   color = if (!is.null(col)) {
-                     as.formula(paste0('~', col))
-                   } else I(colScheme),
-                   colors = colScheme,
-                   size = switch(sizeSwitch, I(size), ~plotly_size),
-                   marker = pmarker,
-                   sizes = sizeRange,
-                   symbol = if (!is.null(shape)) {
-                     as.formula(paste0('~', shape))
-                   } else I(psymbols),
-                   symbols = psymbols,
-                   text = hovertext, hoverinfo = 'text',
-                   key = pkey, source = 'lab_plotly',
-                   width = width, height = height) %>%
-             layout(
-               title = args$main,
-               xaxis = pxaxis,
-               yaxis = pyaxis),
-           # with outliers
-           plot_ly(data = plotly_data[!plotly_data$outlier,],
-                   x = as.formula(paste0('~', x)),
-                   y = as.formula(paste0('~', y)),
-                   type = 'scattergl',
-                   mode = 'markers',
-                   color = if (!is.null(col)) {
-                     as.formula(paste0('~', col))
-                   } else I(colScheme),
-                   colors = colScheme,
-                   size = switch(sizeSwitch, I(size), ~plotly_size),
-                   marker = pmarker,
-                   symbol = if (!is.null(shape)) {
-                     ~comb_symbol
-                   } else I(psymbols),
-                   symbols = psymbols,
-                   text = hovertext[!plotly_data$outlier], hoverinfo = 'text',
-                   key = pkey[!plotly_data$outlier], source = 'lab_plotly',
-                   legendgroup = 'Main',
-                   width = width, height = height) %>%
-             add_markers(data = plotly_data[plotly_data$outlier, ],
-                         x = as.formula(paste0('~', x)),
-                         y = as.formula(paste0('~', y)),
-                         type = switch(pt, 'scattergl', 'scatter'),
-                         color = as.formula(paste0('~', col)),
-                         colors = colScheme,
-                         marker = pmarker,
-                         symbol = if (!is.null(shape)) {
-                           ~comb_symbol
-                         } else I(outlier_psymbol),
-                         symbols = psymbols,
-                         inherit = F,
-                         text = hovertext[plotly_data$outlier],
-                         hoverinfo = 'text',
-                         key = pkey[plotly_data$outlier],
-                         legendgroup = 'outlier', name = 'outlier') %>%
-             layout(
-               title = args$main,
-               xaxis = pxaxis,
-               yaxis = pyaxis)
-    ) %>%
-      layout(annotations = c(annot, LRtitles, custom_annotation),
-             hovermode = 'closest',
-             legend = list(font = list(color = 'black'),
-                           x = legendxy[1], y = legendxy[2]),
-             showlegend = showLegend,
-             shapes = pshapes) %>%
-      config(edits = list(annotationTail = TRUE),
-             toImageButtonOptions = list(format = "svg")) %>%
-      event_register(event = 'plotly_click')
+    main_plotly(plotly_data, x, y, 
+                            col, colScheme,
+                            shape, psymbols, outlier_psymbol,
+                            sizeSwitch, size, sizeRange,
+                            showOutliers, pt = 1,
+                            pmarker,
+                            hovertext, pkey,
+                            width, height,
+                            args,
+                            pxaxis, pyaxis,
+                            annot,
+                            legendxy, showLegend,
+                            pshapes)
   }
+}
 
+main_plotly <- function(plotly_data, x, y, 
+                        col, colScheme,
+                        shape, psymbols, outlier_psymbol,
+                        sizeSwitch, size, sizeRange,
+                        showOutliers, pt,
+                        pmarker,
+                        hovertext, pkey,
+                        width, height,
+                        args,
+                        pxaxis, pyaxis,
+                        annot,
+                        legendxy, showLegend,
+                        pshapes
+                        ) {
+  switch(showOutliers,
+         # no outliers
+         plot_ly(data = plotly_data, x = as.formula(paste0('~', x)),
+                 y = as.formula(paste0('~', y)),
+                 type = switch(pt, 'scattergl', 'scatter'),
+                 mode = 'markers',
+                 color = if (!is.null(col)) {
+                   as.formula(paste0('~', col))
+                 } else I(colScheme),
+                 colors = colScheme,
+                 size = switch(sizeSwitch, I(size), ~plotly_size),
+                 marker = pmarker,
+                 sizes = sizeRange,
+                 symbol = if (!is.null(shape)) {
+                   as.formula(paste0('~', shape))
+                 } else I(psymbols),
+                 symbols = psymbols,
+                 text = hovertext, hoverinfo = 'text',
+                 key = pkey, source = 'lab_plotly',
+                 width = width, height = height) %>%
+           layout(
+             title = args$main,
+             xaxis = pxaxis,
+             yaxis = pyaxis),
+         # with outliers
+         plot_ly(data = plotly_data[!plotly_data$outlier,],
+                 x = as.formula(paste0('~', x)),
+                 y = as.formula(paste0('~', y)),
+                 type = switch(pt, 'scattergl', 'scatter'),
+                 mode = 'markers',
+                 color = if (!is.null(col)) {
+                   as.formula(paste0('~', col))
+                 } else I(colScheme),
+                 colors = colScheme,
+                 size = switch(sizeSwitch, I(size), ~plotly_size),
+                 marker = pmarker,
+                 symbol = if (!is.null(shape)) {
+                   ~comb_symbol
+                 } else I(psymbols),
+                 symbols = psymbols,
+                 text = hovertext[!plotly_data$outlier], hoverinfo = 'text',
+                 key = pkey[!plotly_data$outlier], source = 'lab_plotly',
+                 legendgroup = 'Main',
+                 width = width, height = height) %>%
+           add_markers(data = plotly_data[plotly_data$outlier, ],
+                       x = as.formula(paste0('~', x)),
+                       y = as.formula(paste0('~', y)),
+                       type = switch(pt, 'scattergl', 'scatter'),
+                       color = as.formula(paste0('~', col)),
+                       colors = colScheme,
+                       marker = pmarker,
+                       symbol = if (!is.null(shape)) {
+                         ~comb_symbol
+                       } else I(outlier_psymbol),
+                       symbols = psymbols,
+                       inherit = F,
+                       text = hovertext[plotly_data$outlier],
+                       hoverinfo = 'text',
+                       key = pkey[plotly_data$outlier],
+                       legendgroup = 'outlier', name = 'outlier') %>%
+           layout(
+             title = args$main,
+             xaxis = pxaxis,
+             yaxis = pyaxis)
+  ) %>%
+    layout(annotations = annot,
+           hovermode = 'closest',
+           legend = list(font = list(color = 'black'),
+                         x = legendxy[1], y = legendxy[2]),
+           showlegend = showLegend,
+           shapes = pshapes) %>%
+    config(edits = list(annotationTail = TRUE),
+           toImageButtonOptions = list(format = "svg")) %>%
+    event_register(event = 'plotly_click')
 }
 
 
