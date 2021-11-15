@@ -2,6 +2,16 @@
 0 errors ✓ | 0 warnings ✓ | 0 notes ✓
 
 ## Update
+This is an update to version 0.2.4. In this version we have:
+
+* Added a feature to allow the option for label text, line and box colours to 
+  match colour of each point
+  
+* Enabled optional return value of plotly objects
+
+* Fixed bugs in MA plot
+
+## Update
 This is an update to new version 0.2.2. In this version I have:
 
 * Added a new feature to plot Manhattan plots using a new function 
