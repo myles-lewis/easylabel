@@ -272,8 +272,7 @@ the legend around the centre of y axis.
 
 Further control of plotting can be achieved by passing other arguments to 
 plot() via R's `...` argument. For example, a box around the plot can be added 
-using `bty='o'` (see `par()`). Note this method only works for saving to PDF 
-since it is not supported by plotly. 
+using `bty = 'o'` (see `par()`).
 
 ## panel.last
 
