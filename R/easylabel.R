@@ -220,10 +220,12 @@ easylabel <- function(data, x, y,
   pxaxis <- list(title = exprToHtml(xlab),
                  showgrid = grepl("x", showgrid, ignore.case = TRUE),
                  color = 'black', ticklen = 5,
+                 mirror = args$bty %in% c('o', ']', '7', 'c'),
                  showline = TRUE, zeroline = zeroline)
   pyaxis <- list(title = exprToHtml(ylab),
                  showgrid = grepl("y", showgrid, ignore.case = TRUE),
-                 color = 'black', ticklen = 5, 
+                 color = 'black', ticklen = 5,
+                 mirror = args$bty %in% c('o', ']', '7', 'u'),
                  showline = TRUE, zeroline = zeroline)
   if (!is.null(xticks)) {
     pxaxis <- c(pxaxis, tickmode = list('array'),
