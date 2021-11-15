@@ -7,7 +7,7 @@ This is an update to version 0.2.4. In this version we have:
 * Added a feature to allow the option for label text, line and box colours to 
   match colour of each point
   
-* Enabled optional return value of plotly objects
+* Enabled optional return value of plotly objects from easylabel()
 
 * Fixed bugs in MA plot
 
