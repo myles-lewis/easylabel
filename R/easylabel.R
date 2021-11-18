@@ -1144,14 +1144,14 @@ roundRect <- function(xleft, ybottom, xright, ytop,
     return(rect(xleft, ybottom, xright, ytop, col = col, border = border, ...))
   }
   # convert pixels to y axis units
-  figheight <- (par("din")[2] - sum(par("mai")[c(1, 3)]))  # inches
+  figheight <- par("pin")[2]  # inches
   border_radius <- border_radius * diff(par("usr")[3:4]) / (figheight * 100)
   # assumes textbox, i.e. width > height
   yheight <- abs(ytop - ybottom)
   border_radius <- min(c(border_radius, yheight / 2))
   yi <- border_radius
   xi <- border_radius * diff(par("usr")[1:2]) / diff(par("usr")[3:4])
-  xi <- xi * figheight / (par("din")[1] - sum(par("mai")[c(2, 4)]))
+  xi <- xi * figheight / par("pin")[1]
   if (length(col) < length(xleft)) col <- rep_len(col, length(xleft))
   if (length(border) < length(xleft)) border <- rep_len(border, length(xleft))
   for (i in 1:length(xleft)) {
@@ -1173,10 +1173,10 @@ cy <- function(from, to, n) sin(seq(from, to, length.out = n))
 
 # convert pixels to xy axis units
 pixelToXY <- function(pix) {
-  figheight <- (par("din")[2] - sum(par("mai")[c(1, 3)]))  # inches
+  figheight <- par("pin")[2]  # inches
   yi <- pix * diff(par("usr")[3:4]) / (figheight * 100)
   xi <- yi * diff(par("usr")[1:2]) / diff(par("usr")[3:4])
-  xi <- xi * figheight / (par("din")[1] - sum(par("mai")[c(2, 4)]))
+  xi <- xi * figheight / par("pin")[1]
   c(xi, yi)
 }
 
