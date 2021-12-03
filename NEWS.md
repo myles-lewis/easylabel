@@ -1,6 +1,11 @@
 News
 =====
 
+# easylabel 0.2.5
+###### 3/12/2021
+
+* Improve rounded rectangles padding
+
 # easylabel 0.2.4
 ###### 13/11/2021
 
