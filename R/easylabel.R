@@ -745,6 +745,7 @@ easylabel <- function(data, x, y,
         if (rectangles) {
           roundRect(annotdf$ax - annotdf$textw/2, annotdf$ay - annotdf$texth/2,
                     annotdf$ax + annotdf$textw/2, annotdf$ay + annotdf$texth/2,
+                    padding = padding,
                     col = if (rect_col != "match" | is.na(rect_col)) {
                       rect_col} else annotdf$col,
                     border = if (border_col != "match" | is.na(border_col)) {
@@ -1138,6 +1139,7 @@ exprToHtml <- function(x) {
 
 # Plots rounded rectangles for labels
 roundRect <- function(xleft, ybottom, xright, ytop,
+                      padding,
                       col = 'white', border = 'black',
                       border_radius = 8, n = 20, ...) {
   if (border_radius == 0) {
@@ -1152,6 +1154,11 @@ roundRect <- function(xleft, ybottom, xright, ytop,
   yi <- border_radius
   xi <- border_radius * diff(par("usr")[1:2]) / diff(par("usr")[3:4])
   xi <- xi * figheight / par("pin")[1]
+  pxy <- pixelToXY(padding)
+  if (xi > pxy[1]) {
+    xleft <- xleft - xi + pxy[1]
+    xright <- xright + xi - pxy[1]
+  }
   if (length(col) < length(xleft)) col <- rep_len(col, length(xleft))
   if (length(border) < length(xleft)) border <- rep_len(border, length(xleft))
   for (i in 1:length(xleft)) {
