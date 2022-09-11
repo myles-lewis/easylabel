@@ -47,6 +47,7 @@ easyVolcano <- function(data, x = NULL, y = NULL, padj = y,
                         showCounts = TRUE, useQ = FALSE, ...) {
   if (is.null(filename)) filename <- paste0("volcano_",
                                             deparse(substitute(data)))
+  data <- as.data.frame(data)
   if (is.null(x)) {
     if ('log2FoldChange' %in% colnames(data)) x = 'log2FoldChange'  # DESeq2
     if ('logFC' %in% colnames(data)) x = 'logFC'  # limma
@@ -204,6 +205,7 @@ easyMAplot <- function(data, x = NULL, y = NULL, padj = NULL, fdrcutoff = 0.05,
                        showCounts = TRUE, useQ = FALSE, ...) {
   if (is.null(filename)) filename <- paste0("MAplot_",
                                             deparse(substitute(data)))
+  data <- as.data.frame(data)
   if (is.null(y)) {
     if ('log2FoldChange' %in% colnames(data)) y = 'log2FoldChange'  # DESeq2
     if ('logFC' %in% colnames(data)) y = 'logFC'  # limma
