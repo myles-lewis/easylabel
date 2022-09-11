@@ -1,6 +1,10 @@
 News
 =====
 
+# easylabel 0.2.6
+###### 11/09/2022
+* Improve passing of DESeq2 objects into `easyVolcano()`
+
 # easylabel 0.2.5
 ###### 3/12/2021
 
