@@ -1,6 +1,11 @@
 News
 =====
 
+# easylabel 0.2.7
+###### 29/08/2023
+* Added `qqplot()` for fast plotting of log QQ p-value plots for genomic 
+analyses
+
 # easylabel 0.2.6
 ###### 11/09/2022
 * Improve passing of DESeq2 objects into `easyVolcano()`

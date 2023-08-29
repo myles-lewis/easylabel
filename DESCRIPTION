@@ -1,7 +1,7 @@
 Package: easylabel
 Type: Package
 Title: Interactive Scatter Plot and Volcano Plot Labels
-Version: 0.2.6
+Version: 0.2.7
 Authors@R:
     c(person(given = "Myles",family = "Lewis",
     role = c("aut", "cre"),
@@ -33,15 +33,17 @@ Suggests:
     qvalue,
     rmarkdown
 Imports:
+    DT,
+    ggplot2,
+    gtools,
     plotly (>= 4.10.0),
+    RColorBrewer,
+    rlang,
     shiny,
     shinycssloaders,
     shinybusy,
-    RColorBrewer,
-    DT,
-    gtools,
     splus2R
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
 Depends: 
