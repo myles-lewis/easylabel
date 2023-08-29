@@ -43,7 +43,7 @@ qqplot <- function(pval, fdr = NULL, fdr_cutoff = 0.05,
                    verbose = TRUE, ...) {
   start <- Sys.time()
   if (verbose) message("Sorting p-values")
-  ord <- order(pval)
+  ord <- order(pval, decreasing = TRUE)
   pval <- pval[ord]
   if (!is.null(fdr)) {
     fdr <- fdr[ord]
@@ -51,7 +51,7 @@ qqplot <- function(pval, fdr = NULL, fdr_cutoff = 0.05,
   if (verbose) message("Processing")
   fdr <- fdr < fdr_cutoff
   n <- length(pval)
-  x <- seq_len(n) / n - 1 / (2 * n)
+  x <- rev(seq_len(n) / n - 1 / (2 * n))
   x <- -log10(x)
   rem <- npoints - sum(fdr)
   if (rem < 1) rem <- 1e5
