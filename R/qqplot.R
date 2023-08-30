@@ -10,8 +10,8 @@
 #' @param fdr_cutoff Cutoff for FDR significance
 #' @param scheme Vector of 2 colours for plotting non-significant and
 #'   significant SNPs
-#' @param npoints Limits the number of points being plotted to speed up
-#'   plotting. See details.
+#' @param npoints Limits the number of non-significant points being plotted to
+#'   speed up plotting. See details. Set to `NULL` to plot all points.
 #' @param show_plot Logical whether to produce a plot via base graphics or just
 #'   return dataframe ready for plotting.
 #' @param verbose Whether to show messages
@@ -24,7 +24,8 @@
 #' typically overlap substantially near the origin are thinned by random
 #' sampling. In this way the plot can be reduced from millions of points to
 #' 500,000 points with a plot which is indistinguishable from one with all
-#' points plotted.
+#' points plotted. For comparison, set `npoints` to `NULL` to plot all points as
+#' usual.
 #' 
 #' Calling [qqplot()] will result in a base graphics plot. The plotting
 #' dataframe is returned invisibly, so users can save time when refining plots
@@ -53,13 +54,18 @@ qqplot <- function(pval, fdr = NULL, fdr_cutoff = 0.05,
   n <- length(pval)
   x <- rev(seq_len(n) / n - 1 / (2 * n))
   x <- -log10(x)
-  rem <- npoints - sum(fdr)
-  if (rem < 1) rem <- 1e5
-  cutpoint <- n - sum(fdr)
-  sam <- sample(cutpoint, rem)
-  ind <- fdr
-  ind[sam] <- TRUE
-  pval <- pval[ind]; fdr <- fdr[ind]; x <- x[ind]
+  
+  if (!is.null(npoints)) {
+    # thin non-significant points
+    rem <- npoints - sum(fdr)
+    if (rem < 1) rem <- 1e5
+    cutpoint <- n - sum(fdr)
+    sam <- sample(cutpoint, rem)
+    ind <- fdr
+    ind[sam] <- TRUE
+    pval <- pval[ind]; fdr <- fdr[ind]; x <- x[ind]
+  }
+  
   df <- data.frame(x, pval, fdr)
   df$logp <- -log10(df$pval)
   df$fdr <- as.factor(df$fdr)

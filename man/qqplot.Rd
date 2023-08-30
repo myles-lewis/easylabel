@@ -27,8 +27,8 @@ using the Benjamini-Hochberg method.}
 \item{scheme}{Vector of 2 colours for plotting non-significant and
 significant SNPs}
 
-\item{npoints}{Limits the number of points being plotted to speed up
-plotting. See details.}
+\item{npoints}{Limits the number of non-significant points being plotted to
+speed up plotting. See details. Set to \code{NULL} to plot all points.}
 
 \item{show_plot}{Logical whether to produce a plot via base graphics or just
 return dataframe ready for plotting.}
@@ -53,7 +53,8 @@ cut-off and ensures all of these points are plotted. Additional points which
 typically overlap substantially near the origin are thinned by random
 sampling. In this way the plot can be reduced from millions of points to
 500,000 points with a plot which is indistinguishable from one with all
-points plotted.
+points plotted. For comparison, set \code{npoints} to \code{NULL} to plot all points as
+usual.
 
 Calling \code{\link[=qqplot]{qqplot()}} will result in a base graphics plot. The plotting
 dataframe is returned invisibly, so users can save time when refining plots
