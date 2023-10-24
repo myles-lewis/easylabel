@@ -2,6 +2,13 @@
 0 errors ✓ | 0 warnings ✓ | 0 notes ✓
 
 ## Update
+Update to version 0.2.7. In this version we have:
+
+* Added a new plotting feature for log p-value QQ plots.
+
+* Fixed bugs relating to use of matrices.
+
+## Update
 This is an update to version 0.2.4. In this version we have:
 
 * Added a feature to allow the option for label text, line and box colours to 
