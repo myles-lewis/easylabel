@@ -19,10 +19,12 @@ easyManhattan(
   labelDir = "horiz",
   xlab = "Chromosome position",
   ylab = expression("-log"[10] ~ "P"),
+  xlim = NULL,
+  ylim = NULL,
   outline_col = NA,
   shapeScheme = 16,
   size = 6,
-  width = 1000,
+  width = 1100,
   lineLength = 60,
   npoints = 1e+06,
   nplotly = 1e+05,
@@ -68,6 +70,10 @@ recycled dependent on the length of the vector.}
 \item{xlab}{x axis title. Accepts expressions.}
 
 \item{ylab}{y axis title. Accepts expressions.}
+
+\item{xlim}{The x limits (x1, x2) of the plot.}
+
+\item{ylim}{The y limits of the plot.}
 
 \item{outline_col}{Colour of symbol outlines. Passed to \code{\link[=easylabel]{easylabel()}}.}
 
