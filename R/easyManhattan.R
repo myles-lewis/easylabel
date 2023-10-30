@@ -157,8 +157,11 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
   # fix ylim
   lim <- range(data$logP, na.rm = TRUE)
   lim[2] <- lim[2] + diff(lim) * 0.02
+  glim <- range(data$genome_pos, na.rm = TRUE)
+  glim <- glim + diff(glim) * 0.01 * c(-1, 1)
   
   if (!transpose) {
+    if (is.null(xlim)) xlim <- glim
     if (is.null(ylim)) ylim <- lim
     easylabel(data, x = 'genome_pos', y = 'logP',
               labs = labs,
@@ -186,6 +189,7 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
       xticks$at <- -xticks$at
     }
     if (is.null(xlim)) xlim <- lim
+    if (is.null(ylim)) ylim <- glim
     easylabel(data, y = 'genome_pos', x = 'logP',
               labs = labs,
               xlab = ylab, ylab = xlab,
