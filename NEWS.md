@@ -1,6 +1,13 @@
 News
 =====
 
+# easylabel 0.2.8
+###### 30/10/2023
+* Bugfix for peak detection error when `showOutliers = FALSE` in `easyManhattan()`
+* Aesthetic improvements to `easyManhattan()`
+* Improved thinning of data points near the x axis in `easyManhattan()` with 
+large GWAS
+
 # easylabel 0.2.7
 ###### 29/08/2023
 * Added `qqplot()` for fast plotting of log QQ p-value plots for genomic 

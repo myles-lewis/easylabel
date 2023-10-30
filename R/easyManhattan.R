@@ -25,6 +25,8 @@
 #' @param labelDir Option for label lines. See [easylabel()].
 #' @param xlab x axis title. Accepts expressions.
 #' @param ylab y axis title. Accepts expressions.
+#' @param xlim The x limits (x1, x2) of the plot.
+#' @param ylim The y limits of the plot.
 #' @param outline_col Colour of symbol outlines. Passed to [easylabel()].
 #' @param shapeScheme A single symbol for points or a vector of symbols. Passed 
 #' to [easylabel()].
@@ -62,10 +64,12 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
                           labelDir = 'horiz',
                           xlab = "Chromosome position",
                           ylab = expression("-log"[10] ~ "P"),
+                          xlim = NULL,
+                          ylim = NULL,
                           outline_col = NA,
                           shapeScheme = 16,
                           size = 6,
-                          width = 1000,
+                          width = 1100,
                           lineLength = 60,
                           npoints = 1E6,
                           nplotly = 1E5,
@@ -96,7 +100,12 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
   data$plotly_filter <- FALSE
   data$plotly_filter[index[1:nplotly]] <- TRUE
   if (!is.na(npoints) & nrow(data) > npoints) {
-    data <- data[index[1:npoints], ]  # shrink dataset
+    # thin points near x axis
+    s1 <- seq_len(nplotly)
+    s2len <- nrow(data) - nplotly
+    s2 <- round(seq_len(npoints - nplotly) * s2len / (npoints - nplotly)) + nplotly
+    s3 <- rev(nrow(data) - seq_len(nplotly) +1)
+    data <- data[index[unique(c(s1, s2, s3))], ]
   }
   data$logP <- -log10(data[, p])
   chrom_list <- gtools::mixedsort(unique(data[, chrom]), na.last = NA)
@@ -126,14 +135,14 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
                    labels = levels(data[, chrom]))
   } else xticks <- NULL
   
-  labelchoices <- if (is.null(labs)) rownames(data) else data[[labs]]
+  # labelchoices <- if (is.null(labs)) rownames(data) else data[[labs]]
   if (is.character(startLabels)) {
     startLabels <- which(data[[labs]] %in% startLabels)
   } 
   
   # find local maxima
   if (!is.null(npeaks)) {
-    cat("Finding peaks...\n")
+    message("Finding peaks...")
     span <- span + 1 - (span %% 2)
     pks <- splus2R::peaks(data$logP, span = span)
     pks_index <- which(pks)
@@ -145,11 +154,18 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
   # fix x axis for locus plots
   if(length(unique(data$chrom)) == 1) data$genome_pos <- data$pos
   
+  # fix ylim
+  lim <- range(data$logP, na.rm = TRUE)
+  lim[2] <- lim[2] + diff(lim) * 0.02
+  
   if (!transpose) {
+    if (is.null(ylim)) ylim <- lim
     easylabel(data, x = 'genome_pos', y = 'logP',
               labs = labs,
               xlab = xlab, 
               ylab = ylab,
+              xlim = xlim,
+              ylim = ylim,
               xticks = xticks,
               labelDir = labelDir,
               startLabels = rsLabels,
@@ -163,15 +179,18 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
               plotly_filter = 'plotly_filter',
               showLegend = FALSE,
               filename = filename,
-              bty = 'n', las = 2, cex.axis = 0.9, ...)
+              bty = 'l', xaxs = "i", yaxs = "i", las = 2, cex.axis = 0.9, ...)
   } else {
     if (!is.null(xticks)) {
       data$genome_pos <- -data$genome_pos
       xticks$at <- -xticks$at
     }
+    if (is.null(xlim)) xlim <- lim
     easylabel(data, y = 'genome_pos', x = 'logP',
               labs = labs,
               xlab = ylab, ylab = xlab,
+              xlim = xlim,
+              ylim = ylim,
               yticks = xticks,
               labelDir = labelDir,
               startLabels = startLabels,
@@ -185,6 +204,6 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
               plotly_filter = 'plotly_filter',
               showLegend = FALSE,
               filename = filename,
-              bty = 'n', las = 2, cex.axis = 0.9, ...)
+              bty = 'l', xaxs = "i", yaxs = "i", las = 2, cex.axis = 0.9, ...)
   }
 }

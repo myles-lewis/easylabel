@@ -254,8 +254,10 @@ easylabel <- function(data, x, y,
     data[notNA & data[, y] < ylim[1], y] <- ylim[1]
     data[notNA & data[, y] > ylim[2], y] <- ylim[2]
     xyspan[2] <- ylim[2] - ylim[1]
-    ylim[1] <- ylim[1] - xyspan[2] * 0.025
-    ylim[2] <- ylim[2] + xyspan[2] * 0.025
+    if (showOutliers & any(data$outlier)) {
+      ylim[1] <- ylim[1] - xyspan[2] * 0.02
+      ylim[2] <- ylim[2] + xyspan[2] * 0.02
+    }
     pyaxis <- c(pyaxis, range = as.list(ylim))
   }
   if (!is.null(xlim)) {
@@ -264,13 +266,21 @@ easylabel <- function(data, x, y,
     data[notNA & data[, x] < xlim[1], x] <- xlim[1]
     data[notNA & data[, x] > xlim[2], x] <- xlim[2]
     xyspan[1] <- xlim[2] - xlim[1]
-    xlim[1] <- xlim[1] - xyspan[1] * 0.025
-    xlim[2] <- xlim[2] + xyspan[1] * 0.025
+    if (showOutliers & any(data$outlier)) {
+      xlim[1] <- xlim[1] - xyspan[1] * 0.02
+      xlim[2] <- xlim[2] + xyspan[1] * 0.02
+    }
     pxaxis <- c(pxaxis, range = as.list(xlim))
   }
 
   # combine symbols & outlier symbol
   if (!showOutliers) {
+    if (is.numeric(startLabels)) {
+      # shift label indices from outlier removal
+      sl <- 1L:nrow(data)
+      sl <- sl %in% startLabels
+      startLabels <- which(sl[!data$outlier])
+    }
     data <- data[!data$outlier, ]
     showOutliers <- 1
   } else {
