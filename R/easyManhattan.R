@@ -33,6 +33,7 @@
 #' @param size Specifies point size. Passed to [easylabel()].
 #' @param width Width of the plot in pixels. Saving to pdf scales 100 pixels to 
 #' 1 inch.
+#' @param height Height of the plot in pixels.
 #' @param lineLength Initial length of label lines in pixels.
 #' @param npoints Maximum number of points to plot when saving to pdf. Defaults 
 #' to plot the top 1 million points by p value. Setting a value of `NA` will 

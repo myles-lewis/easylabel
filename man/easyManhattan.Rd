@@ -86,6 +86,8 @@ to \code{\link[=easylabel]{easylabel()}}.}
 \item{width}{Width of the plot in pixels. Saving to pdf scales 100 pixels to
 1 inch.}
 
+\item{height}{Height of the plot in pixels.}
+
 \item{lineLength}{Initial length of label lines in pixels.}
 
 \item{npoints}{Maximum number of points to plot when saving to pdf. Defaults
