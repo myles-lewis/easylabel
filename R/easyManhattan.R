@@ -50,7 +50,6 @@
 #' button 'Export plotly & exit' is pressed, a plotly figure is returned. 
 #' See [easylabel()].
 #' @importFrom gtools mixedsort
-#' @importFrom splus2R peaks
 #' @export
 
 easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
