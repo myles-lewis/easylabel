@@ -41,8 +41,7 @@ Imports:
     rlang,
     shiny,
     shinycssloaders,
-    shinybusy,
-    splus2R
+    shinybusy
 RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
