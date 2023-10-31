@@ -7,6 +7,7 @@ News
 * Aesthetic improvements to `easyManhattan()`
 * Improved thinning of data points near the x axis in `easyManhattan()` with 
 large GWAS
+* Faster peak finding algorithm for Manhattan plots
 
 # easylabel 0.2.7
 ###### 29/08/2023
