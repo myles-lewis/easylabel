@@ -69,7 +69,8 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
                           outline_col = NA,
                           shapeScheme = 16,
                           size = 6,
-                          width = 1100,
+                          width = ifelse(transpose, 600, 1100),
+                          height = ifelse(transpose, 800, 600),
                           lineLength = 60,
                           npoints = 1E6,
                           nplotly = 1E5,
@@ -176,7 +177,7 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
               outline_col = outline_col,
               shapeScheme = shapeScheme,
               size = size,
-              width = width,
+              width = width, height = height,
               lineLength = lineLength,
               zeroline = FALSE,
               plotly_filter = 'plotly_filter',
@@ -189,7 +190,6 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
       xticks$at <- -xticks$at
     }
     if (is.null(xlim)) xlim <- lim
-    if (is.null(ylim)) ylim <- glim
     easylabel(data, y = 'genome_pos', x = 'logP',
               labs = labs,
               xlab = ylab, ylab = xlab,
@@ -202,12 +202,12 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
               outline_col = outline_col,
               shapeScheme = shapeScheme,
               size = size,
-              width = width,
+              width = width, height = height,
               lineLength = lineLength,
               zeroline = FALSE,
               plotly_filter = 'plotly_filter',
               showLegend = FALSE,
               filename = filename,
-              bty = 'l', xaxs = "i", yaxs = "i", las = 2, cex.axis = 0.9, ...)
+              bty = 'l', xaxs = "i", las = 1, cex.axis = 0.9, ...)
   }
 }
