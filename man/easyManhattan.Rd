@@ -24,12 +24,13 @@ easyManhattan(
   outline_col = NA,
   shapeScheme = 16,
   size = 6,
-  width = 1100,
+  width = ifelse(transpose, 600, 1000),
+  height = ifelse(transpose, 800, 600),
   lineLength = 60,
   npoints = 1e+06,
   nplotly = 1e+05,
   npeaks = NULL,
-  span = min(c(nrow(data), npoints), na.rm = TRUE)/200,
+  span = 2e+07,
   transpose = FALSE,
   filename = NULL,
   ...
@@ -97,7 +98,7 @@ the default setting of 100,000 points (or fewer).}
 \item{npeaks}{Number of peaks to label initially.}
 
 \item{span}{a peak is defined as the most significant SNP within a window of
-width span SNPs centred at that SNP. Large numbers take significantly longer.}
+width span centred at that SNP.}
 
 \item{transpose}{Logical whether to transpose the plot.}
 

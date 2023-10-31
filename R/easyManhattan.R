@@ -41,7 +41,7 @@
 #' the default setting of 100,000 points (or fewer).
 #' @param npeaks Number of peaks to label initially.
 #' @param span a peak is defined as the most significant SNP within a window of 
-#' width span SNPs centred at that SNP. Large numbers take significantly longer.
+#' width span centred at that SNP.
 #' @param transpose Logical whether to transpose the plot.
 #' @param filename Filename for saving to pdf.
 #' @param ... Other arguments passed to [easylabel()].
@@ -75,7 +75,7 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
                           npoints = 1E6,
                           nplotly = 1E5,
                           npeaks = NULL,
-                          span = min(c(nrow(data), npoints), na.rm = TRUE) / 200,
+                          span = 2e7,
                           transpose = FALSE,
                           filename = NULL, ...) {
   if (is.null(filename)) filename <- paste0("manhattan_",
@@ -144,12 +144,16 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
   # find local maxima
   if (!is.null(npeaks)) {
     message("Finding peaks...")
-    span <- span + 1 - (span %% 2)
-    pks <- splus2R::peaks(data$logP, span = span)
-    pks_index <- which(pks)
-    sort_pks <- pks_index[order(data$logP[pks_index], decreasing = TRUE, 
-                                na.last = NA)]
-    rsLabels <- c(startLabels, sort_pks[1:npeaks])
+    i <- 2
+    index <- order(data[, p])
+    pks <- index[1]
+    while (length(pks) < npeaks & i < length(index)) {
+      if (all(abs(data[index[i], 'genome_pos'] - data[pks, 'genome_pos']) > span)) {
+        pks <- c(pks, index[i])
+      }
+      i <- i + 1
+    }
+    rsLabels <- c(startLabels, pks)
   } else {rsLabels <- startLabels}
   
   # fix x axis for locus plots
