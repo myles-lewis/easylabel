@@ -35,9 +35,9 @@
 #' 1 inch.
 #' @param height Height of the plot in pixels.
 #' @param lineLength Initial length of label lines in pixels.
-#' @param npoints Maximum number of points to plot when saving to pdf. Defaults 
-#' to plot the top 1 million points by p value. Setting a value of `NA` will 
-#' plot all points.
+#' @param npoints Maximum number of points to plot when saving the final plot to
+#'   pdf. By default plots with >1 million points are thinned to speed up
+#'   plotting. Setting a value of `NA` will plot all points.
 #' @param nplotly Maximum number of points to display via plotly. We recommend 
 #' the default setting of 100,000 points (or fewer).
 #' @param npeaks Number of peaks to label initially.
@@ -72,8 +72,8 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
                           width = ifelse(transpose, 600, 1000),
                           height = ifelse(transpose, 800, 600),
                           lineLength = 60,
-                          npoints = 1E6,
-                          nplotly = 1E5,
+                          npoints = max(c(nrow(data)/5, 1e6)),
+                          nplotly = 1e5,
                           npeaks = NULL,
                           span = 2e7,
                           transpose = FALSE,
