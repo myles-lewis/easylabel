@@ -157,7 +157,7 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
   } else {rsLabels <- startLabels}
   
   # fix x axis for locus plots
-  if(length(unique(data$chrom)) == 1) data$genome_pos <- data$pos
+  if(length(unique(data$chrom)) == 1) data$genome_pos <- data[, pos]
   
   # fix ylim
   lim <- range(data$logP, na.rm = TRUE)
