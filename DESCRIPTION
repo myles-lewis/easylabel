@@ -25,6 +25,8 @@ Language: en-gb
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+URL: https://github.com/myles-lewis/easylabel
+BugReports: https://github.com/myles-lewis/easylabel/issues
 biocViews:
 Suggests:
     AnnotationDbi,
