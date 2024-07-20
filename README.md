@@ -1,7 +1,7 @@
 # easylabel
 
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/easylabel)](https://cran.r-project.org/package=easylabel)
-[![Downloads](http://cranlogs.r-pkg.org/badges/easylabel)](https://CRAN.R-project.org/package=easylabel)
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/easylabel)](https://cran.r-project.org/package=easylabel)
+[![Downloads](https://cranlogs.r-pkg.org/badges/easylabel)](https://CRAN.R-project.org/package=easylabel)
 
 A common problem in R is labelling scatter plots with large numbers of points
 and/or labels. We provide a utility for easy labelling of scatter plots, and 
