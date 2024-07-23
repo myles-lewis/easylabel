@@ -157,7 +157,7 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
   } else {rsLabels <- startLabels}
   
   # fix x axis for locus plots
-  if(length(unique(data$chrom)) == 1) data$genome_pos <- data$pos
+  if(length(unique(data$chrom)) == 1) data$genome_pos <- data[, pos]
   
   # fix ylim
   lim <- range(data$logP, na.rm = TRUE)
@@ -185,6 +185,7 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
               lineLength = lineLength,
               zeroline = FALSE,
               plotly_filter = 'plotly_filter',
+              showOutliers = FALSE,
               showLegend = FALSE,
               filename = filename,
               bty = 'l', xaxs = "i", yaxs = "i", las = 1, cex.axis = 0.85, ...)
@@ -212,6 +213,7 @@ easyManhattan <- function(data, chrom = 'chrom', pos = 'pos', p = 'p',
               lineLength = lineLength,
               zeroline = FALSE,
               plotly_filter = 'plotly_filter',
+              showOutliers = FALSE,
               showLegend = FALSE,
               filename = filename,
               bty = 'l', xaxs = "i", yaxs = "i", las = 1, cex.axis = 0.9, ...)
