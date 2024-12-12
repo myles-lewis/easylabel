@@ -276,7 +276,7 @@ plot_points <- function(data, x, y, xaxt, yaxt, xlim, ylim, xlab, ylab,
                         showgrid, xgrid, ygrid, zeroline,
                         shape, shapeScheme, col, colScheme2,
                         outline_col, outline_lwd, outlier_shape,
-                        size, sizeSwitch, do_raster = FALSE, insert_raster = FALSE, ...) {
+                        size, sizeSwitch, do_raster = FALSE, no_points = FALSE, ...) {
   if (do_raster) {
     plot(data[!data$.outlier, x], data[!data$.outlier, y],
          type = "n", xaxt = "n", yaxt = "n", xlab = "", ylab = "",
@@ -299,7 +299,7 @@ plot_points <- function(data, x, y, xaxt, yaxt, xlim, ylim, xlab, ylab,
        })
   }
   
-  if (!insert_raster) {
+  if (!no_points) {
     points(data[!data$.outlier, x], data[!data$.outlier, y],
            pch = if (is.null(shape)) shapeScheme else shapeScheme[data[!data$.outlier, shape]],
            bg = if (is.null(col)) colScheme2 else colScheme2[data[!data$.outlier, col]],
@@ -325,7 +325,7 @@ plot_points <- function(data, x, y, xaxt, yaxt, xlim, ylim, xlab, ylab,
   }
 }
 
-
+#' @importFrom grDevices as.raster
 insert_image <- function(temp_image, res) {
   # need to extract coords of plot window then crop the png
   pix <- par("din") * res
@@ -335,6 +335,8 @@ insert_image <- function(temp_image, res) {
   x_off <- pix[1] * (plt[1] + diff(plt[1:2]) * 0.005)
   y_off <- pix[2] * (1-plt[4] + diff(plt[3:4]) * 0.005)
   
+  if (!requireNamespace("magick", quietly = TRUE))
+    stop("magick package is not installed", call. = FALSE)
   geom <- magick::geometry_area(width, height, x_off, y_off)
   image <- magick::image_read(temp_image)
   image <- magick::image_crop(image, geom)

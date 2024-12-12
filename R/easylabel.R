@@ -148,14 +148,14 @@
 #' updateSelectizeInput reactiveValues isolate reactive debounce
 #' observeEvent modalDialog textAreaInput tagList modalButton showModal
 #' removeModal h4 h5 runApp downloadButton selectInput br textInput req
-#' downloadHandler stopApp
+#' downloadHandler stopApp checkboxInput numericInput
 #' @importFrom plotly plot_ly layout plotlyOutput renderPlotly event_data
 #' event_register config plotlyProxy plotlyProxyInvoke add_markers %>%
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom DT dataTableOutput datatable formatSignif
-#' @importFrom grDevices adjustcolor pdf dev.off col2rgb rgb
+#' @importFrom grDevices adjustcolor pdf dev.off col2rgb rgb png svg tiff jpeg
 #' @importFrom graphics abline legend lines mtext par points polygon rect
-#' strheight strwidth text axis
+#' strheight strwidth text axis rasterImage
 #' @importFrom stats as.formula
 #' @importFrom shinycssloaders withSpinner
 #' @importFrom shinybusy show_modal_spinner remove_modal_spinner
@@ -703,8 +703,9 @@ easylabel <- function(data, x, y,
       oldpar <- par(no.readonly = TRUE)
       on.exit(par(oldpar), add = TRUE)
       
-      # raster
-      if (input$raster) {
+      # set up raster
+      do_raster <- input$raster & input$file_type %in% c("pdf", "svg")
+      if (do_raster) {
         temp_dir <- tempdir()
         temp_image <- tempfile(pattern = "scatter",
                                tmpdir = temp_dir, fileext =".png")
@@ -732,8 +733,8 @@ easylabel <- function(data, x, y,
                   showgrid, xgrid, ygrid, zeroline,
                   shape, shapeScheme, col, colScheme2,
                   outline_col, outline_lwd, outlier_shape,
-                  size, sizeSwitch, insert_raster = input$raster, ...)
-      if (input$raster) insert_image(temp_image, input$res)
+                  size, sizeSwitch, no_points = do_raster, ...)
+      if (do_raster) insert_image(temp_image, input$res)
       eval(panel.last)
       
       if (!is.null(xticks)) {
