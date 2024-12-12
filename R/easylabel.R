@@ -498,14 +498,21 @@ easylabel <- function(data, x, y,
                           options = list(
                             onInitialize = I('function() { this.setValue(""); }')
                           ),
-                          multiple = T)),
-                 column(5,
-                        textInput("filename", h5("Save pdf filename"), filename),
-                        br(),
+                          multiple = T),
                         actionButton("add_batch", "Add batch"),
-                        actionButton("clear", "Clear all"),
-                        downloadButton("save_plot", "Save pdf"),
-                        actionButton("stop", "Export plotly & exit")
+                        actionButton("clear", "Clear all")),
+                 column(5,
+                        fluidRow(
+                          column(6,
+                                 selectInput("file_type", h5("File type"),
+                                             choices = c("pdf", "svg", "png", "jpeg", "tiff"))),
+                          column(6,
+                                 numericInput("res", h5("Resolution"), value = 300, min = 50)
+                          )),
+                        textInput("filename", h5("Filename"), filename),
+                        downloadButton("save_plot", "Save plot"),
+                        actionButton("stop", "Export plotly & exit"),
+                        br(), br()
                  )
                )
       ),
@@ -590,11 +597,11 @@ easylabel <- function(data, x, y,
 
     # download plot using base graphics
     output$save_plot <- downloadHandler(filename = function()
-    {paste0(input$filename, ".pdf")}, content = function(file) {
+    {paste0(input$filename, ".", input$file_type)}, content = function(file) {
       
       if (nrow(data) > 80000) {
         show_modal_spinner(spin = "self-building-square",
-                           text = "Saving pdf ...", color = "royalblue")
+                           text = "Saving file ...", color = "royalblue")
         on.exit(remove_modal_spinner(), add = TRUE)
       }
       labs <- labels$list
@@ -693,7 +700,12 @@ easylabel <- function(data, x, y,
       }
       
       # save plot
-      pdf(file, width = width/100, height = height/100 + 0.75)
+      arg <- list(file = file, width = width/100, height = height/100 + 0.75)
+      if (input$file_type %in% c("png", "jpeg", "tiff")) {
+        arg <- c(arg, units = "in", res = input$res)
+      }
+      do.call(input$file_type, arg)
+      
       oldpar <- par(no.readonly = TRUE)
       on.exit(par(oldpar), add = TRUE)
       par(mgp = mgp, mar = c(4, 4, 2, legenddist), tcl = -0.3,
@@ -798,7 +810,7 @@ easylabel <- function(data, x, y,
       }
       dev.off()
 
-    }, contentType = 'application/pdf')
+    })
 
     updateSelectizeInput(session, 'label',
                          choices = unique(labelchoices), server = TRUE)
