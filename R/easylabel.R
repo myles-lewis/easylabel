@@ -483,17 +483,17 @@ easylabel <- function(data, x, y,
                  br()),
                fluidRow(
                  column(3,
-                        selectInput("labDir", label = h5("Label direction"),
+                        selectInput("labDir", label = "Label direction",
                                     choices = labDir_choices,
                                     selected = labelDir),
-                        radioButtons("ptype", label = h5("Plot type"),
+                        radioButtons("ptype", label = "Plot type",
                                      choices = c("WebGL (fast)" = 1,
                                                  "SVG (slow)" = 2),
                                      selected = 1)
                  ),
-                 column(4,
+                 column(3,
                         selectizeInput(
-                          'label', h5('Select labels'),
+                          'label', 'Select labels',
                           choices = NULL,
                           options = list(
                             onInitialize = I('function() { this.setValue(""); }')
@@ -501,18 +501,19 @@ easylabel <- function(data, x, y,
                           multiple = T),
                         actionButton("add_batch", "Add batch"),
                         actionButton("clear", "Clear all")),
-                 column(5,
-                        fluidRow(
-                          column(6,
-                                 selectInput("file_type", h5("File type"),
-                                             choices = c("pdf", "svg", "png", "jpeg", "tiff"))),
-                          column(6,
-                                 numericInput("res", h5("Resolution"), value = 300, min = 50)
-                          )),
-                        textInput("filename", h5("Filename"), filename),
+                 column(4,
+                        textInput("filename", "Filename", filename),
                         downloadButton("save_plot", "Save plot"),
                         actionButton("stop", "Export plotly & exit"),
+                        checkboxInput("raster", "Raster points",
+                                      value = (nrow(data) > 1e5)),
                         br(), br()
+                 ),
+                 column(2,
+                        selectInput("file_type", "File type",
+                                    choices = c("pdf", "svg", "png", "jpeg", "tiff")),
+                        
+                        numericInput("res", "Resolution", value = 300, min = 50)
                  )
                )
       ),
@@ -699,56 +700,40 @@ easylabel <- function(data, x, y,
         legtext <- c(legtext, 'outlier')
       }
       
+      oldpar <- par(no.readonly = TRUE)
+      on.exit(par(oldpar), add = TRUE)
+      
+      # raster
+      if (input$raster) {
+        temp_dir <- tempdir()
+        temp_image <- tempfile(pattern = "scatter",
+                               tmpdir = temp_dir, fileext =".png")
+        png(temp_image, width = width/100, height = height/100 +0.75, units = "in",
+            res = input$res, bg = "transparent")
+        par(mgp = mgp, mar = c(4, 4, 2, legenddist), tcl = -0.3,
+            las = 1, bty = 'l', font.main = 1)
+        plot_points(data, x, y, xaxt, yaxt, xlim, ylim, xlab, ylab,
+                    showgrid, xgrid, ygrid, zeroline,
+                    shape, shapeScheme, col, colScheme2,
+                    outline_col, outline_lwd, outlier_shape,
+                    size, sizeSwitch, do_raster = TRUE, ...)
+        dev.off()
+      }
+      
       # save plot
       arg <- list(file = file, width = width/100, height = height/100 + 0.75)
       if (input$file_type %in% c("png", "jpeg", "tiff")) {
         arg <- c(arg, units = "in", res = input$res)
       }
       do.call(input$file_type, arg)
-      
-      oldpar <- par(no.readonly = TRUE)
-      on.exit(par(oldpar), add = TRUE)
       par(mgp = mgp, mar = c(4, 4, 2, legenddist), tcl = -0.3,
           las = 1, bty = 'l', font.main = 1)
-      plot(data[!data$.outlier, x], data[!data$.outlier, y],
-           type = "n",
-           xaxt = xaxt, yaxt = yaxt,
-           xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, ...,
-           panel.first = {
-             if (showgrid != "") {
-               if (grepl("x", showgrid, ignore.case = TRUE)) {
-                 abline(v = xgrid, col = 'grey80', lwd = 0.5)
-               }
-               if (grepl("y", showgrid, ignore.case = TRUE)) {
-                 abline(h = ygrid, col = 'grey80', lwd = 0.5)
-               }
-             }
-             if (zeroline) abline(h = 0, v = 0)
-           })
-      
-      points(data[!data$.outlier, x], data[!data$.outlier, y],
-             pch = if (is.null(shape)) shapeScheme else shapeScheme[data[!data$.outlier, shape]],
-             bg = if (is.null(col)) colScheme2 else colScheme2[data[!data$.outlier, col]],
-             col = if (!is.null(col)) {
-               if (all(shapeScheme > 20)) {
-                 outline_col
-               } else {
-                 colScheme2[data[!data$.outlier, col]]
-               }
-             } else {colScheme2},
-             cex = switch(sizeSwitch, size / 8,
-                          data[!data$.outlier, 'plotly_size'] / 8),
-             lwd = outline_lwd)
-      
-      # add outliers
-      if (any(data$.outlier)) {
-        points(data[data$.outlier, x], data[data$.outlier, y],
-               pch = outlier_shape,
-               col = if (!is.null(col)) {
-                 colScheme2[data[data$.outlier, col]]} else colScheme2,
-               cex = size / 8)
-      }
-      
+      plot_points(data, x, y, xaxt, yaxt, xlim, ylim, xlab, ylab,
+                  showgrid, xgrid, ygrid, zeroline,
+                  shape, shapeScheme, col, colScheme2,
+                  outline_col, outline_lwd, outlier_shape,
+                  size, sizeSwitch, insert_raster = input$raster, ...)
+      if (input$raster) insert_image(temp_image, input$res)
       eval(panel.last)
       
       if (!is.null(xticks)) {

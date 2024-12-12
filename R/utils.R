@@ -270,3 +270,79 @@ col2hex <- function (cname) {
   colMat <- col2rgb(cname)
   rgb(red = colMat[1, ]/255, green = colMat[2, ]/255, blue = colMat[3, ]/255)
 }
+
+
+plot_points <- function(data, x, y, xaxt, yaxt, xlim, ylim, xlab, ylab,
+                        showgrid, xgrid, ygrid, zeroline,
+                        shape, shapeScheme, col, colScheme2,
+                        outline_col, outline_lwd, outlier_shape,
+                        size, sizeSwitch, do_raster = FALSE, insert_raster = FALSE, ...) {
+  if (do_raster) {
+    plot(data[!data$.outlier, x], data[!data$.outlier, y],
+         type = "n", xaxt = "n", yaxt = "n", xlab = "", ylab = "",
+         xlim = xlim, ylim = ylim,  ...)
+  } else {
+  plot(data[!data$.outlier, x], data[!data$.outlier, y],
+       type = "n",
+       xaxt = xaxt, yaxt = yaxt,
+       xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, ...,
+       panel.first = {
+         if (showgrid != "") {
+           if (grepl("x", showgrid, ignore.case = TRUE)) {
+             abline(v = xgrid, col = 'grey80', lwd = 0.5)
+           }
+           if (grepl("y", showgrid, ignore.case = TRUE)) {
+             abline(h = ygrid, col = 'grey80', lwd = 0.5)
+           }
+         }
+         if (zeroline) abline(h = 0, v = 0)
+       })
+  }
+  
+  if (!insert_raster) {
+    points(data[!data$.outlier, x], data[!data$.outlier, y],
+           pch = if (is.null(shape)) shapeScheme else shapeScheme[data[!data$.outlier, shape]],
+           bg = if (is.null(col)) colScheme2 else colScheme2[data[!data$.outlier, col]],
+           col = if (!is.null(col)) {
+             if (all(shapeScheme > 20)) {
+               outline_col
+             } else {
+               colScheme2[data[!data$.outlier, col]]
+             }
+           } else {colScheme2},
+           cex = switch(sizeSwitch, size / 8,
+                        data[!data$.outlier, 'plotly_size'] / 8),
+           lwd = outline_lwd)
+    
+    # add outliers
+    if (any(data$.outlier)) {
+      points(data[data$.outlier, x], data[data$.outlier, y],
+             pch = outlier_shape,
+             col = if (!is.null(col)) {
+               colScheme2[data[data$.outlier, col]]} else colScheme2,
+             cex = size / 8)
+    }
+  }
+}
+
+
+insert_image <- function(temp_image, res) {
+  # need to extract coords of plot window then crop the png
+  pix <- par("din") * res
+  plt <- par("plt")
+  width <- pix[1] * diff(plt[1:2]) * 0.99
+  height <- pix[2] * diff(plt[3:4]) * 0.99
+  x_off <- pix[1] * (plt[1] + diff(plt[1:2]) * 0.005)
+  y_off <- pix[2] * (1-plt[4] + diff(plt[3:4]) * 0.005)
+  
+  geom <- magick::geometry_area(width, height, x_off, y_off)
+  image <- magick::image_read(temp_image)
+  image <- magick::image_crop(image, geom)
+  image <- as.raster(image)
+  
+  usr <- par("usr")  # x1, x2, y1, y2
+  xd <- diff(usr[1:2]) * 0.005
+  yd <- diff(usr[3:4]) * 0.005
+  rasterImage(image, usr[1] +xd, usr[3] +yd, usr[2] -xd, usr[4] -yd,
+              interpolate = FALSE)
+}
