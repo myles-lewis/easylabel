@@ -1,7 +1,7 @@
 Package: easylabel
 Type: Package
 Title: Interactive Scatter Plot and Volcano Plot Labels
-Version: 0.2.8
+Version: 0.3.0
 Authors@R:
     c(person(given = "Myles",family = "Lewis",
     role = c("aut", "cre"),
@@ -16,6 +16,8 @@ Authors@R:
     email = "c.cubuk@qmul.ac.uk",
     comment = c(ORCID = "0000-0003-4646-0849")))
 Maintainer: Myles Lewis <myles.lewis@qmul.ac.uk>
+BugReports: https://github.com/myles-lewis/easylabel/issues
+URL: https://github.com/myles-lewis/easylabel
 Description: Interactive labelling of scatter plots, volcano plots and 
     Manhattan plots using a 'shiny' and 'plotly' interface. Users can hover 
     over points to see where specific points are located and click points 
@@ -29,6 +31,7 @@ biocViews:
 Suggests:
     AnnotationDbi,
     knitr,
+    magick,
     org.Hs.eg.db,
     qvalue,
     rmarkdown

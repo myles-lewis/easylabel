@@ -245,16 +245,16 @@ easylabel <- function(data, x, y,
   }
   
   # determine outliers
-  data$outlier <- FALSE
+  data$.outlier <- FALSE
   xyspan <- c(max(data[, x], na.rm = TRUE) - min(data[, x], na.rm = TRUE),
               max(data[, y], na.rm = TRUE) - min(data[, y], na.rm = TRUE))
   if (!is.null(ylim)) {
     notNA <- !is.na(data[,y])
-    data$outlier[notNA & (data[, y] < ylim[1] | data[, y] > ylim[2])] <- TRUE
+    data$.outlier[notNA & (data[, y] < ylim[1] | data[, y] > ylim[2])] <- TRUE
     data[notNA & data[, y] < ylim[1], y] <- ylim[1]
     data[notNA & data[, y] > ylim[2], y] <- ylim[2]
     xyspan[2] <- ylim[2] - ylim[1]
-    if (showOutliers & any(data$outlier)) {
+    if (showOutliers & any(data$.outlier)) {
       ylim[1] <- ylim[1] - xyspan[2] * 0.02
       ylim[2] <- ylim[2] + xyspan[2] * 0.02
     }
@@ -262,11 +262,11 @@ easylabel <- function(data, x, y,
   }
   if (!is.null(xlim)) {
     notNA <- !is.na(data[,x])
-    data$outlier[notNA & (data[, x] < xlim[1] | data[, x] > xlim[2])] <- TRUE
+    data$.outlier[notNA & (data[, x] < xlim[1] | data[, x] > xlim[2])] <- TRUE
     data[notNA & data[, x] < xlim[1], x] <- xlim[1]
     data[notNA & data[, x] > xlim[2], x] <- xlim[2]
     xyspan[1] <- xlim[2] - xlim[1]
-    if (showOutliers & any(data$outlier)) {
+    if (showOutliers & any(data$.outlier)) {
       xlim[1] <- xlim[1] - xyspan[1] * 0.02
       xlim[2] <- xlim[2] + xyspan[1] * 0.02
     }
@@ -279,17 +279,17 @@ easylabel <- function(data, x, y,
       # shift label indices from outlier removal
       sl <- 1L:nrow(data)
       sl <- sl %in% startLabels
-      startLabels <- which(sl[!data$outlier])
+      startLabels <- which(sl[!data$.outlier])
     }
-    data <- data[!data$outlier, ]
+    data <- data[!data$.outlier, ]
     showOutliers <- 1
   } else {
-    if (any(data$outlier)) {
+    if (any(data$.outlier)) {
       showOutliers <- 2
       if (!is.null(shape)) {
         data$comb_symbol <- factor(data[, shape])
         levels(data$comb_symbol) <- c(levels(data$comb_symbol), "Outlier")
-        data$comb_symbol[data$outlier] <- "Outlier"
+        data$comb_symbol[data$.outlier] <- "Outlier"
         shapeScheme <- c(shapeScheme, outlier_shape)
       }
     } else showOutliers <- 1
@@ -654,50 +654,6 @@ easylabel <- function(data, x, y,
         ygrid <- seq(args$yaxp[1], args$yaxp[2], length.out = args$yaxp[3] + 1)
       }
       
-      pdf(file, width = width/100, height = height/100 + 0.75)
-      oldpar <- par(no.readonly = TRUE)
-      on.exit(par(oldpar), add = TRUE)
-      par(mgp = mgp, mar = c(4, 4, 2, legenddist), tcl = -0.3,
-          las = 1, bty = 'l', font.main = 1)
-      plot(data[!data$outlier, x], data[!data$outlier, y],
-           pch = if (is.null(shape)) shapeScheme else shapeScheme[data[!data$outlier, shape]],
-           bg = if (is.null(col)) colScheme2 else colScheme2[data[!data$outlier, col]],
-           col = if (!is.null(col)) {
-             if (all(shapeScheme > 20)) {
-               outline_col
-             } else {
-               colScheme2[data[!data$outlier, col]]
-             }
-           } else {colScheme2},
-           cex = switch(sizeSwitch, size / 8,
-                        data[!data$outlier, 'plotly_size'] / 8),
-           lwd = outline_lwd,
-           xaxt = xaxt, yaxt = yaxt,
-           xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, ...,
-           panel.first = {
-             if (showgrid != "") {
-               if (grepl("x", showgrid, ignore.case = TRUE)) {
-                 abline(v = xgrid, col = 'grey80', lwd = 0.5)
-               }
-               if (grepl("y", showgrid, ignore.case = TRUE)) {
-                 abline(h = ygrid, col = 'grey80', lwd = 0.5)
-               }
-             }
-             if (zeroline) abline(h = 0, v = 0)
-           },
-           panel.last = panel.last)
-      if (!is.null(xticks)) {
-        axis(1, at = xticks$at, labels = xticks$labels, ...)
-      }
-      if (!is.null(yticks)) {
-        axis(2, at = yticks$at, labels = yticks$labels, ...)
-      }
-      mtext(Ltitle, LRtitle_side, adj = 0,
-            line = ifelse(LRtitle_side <= 2, mgp[1], 0.1),
-            cex = args$cex.lab)
-      mtext(Rtitle, LRtitle_side, adj = 1,
-            line = ifelse(LRtitle_side <= 2, mgp[1], 0.1),
-            cex = args$cex.lab)
       # arrange legend features
       legtext <- legcol <- legpch <- legbg <- NULL
       if (!is.null(col)) {
@@ -726,20 +682,76 @@ easylabel <- function(data, x, y,
           legpch <- shapeScheme
         }
       }
-
+      
       pt.lwd <- outline_lwd
-      if (any(data$outlier)) {
-        points(data[data$outlier, x], data[data$outlier, y],
-               pch = outlier_shape,
-               col = if (!is.null(col)) {
-                 colScheme2[data[data$outlier, col]]} else colScheme2,
-               cex = size / 8)
+      if (any(data$.outlier)) {
         legpch <- c(legpch, outlier_shape)
         legcol <- c(legcol, 'black')
         legbg <- c(legbg, 'black')
         pt.lwd <- c(rep(pt.lwd, length(legtext)), 1)
         legtext <- c(legtext, 'outlier')
       }
+      
+      # save plot
+      pdf(file, width = width/100, height = height/100 + 0.75)
+      oldpar <- par(no.readonly = TRUE)
+      on.exit(par(oldpar), add = TRUE)
+      par(mgp = mgp, mar = c(4, 4, 2, legenddist), tcl = -0.3,
+          las = 1, bty = 'l', font.main = 1)
+      plot(data[!data$.outlier, x], data[!data$.outlier, y],
+           type = "n",
+           xaxt = xaxt, yaxt = yaxt,
+           xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, ...,
+           panel.first = {
+             if (showgrid != "") {
+               if (grepl("x", showgrid, ignore.case = TRUE)) {
+                 abline(v = xgrid, col = 'grey80', lwd = 0.5)
+               }
+               if (grepl("y", showgrid, ignore.case = TRUE)) {
+                 abline(h = ygrid, col = 'grey80', lwd = 0.5)
+               }
+             }
+             if (zeroline) abline(h = 0, v = 0)
+           })
+      
+      points(data[!data$.outlier, x], data[!data$.outlier, y],
+             pch = if (is.null(shape)) shapeScheme else shapeScheme[data[!data$.outlier, shape]],
+             bg = if (is.null(col)) colScheme2 else colScheme2[data[!data$.outlier, col]],
+             col = if (!is.null(col)) {
+               if (all(shapeScheme > 20)) {
+                 outline_col
+               } else {
+                 colScheme2[data[!data$.outlier, col]]
+               }
+             } else {colScheme2},
+             cex = switch(sizeSwitch, size / 8,
+                          data[!data$.outlier, 'plotly_size'] / 8),
+             lwd = outline_lwd)
+      
+      # add outliers
+      if (any(data$.outlier)) {
+        points(data[data$.outlier, x], data[data$.outlier, y],
+               pch = outlier_shape,
+               col = if (!is.null(col)) {
+                 colScheme2[data[data$.outlier, col]]} else colScheme2,
+               cex = size / 8)
+      }
+      
+      eval(panel.last)
+      
+      if (!is.null(xticks)) {
+        axis(1, at = xticks$at, labels = xticks$labels, ...)
+      }
+      if (!is.null(yticks)) {
+        axis(2, at = yticks$at, labels = yticks$labels, ...)
+      }
+      mtext(Ltitle, LRtitle_side, adj = 0,
+            line = ifelse(LRtitle_side <= 2, mgp[1], 0.1),
+            cex = args$cex.lab)
+      mtext(Rtitle, LRtitle_side, adj = 1,
+            line = ifelse(LRtitle_side <= 2, mgp[1], 0.1),
+            cex = args$cex.lab)
+      
       abline(h = hline[hline != 0], v = vline[vline != 0],
              col = '#AAAAAA', lty = 2)
       abline(h = hline[hline == 0], v = vline[vline == 0])
