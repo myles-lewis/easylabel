@@ -708,6 +708,8 @@ easylabel <- function(data, x, y,
       # set up raster
       do_raster <- input$raster & input$file_type %in% c("pdf", "svg")
       if (do_raster) {
+        if (!requireNamespace("magick", quietly = TRUE))
+          stop("magick package is not installed", call. = FALSE)
         temp_dir <- tempdir()
         temp_image <- tempfile(pattern = "scatter",
                                tmpdir = temp_dir, fileext =".png")
