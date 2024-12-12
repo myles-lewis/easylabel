@@ -148,7 +148,7 @@
 #' updateSelectizeInput reactiveValues isolate reactive debounce
 #' observeEvent modalDialog textAreaInput tagList modalButton showModal
 #' removeModal h4 h5 runApp downloadButton selectInput br textInput req
-#' downloadHandler stopApp checkboxInput numericInput
+#' downloadHandler stopApp checkboxInput numericInput conditionalPanel
 #' @importFrom plotly plot_ly layout plotlyOutput renderPlotly event_data
 #' event_register config plotlyProxy plotlyProxyInvoke add_markers %>%
 #' @importFrom RColorBrewer brewer.pal
@@ -505,8 +505,10 @@ easylabel <- function(data, x, y,
                         textInput("filename", "Filename", filename),
                         downloadButton("save_plot", "Save plot"),
                         actionButton("stop", "Export plotly & exit"),
+                        conditionalPanel(condition="input.file_type == 'pdf' | input.file_type == 'svg'",
                         checkboxInput("raster", "Raster points",
-                                      value = (nrow(data) > 1e5)),
+                                      value = (nrow(data) > 1e5))
+                        ),
                         br(), br()
                  ),
                  column(2,
