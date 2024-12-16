@@ -1,13 +1,15 @@
 
 #' Load easylabel saved state
 #' 
-#' Loads a file or easylab object containing saved state.
+#' Loads a file or easylab object containing saved state with specified labels
+#' and their positions.
 #' 
 #' @param object Either a character value specifying an rds file to be loaded,
 #'   or an object of class 'easylab'.
 #' @param data Dataset (data.frame or data.table) to use for plot. If not
-#'   specified, the function will try to load the original data object as it was
-#'   specified in the original call to easylabel.
+#'   specified, the function will first use embedded data included in `object`;
+#'   if no data is embedded it will attempt to load the original data object as
+#'   it was specified in the original call to [easylabel()].
 #' @param ... Additional arguments passed to [easylabel()]. Can be used to
 #'   overwrite original arguments.
 #' @returns By default no return value. Calls [easylabel()] which will open a
