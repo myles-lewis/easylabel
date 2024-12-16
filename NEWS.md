@@ -7,7 +7,8 @@ News
 interface.
 * Added ability to embed an image of the points as a rastered bitmap (png). This 
 helps reduce file size with large numbers of points.
-* Added saving of state of labels from shiny and enabled reloading
+* Added saving of state of labels from shiny and enabled reloading using 
+`loadlabel()`.
 
 # easylabel 0.2.8
 ###### 30/10/2023

@@ -95,7 +95,7 @@ axis lines, ticks, axis labels, label lines, label text etc are all preserved as
 vectors, only the points are rasterised, which is arguably the best of both
 worlds, and typically preferred by publications.
 
-## Save and restore state
+## Save state
 This button allows users to save the state of the plot including which points
 are labelled and the position of the labels. An rds file is saved in the working
 directory. This can be reloaded during another R session using the function
