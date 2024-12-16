@@ -56,5 +56,10 @@ loadlabel <- function(object, data = NULL, ...) {
 summary.easylab <- function(object, ...) {
   obcall <- deparse(object$call)
   cat("Call:", paste(obcall, collapse = "\n"), "\n")
-  cat("Labels:", paste(object$labelnames, collapse = ", "))
+  cat("Labels:", paste(object$labelnames, collapse = ", "), "\n")
+  if (is.null(object$data)) {
+    cat("No embedded data\n")
+  } else {
+    cat("Embedded data:", nrow(object$data), "rows\n")
+  }
 }
