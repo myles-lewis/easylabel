@@ -978,7 +978,7 @@ easylabel <- function(data, x, y,
       if (input$embed_data) out$data <- data
       class(out) <- "easylab"
       saveRDS(out, file = file)
-      showNotification(HTML(paste0("Saved state to ", file, " in<br>", getwd())),
+      showNotification(HTML(paste0("Saved state to ", file, " in folder<br>", getwd())),
                        type = "message")
     })
     
