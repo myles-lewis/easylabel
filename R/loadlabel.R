@@ -19,9 +19,17 @@ loadlabel <- function(object, data = NULL, ...) {
   
   dots <- list(...)
   args <- object$evalcall
-  args$data <- if (!is.null(data)) {
-    quote(data)
-  } else object$call$data
+  if (!is.null(data)) {
+    args$data <- quote(data)
+  } else {
+    if (exists(object$call$data)) {
+      args$data <- object$call$data
+      dataname <- as.character(object$call$data)
+      message("Dataset: ", dataname)
+      if (!inherits(eval(parse(text = dataname)), c("matrix", "data.frame")))
+                    stop(object$call$data, " is not a dataframe or matrix")
+    } else stop(object$call$data, " is missing")
+  }
   args$startLabels <- object$startLabels
   args$start_xy <- object$start_xy
   if (length(dots)) args[names(dots)] <- dots
