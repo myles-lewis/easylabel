@@ -10,6 +10,7 @@ easylabel(
   y,
   labs = NULL,
   startLabels = NULL,
+  start_xy = NULL,
   cex.text = 0.72,
   col = NULL,
   colScheme = NULL,
@@ -73,6 +74,9 @@ Label names do not have to be unique. If \code{NULL} defaults to \code{rownames(
 \item{startLabels}{Vector of initial labels. With a character vector, labels
 are identified in the column specified by \code{labs}. With a numeric vector,
 points to be labelled are referred to by row number.}
+
+\item{start_xy}{List containing label annotation starting coordinates.
+Invoked by \code{\link[=loadlabel]{loadlabel()}}.}
 
 \item{cex.text}{Font size for labels. Default 0.72 to match plotly font size.
 See \code{\link[=text]{text()}}.}

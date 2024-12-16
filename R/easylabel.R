@@ -25,6 +25,8 @@
 #' @param startLabels Vector of initial labels. With a character vector, labels 
 #' are identified in the column specified by `labs`. With a numeric vector,
 #' points to be labelled are referred to by row number.
+#' @param start_xy List containing label annotation starting coordinates.
+#'   Invoked by [loadlabel()].
 #' @param cex.text Font size for labels. Default 0.72 to match plotly font size.
 #' See [text()].
 #' @param col Specifies which column in `data` affects point colour. Must be
@@ -148,7 +150,7 @@
 #' updateSelectizeInput reactiveValues isolate reactive debounce
 #' observeEvent modalDialog textAreaInput tagList modalButton showModal
 #' removeModal h4 h5 runApp downloadButton selectInput br textInput req
-#' downloadHandler stopApp checkboxInput numericInput conditionalPanel
+#' downloadHandler stopApp checkboxInput numericInput conditionalPanel icon
 #' @importFrom plotly plot_ly layout plotlyOutput renderPlotly event_data
 #' event_register config plotlyProxy plotlyProxyInvoke add_markers %>%
 #' @importFrom RColorBrewer brewer.pal
@@ -172,6 +174,7 @@
 easylabel <- function(data, x, y,
                       labs = NULL,
                       startLabels = NULL,
+                      start_xy = NULL,
                       cex.text = 0.72,
                       col = NULL, colScheme = NULL,
                       alpha = 1,
@@ -210,6 +213,7 @@ easylabel <- function(data, x, y,
                       output_shiny = TRUE, 
                       ...) {
   name_data <- deparse(substitute(data))
+  call. <- match.call()
   if (is.null(filename)) filename <- paste0("label_", name_data)
   args <- list(...)
   if (!inherits(data, 'data.frame') | inherits(data, 'tbl')) data <- as.data.frame(data)
@@ -396,7 +400,7 @@ easylabel <- function(data, x, y,
   }
   pkey <- 1:length(labelchoices)
   labSize <- cex.text / 0.72 * 12
-  start_annot <- annotation(startLabels, plotly_data, x, y,
+  start_annot <- annotation(startLabels, plotly_data, x, y, start_xy,
                             labelchoices = labelchoices,
                             labSize = labSize,
                             labelDir = labelDir, labCentre = labCentre,
@@ -404,8 +408,10 @@ easylabel <- function(data, x, y,
                             lineLength = lineLength,
                             col = col, colScheme = colScheme, 
                             text_col = ptext_col, line_col = line_col)
-  start_xy <- lapply(start_annot, function(i) list(ax = i$ax, ay = i$ay))
-  names(start_xy) <- startLabels
+  if (is.null(start_xy)) {
+    start_xy <- lapply(start_annot, function(i) list(ax = i$ax, ay = i$ay))
+    names(start_xy) <- startLabels
+  }
   hovertext <- labelchoices
   if (fullGeneNames) {
     if (!requireNamespace("AnnotationDbi", quietly = TRUE)) {
@@ -500,7 +506,10 @@ easylabel <- function(data, x, y,
                           ),
                           multiple = T),
                         actionButton("add_batch", "Add batch"),
-                        actionButton("clear", "Clear all")),
+                        actionButton("clear", "Clear all"),
+                        actionButton("save_state", "Save state", icon = icon("download")),
+                        checkboxInput("keep_data", "Embed data")
+                        ),
                  column(4,
                         textInput("filename", "Filename", filename),
                         downloadButton("save_plot", "Save plot"),
@@ -514,7 +523,6 @@ easylabel <- function(data, x, y,
                  column(2,
                         selectInput("file_type", "File type",
                                     choices = c("pdf", "svg", "png", "jpeg", "tiff")),
-                        
                         numericInput("res", "Resolution", value = 300, min = 50)
                  )
                )
@@ -542,7 +550,7 @@ easylabel <- function(data, x, y,
       labs <- startLabels
       isolate(pt <- as.numeric(input$ptype))
       isolate(ldir <- input$labDir)
-      annot <- annotation(labs, plotly_data, x, y,
+      annot <- annotation(labs, plotly_data, x, y, start_xy,
                           labelchoices = labelchoices,
                           labSize = labSize, labelDir = ldir,
                           labCentre = labCentre, xyspan = xyspan,
@@ -702,9 +710,6 @@ easylabel <- function(data, x, y,
         legtext <- c(legtext, 'outlier')
       }
       
-      oldpar <- par(no.readonly = TRUE)
-      on.exit(par(oldpar), add = TRUE)
-      
       # set up raster
       do_raster <- input$raster & input$file_type %in% c("pdf", "svg")
       if (do_raster) {
@@ -715,6 +720,8 @@ easylabel <- function(data, x, y,
                                tmpdir = temp_dir, fileext =".png")
         png(temp_image, width = width/100, height = height/100 +0.75, units = "in",
             res = input$res, bg = "transparent")
+        oldpar <- par(no.readonly = TRUE)
+        on.exit(par(oldpar), add = TRUE)
         par(mgp = mgp, mar = c(4, 4, 2, legenddist), tcl = -0.3,
             las = 1, bty = 'l', font.main = 1)
         plot_points(data, x, y, xaxt, yaxt, xlim, ylim, xlab, ylab,
@@ -731,6 +738,8 @@ easylabel <- function(data, x, y,
         arg <- c(arg, units = "in", res = input$res)
       }
       do.call(input$file_type, arg)
+      oldpar <- par(no.readonly = TRUE)
+      on.exit(par(oldpar), add = TRUE)
       par(mgp = mgp, mar = c(4, 4, 2, legenddist), tcl = -0.3,
           las = 1, bty = 'l', font.main = 1)
       plot_points(data, x, y, xaxt, yaxt, xlim, ylim, xlab, ylab,
@@ -952,8 +961,23 @@ easylabel <- function(data, x, y,
         plotlyProxyInvoke("relayout",
                           list(annotations = append(annot, custom_annotation)))
     })
-
-
+    
+    # save state
+    observeEvent(input$save_state, {
+      file <- paste0(input$filename, ".rds")
+      xcall <- as.list(call.)[-1]
+      xcall[c("data", "panel.last", "startLabels",
+              "start_xy")] <- NULL
+      evalcall <- lapply(xcall, eval)
+      out <- list(call = call.,
+                  evalcall = evalcall,
+                  startLabels = as.integer(labels$list),
+                  start_xy = labelsxy$list,
+                  labelnames = labelchoices[as.integer(labels$list)])
+      class(out) <- "easylab"
+      saveRDS(out, file = file)
+    })
+    
   }
 
   runApp(list(ui = ui, server = server))
