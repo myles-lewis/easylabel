@@ -5,12 +5,14 @@
 #' 
 #' @param object Either a character value specifying an rds file to be loaded,
 #'   or an object of class 'easylab'.
-#' @param data Dataset (data.frame or data.table) to use for plot.
+#' @param data Dataset (data.frame or data.table) to use for plot. If not
+#'   specified, the function will try to load the original data object as it was
+#'   specified in the original call to easylabel.
 #' @param ... Additional arguments passed to [easylabel()]. Can be used to
 #'   overwrite original arguments.
 #' @returns By default no return value. Calls [easylabel()] which will open a
-#'   shiny interactive session based on previous settings stored in an easylab
-#'   object or rds file of such an object.
+#'   shiny interactive session based on previous settings stored in an 'easylab'
+#'   class object or rds file of such an object.
 #' @export
 #'
 loadlabel <- function(object, data = NULL, ...) {
@@ -38,6 +40,7 @@ loadlabel <- function(object, data = NULL, ...) {
   
   do.call("easylabel", args)
 }
+
 
 #' Summarise easylabel saved state object
 #' 

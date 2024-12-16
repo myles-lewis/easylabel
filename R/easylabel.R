@@ -10,13 +10,17 @@
 #' * Hover over and click on/off genes which you want to label.
 #' * When you have selected all your chosen genes, then drag gene names to
 #'   move label positions.
-#' * Click the save button to export a PDF in base graphics.
+#' * Click the save button to export a PDF or other file types produced in base 
+#'   graphics. Files are saved to the browser downloads folder by default.
 #' * The Table tab shows a table view of the dataset to help with annotation.
 #'
 #' To export an SVG from plotly:
 #' * Switch to SVG when finalised (only do this at last moment as otherwise
 #'   editing is very slow).
 #' * Press camera button in modebar to save image as SVG.
+#' 
+#' In the shiny interface the "Save state" button saves an rds file of
+#' containing an 'easylab' class list object to the current working directory. This can be reloaded in future sessions using [loadlabel()].
 #' @param data Dataset (data.frame or data.table) to use for plot.
 #' @param x Specifies column of x coordinates in `data`.
 #' @param y Specifies column of y coordinates in `data`.
@@ -142,7 +146,7 @@
 #' plotted but before the labels and label lines are drawn, which will allow the
 #' addition of trend lines, extra titles or legends for example (see
 #' [plot.default()]).
-#' @seealso [easyVolcano()], [easyMAplot()]
+#' @seealso [easyVolcano()], [easyMAplot()], [loadlabel()]
 #' @return  By default no return value. If `output_shiny = FALSE` or the shiny 
 #' button 'Export plotly & exit' is pressed, a plotly figure is returned.
 #' @importFrom shiny fluidPage tabsetPanel tabPanel fluidRow column

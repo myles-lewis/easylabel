@@ -10,15 +10,17 @@ loadlabel(object, data = NULL, ...)
 \item{object}{Either a character value specifying an rds file to be loaded,
 or an object of class 'easylab'.}
 
-\item{data}{Dataset (data.frame or data.table) to use for plot.}
+\item{data}{Dataset (data.frame or data.table) to use for plot. If not
+specified, the function will try to load the original data object as it was
+specified in the original call to easylabel.}
 
 \item{...}{Additional arguments passed to \code{\link[=easylabel]{easylabel()}}. Can be used to
 overwrite original arguments.}
 }
 \value{
 By default no return value. Calls \code{\link[=easylabel]{easylabel()}} which will open a
-shiny interactive session based on previous settings stored in an easylab
-object or rds file of such an object.
+shiny interactive session based on previous settings stored in an 'easylab'
+class object or rds file of such an object.
 }
 \description{
 Loads a file or easylab object containing saved state.
