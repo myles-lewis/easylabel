@@ -1,7 +1,7 @@
 Package: easylabel
 Type: Package
 Title: Interactive Scatter Plot and Volcano Plot Labels
-Version: 0.3.0
+Version: 0.3.1
 Authors@R:
     c(person(given = "Myles",family = "Lewis",
     role = c("aut", "cre"),
