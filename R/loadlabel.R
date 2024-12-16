@@ -22,7 +22,9 @@ loadlabel <- function(object, data = NULL, ...) {
   if (!is.null(data)) {
     args$data <- quote(data)
   } else {
-    if (exists(object$call$data)) {
+    if (!is.null(object$data)) {
+      args$data <- object$data
+    } else if (exists(object$call$data)) {
       args$data <- object$call$data
       dataname <- as.character(object$call$data)
       message("Dataset: ", dataname)

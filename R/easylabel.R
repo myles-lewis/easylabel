@@ -151,6 +151,7 @@
 #' observeEvent modalDialog textAreaInput tagList modalButton showModal
 #' removeModal h4 h5 runApp downloadButton selectInput br textInput req
 #' downloadHandler stopApp checkboxInput numericInput conditionalPanel icon
+#' showNotification HTML
 #' @importFrom plotly plot_ly layout plotlyOutput renderPlotly event_data
 #' event_register config plotlyProxy plotlyProxyInvoke add_markers %>%
 #' @importFrom RColorBrewer brewer.pal
@@ -508,7 +509,7 @@ easylabel <- function(data, x, y,
                         actionButton("add_batch", "Add batch"),
                         actionButton("clear", "Clear all"),
                         actionButton("save_state", "Save state", icon = icon("download")),
-                        checkboxInput("keep_data", "Embed data")
+                        checkboxInput("embed_data", "Embed data")
                         ),
                  column(4,
                         textInput("filename", "Filename", filename),
@@ -974,8 +975,11 @@ easylabel <- function(data, x, y,
                   startLabels = as.integer(labels$list),
                   start_xy = labelsxy$list,
                   labelnames = labelchoices[as.integer(labels$list)])
+      if (input$embed_data) out$data <- data
       class(out) <- "easylab"
       saveRDS(out, file = file)
+      showNotification(HTML(paste0("Saved state to ", file, " in<br>", getwd())),
+                       type = "message")
     })
     
   }
