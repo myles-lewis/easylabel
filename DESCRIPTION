@@ -22,7 +22,11 @@ Description: Interactive labelling of scatter plots, volcano plots and
     Manhattan plots using a 'shiny' and 'plotly' interface. Users can hover 
     over points to see where specific points are located and click points 
     on/off to easily label them. Labels can be dragged around the plot to place 
-    them optimally. Plots can be exported directly to PDF for publication.
+    them optimally. Plots can be exported directly to PDF for publication. For 
+    plots with large numbers of points, points can be rasterised as a bitmap 
+    while all other elements (axes, text, labels & lines) are preserved as 
+    vector objects. This can dramatically reduce file size for plots with 
+    millions of points such as Manhattan plots, and is ideal for publication.
 Language: en-gb
 License: MIT + file LICENSE
 Encoding: UTF-8
