@@ -1,6 +1,13 @@
 ## R CMD check results
 0 errors ✓ | 0 warnings ✓ | 0 notes ✓
 
+## Update to version 0.3.1
+Added new features:
+* Save and restore settings from within the shiny interface.
+* Option to export millions of points as embedded raster bitmap while other
+plotting elements (axes, titles, labels and lines etc) are preserved as vector
+objects.
+
 ## Update
 Update to version 0.2.7. In this version we have:
 

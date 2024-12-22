@@ -84,6 +84,28 @@ knitr::include_graphics("scatter1.png")
 * When you have selected all your chosen genes, then drag gene names to move
 label positions.
 * Click the save button to export a PDF in base graphics.
+* File type can be changed to export SVG, PNG, JPEG or TIFF.
+
+If dealing with a plot with very large numbers of points (>20k), then it may
+make sense to rasterise the points by clicking the "Raster points" checkbox and
+setting a resolution (dpi). This can dramatically reduce file size for plots
+with millions of points, e.g. Manhattan plots. It also makes these pdf or svg
+images load much faster. Note that if you use pdf or svg when exporting, the
+axis lines, ticks, axis labels, label lines, label text etc are all preserved as
+vectors, only the points are rasterised, which is arguably the best of both
+worlds, and typically preferred by publications.
+
+## Save state
+This button allows users to save the state of the plot including which points
+are labelled and the position of the labels. An rds file is saved in the working
+directory. This can be reloaded during another R session using the function
+`loadlabel()`. The original data can optionally be embedded in the saved rds
+file by ticking the "Embed data" checkbox. If the data is not embedded the
+function will need access to the original data object, so this must be loaded
+into the global environment before calling `loadlabel()`.
+
+`loadlabel()` can either refer directly to the rds file, or can point to the rds
+file loaded into the global environment as a list object of class 'easylab'.
 
 ## Export SVG from plotly
 * Switch to SVG when finalised (only do this at last moment as otherwise
