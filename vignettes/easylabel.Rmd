@@ -104,8 +104,9 @@ file by ticking the "Embed data" checkbox. If the data is not embedded the
 function will need access to the original data object, so this must be loaded
 into the global environment before calling `loadlabel()`.
 
-`loadlabel()` can either refer directly to the rds file, or can point to the rds
-file loaded into the global environment as a list object of class 'easylab'.
+`loadlabel()` can refer directly to the rds file. Alternatively the rds file can
+be loaded into the global environment as an object and `loadlabel()` can be
+applied to this object.
 
 ## Export SVG from plotly
 * Switch to SVG when finalised (only do this at last moment as otherwise
