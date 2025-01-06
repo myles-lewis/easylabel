@@ -272,6 +272,11 @@ col2hex <- function (cname) {
 }
 
 
+# 3 options:
+# points, no axes (to generate raster)
+# axes, no points (to setup pdf for raster insertion)
+# everything (standard output)
+
 plot_points <- function(data, x, y, xaxt, yaxt, xlim, ylim, xlab, ylab,
                         showgrid, xgrid, ygrid, zeroline,
                         shape, shapeScheme, col, colScheme2,
@@ -282,21 +287,21 @@ plot_points <- function(data, x, y, xaxt, yaxt, xlim, ylim, xlab, ylab,
          type = "n", xaxt = "n", yaxt = "n", xlab = "", ylab = "",
          xlim = xlim, ylim = ylim,  ...)
   } else {
-  plot(data[!data$.outlier, x], data[!data$.outlier, y],
-       type = "n",
-       xaxt = xaxt, yaxt = yaxt,
-       xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, ...,
-       panel.first = {
-         if (showgrid != "") {
-           if (grepl("x", showgrid, ignore.case = TRUE)) {
-             abline(v = xgrid, col = 'grey80', lwd = 0.5)
+    plot(data[!data$.outlier, x], data[!data$.outlier, y],
+         type = "n",
+         xaxt = xaxt, yaxt = yaxt,
+         xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, ...,
+         panel.first = {
+           if (showgrid != "") {
+             if (grepl("x", showgrid, ignore.case = TRUE)) {
+               abline(v = xgrid, col = 'grey80', lwd = 0.5)
+             }
+             if (grepl("y", showgrid, ignore.case = TRUE)) {
+               abline(h = ygrid, col = 'grey80', lwd = 0.5)
+             }
            }
-           if (grepl("y", showgrid, ignore.case = TRUE)) {
-             abline(h = ygrid, col = 'grey80', lwd = 0.5)
-           }
-         }
-         if (zeroline) abline(h = 0, v = 0)
-       })
+           if (zeroline) abline(h = 0, v = 0)
+         })
   }
   
   if (!no_points) {
@@ -325,23 +330,55 @@ plot_points <- function(data, x, y, xaxt, yaxt, xlim, ylim, xlab, ylab,
   }
 }
 
+
 #' @importFrom grDevices as.raster
-insert_image <- function(temp_image, res) {
-  # need to extract coords of plot window then crop the png
+make_raster <- function(data, x, y, xaxt, yaxt, xlim, ylim, xlab, ylab,
+                        showgrid, xgrid, ygrid, zeroline,
+                        shape, shapeScheme, col, colScheme2,
+                        outline_col, outline_lwd, outlier_shape,
+                        size, sizeSwitch,
+                        width, height, mgp, legenddist,
+                        res, ...) {
+  if (!requireNamespace("magick", quietly = TRUE))
+    stop("magick package is not installed", call. = FALSE)
+  temp_dir <- tempdir()
+  temp_image <- tempfile(pattern = "scatter",
+                         tmpdir = temp_dir, fileext =".png")
+  png(temp_image, width = width/100, height = height/100 +0.75, units = "in",
+      res = res, bg = "transparent")
+  oldpar <- par(no.readonly = TRUE)
+  on.exit(par(oldpar), add = TRUE)
+  par(mgp = mgp, mar = c(4, 4, 2, legenddist), tcl = -0.3,
+      las = 1, bty = 'l', font.main = 1)
+  # plot points without axes
+  plot_points(data, x, y, xaxt, yaxt, xlim, ylim, xlab, ylab,
+              showgrid, xgrid, ygrid, zeroline,
+              shape, shapeScheme, col, colScheme2,
+              outline_col, outline_lwd, outlier_shape,
+              size, sizeSwitch, do_raster = TRUE, ...)
+  # extract coords of plot window
   pix <- par("din") * res
   plt <- par("plt")
+  dev.off()
+  
   width <- pix[1] * diff(plt[1:2]) * 0.99
   height <- pix[2] * diff(plt[3:4]) * 0.99
   x_off <- pix[1] * (plt[1] + diff(plt[1:2]) * 0.005)
   y_off <- pix[2] * (1-plt[4] + diff(plt[3:4]) * 0.005)
   
-  if (!requireNamespace("magick", quietly = TRUE))
-    stop("magick package is not installed", call. = FALSE)
+  # crop the png
   geom <- magick::geometry_area(width, height, x_off, y_off)
   image <- magick::image_read(temp_image)
   image <- magick::image_crop(image, geom)
-  image <- as.raster(image)
-  
+  as.raster(image)
+}
+
+#' @importFrom memoise memoise
+mem_make_raster <- memoise(make_raster)
+
+
+#' @importFrom graphics rasterImage
+insert_image <- function(image) {
   usr <- par("usr")  # x1, x2, y1, y2
   xd <- diff(usr[1:2]) * 0.005
   yd <- diff(usr[3:4]) * 0.005

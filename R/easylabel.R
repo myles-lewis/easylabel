@@ -162,7 +162,7 @@
 #' @importFrom DT dataTableOutput datatable formatSignif
 #' @importFrom grDevices adjustcolor pdf dev.off col2rgb rgb png svg tiff jpeg
 #' @importFrom graphics abline legend lines mtext par points polygon rect
-#' strheight strwidth text axis rasterImage
+#' strheight strwidth text axis
 #' @importFrom stats as.formula
 #' @importFrom shinycssloaders withSpinner
 #' @importFrom shinybusy show_modal_spinner remove_modal_spinner
@@ -718,23 +718,14 @@ easylabel <- function(data, x, y,
       # set up raster
       do_raster <- input$raster & input$file_type %in% c("pdf", "svg")
       if (do_raster) {
-        if (!requireNamespace("magick", quietly = TRUE))
-          stop("magick package is not installed", call. = FALSE)
-        temp_dir <- tempdir()
-        temp_image <- tempfile(pattern = "scatter",
-                               tmpdir = temp_dir, fileext =".png")
-        png(temp_image, width = width/100, height = height/100 +0.75, units = "in",
-            res = input$res, bg = "transparent")
-        oldpar <- par(no.readonly = TRUE)
-        on.exit(par(oldpar), add = TRUE)
-        par(mgp = mgp, mar = c(4, 4, 2, legenddist), tcl = -0.3,
-            las = 1, bty = 'l', font.main = 1)
-        plot_points(data, x, y, xaxt, yaxt, xlim, ylim, xlab, ylab,
-                    showgrid, xgrid, ygrid, zeroline,
-                    shape, shapeScheme, col, colScheme2,
-                    outline_col, outline_lwd, outlier_shape,
-                    size, sizeSwitch, do_raster = TRUE, ...)
-        dev.off()
+        raster_image <- mem_make_raster(data, x, y, xaxt, yaxt, xlim, ylim,
+                                        xlab, ylab,
+                                        showgrid, xgrid, ygrid, zeroline,
+                                        shape, shapeScheme, col, colScheme2,
+                                        outline_col, outline_lwd, outlier_shape,
+                                        size, sizeSwitch,
+                                        width, height, mgp, legenddist,
+                                        res = input$res, ...)
       }
       
       # save plot
@@ -752,7 +743,7 @@ easylabel <- function(data, x, y,
                   shape, shapeScheme, col, colScheme2,
                   outline_col, outline_lwd, outlier_shape,
                   size, sizeSwitch, no_points = do_raster, ...)
-      if (do_raster) insert_image(temp_image, input$res)
+      if (do_raster) insert_image(raster_image)
       eval(panel.last)
       
       if (!is.null(xticks)) {
