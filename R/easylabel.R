@@ -483,6 +483,7 @@ easylabel <- function(data, x, y,
     )
   }
   
+  # shiny app
   ui <- fluidPage(
     tabsetPanel(
       tabPanel("Plot",
