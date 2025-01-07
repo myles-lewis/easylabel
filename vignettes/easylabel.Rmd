@@ -87,7 +87,7 @@ label positions.
 * File type can be changed to export SVG, PNG, JPEG or TIFF.
 
 If dealing with a plot with very large numbers of points (>20k), then it may
-make sense to rasterise the points by clicking the "Raster points" checkbox and
+make sense to rasterize the points by clicking the "Raster points" checkbox and
 setting a resolution (dpi). This can dramatically reduce file size for plots
 with millions of points, e.g. Manhattan plots. It also makes these pdf or svg
 images load much faster. Note that if you use pdf or svg when exporting, the
