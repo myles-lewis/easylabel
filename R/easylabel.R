@@ -276,7 +276,7 @@ easylabel <- function(data, x, y,
       ylim[1] <- ylim[1] - xyspan[2] * 0.02
       ylim[2] <- ylim[2] + xyspan[2] * 0.02
     }
-    pyaxis <- c(pyaxis, range = as.list(ylim))
+    pyaxis <- c(pyaxis, list(range = ylim))
   }
   if (!is.null(xlim)) {
     notNA <- !is.na(data[,x])
@@ -288,7 +288,7 @@ easylabel <- function(data, x, y,
       xlim[1] <- xlim[1] - xyspan[1] * 0.02
       xlim[2] <- xlim[2] + xyspan[1] * 0.02
     }
-    pxaxis <- c(pxaxis, range = as.list(xlim))
+    pxaxis <- c(pxaxis, list(range = xlim))
   }
 
   # combine symbols & outlier symbol
