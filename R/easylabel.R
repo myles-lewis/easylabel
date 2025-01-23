@@ -227,7 +227,11 @@ easylabel <- function(data, x, y,
                       output_shiny = TRUE, 
                       ...) {
   name_data <- deparse(substitute(data))
-  call. <- match.call()
+  call. <- match.call(expand.dots = TRUE)
+  evalcall <- as.list(call.)[-1]
+  evalcall[c("data", "panel.last", "startLabels", "start_xy")] <- NULL
+  evalcall <- lapply(evalcall, eval.parent, n = 2L)
+  
   if (is.null(filename)) filename <- paste0("label_", name_data)
   args <- list(...)
   if (!inherits(data, 'data.frame') | inherits(data, 'tbl')) data <- as.data.frame(data)
@@ -971,10 +975,6 @@ easylabel <- function(data, x, y,
     # save state
     observeEvent(input$save_state, {
       file <- paste0(input$filename, ".rds")
-      xcall <- as.list(call.)[-1]
-      xcall[c("data", "panel.last", "startLabels",
-              "start_xy")] <- NULL
-      evalcall <- lapply(xcall, eval)
       out <- list(call = call.,
                   evalcall = evalcall,
                   startLabels = as.integer(labels$list),

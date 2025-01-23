@@ -281,11 +281,12 @@ plot_points <- function(data, x, y, xaxt, yaxt, xlim, ylim, xlab, ylab,
                         showgrid, xgrid, ygrid, zeroline,
                         shape, shapeScheme, col, colScheme2,
                         outline_col, outline_lwd, outlier_shape,
-                        size, sizeSwitch, do_raster = FALSE, no_points = FALSE, ...) {
+                        size, sizeSwitch, do_raster = FALSE, no_points = FALSE,
+                        ...) {
   if (do_raster) {
     plot(data[!data$.outlier, x], data[!data$.outlier, y],
          type = "n", xaxt = "n", yaxt = "n", xlab = "", ylab = "",
-         xlim = xlim, ylim = ylim,  ...)
+         xlim = xlim, ylim = ylim, ...)
   } else {
     plot(data[!data$.outlier, x], data[!data$.outlier, y],
          type = "n",

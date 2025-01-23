@@ -2,8 +2,9 @@ News
 =====
 
 # easylabel 0.3.3
-###### 17/1/2025
+###### 23/1/2025
 * Fixed problem with xlim and ylim (thanks to RC2754).
+* Fixed save state in easyVolcano etc.
 
 # easylabel 0.3.2
 ###### 6/1/2025
