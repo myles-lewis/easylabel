@@ -527,7 +527,7 @@ easylabel <- function(data, x, y,
                         actionButton("add_batch", "Add batch"),
                         actionButton("clear", "Clear all"),
                         actionButton("save_state", "Save state", icon = icon("floppy-disk")),
-                        checkboxInput("embed_data", "Embed data")
+                        checkboxInput("embed_data", "Embed data", value = TRUE)
                         ),
                  column(4,
                         textInput("filename", "Filename", filename),
