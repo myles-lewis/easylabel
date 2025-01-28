@@ -51,11 +51,10 @@ add_labels <- function(p, labs) {
   } 
   # 2d plot
   annot <- annot_labs(labs, sx, sy)
-  p <- p %>%
+  p %>%
     layout(annotations = annot) %>%
     config(edits = list(annotationTail = TRUE),
            toImageButtonOptions = list(format = "svg"))
-  p
 }
 
 
