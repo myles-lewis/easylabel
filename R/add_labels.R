@@ -70,7 +70,7 @@ annot_labs <- function(labs, sx, sy, sz = NULL) {
 }
 
 
-#' Change plotly font to arial
+#' Change plotly font to Arial
 #' 
 #' @param p A plotly object
 #' @param size Font size

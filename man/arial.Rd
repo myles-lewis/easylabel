@@ -2,7 +2,7 @@
 % Please edit documentation in R/add_labels.R
 \name{arial}
 \alias{arial}
-\title{Change plotly font to arial}
+\title{Change plotly font to Arial}
 \usage{
 arial(p, size = 14)
 }
@@ -15,5 +15,5 @@ arial(p, size = 14)
 A plotly object
 }
 \description{
-Change plotly font to arial
+Change plotly font to Arial
 }
