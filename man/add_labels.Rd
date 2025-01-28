@@ -15,5 +15,10 @@ add_labels(p, labs)
 A plotly plot with added labels
 }
 \description{
-Adds labels to a plotly 2d or 3d scatter plot.
+Adds labels to a plotly 2d or 3d scatter plot. The labels can be dragged.
+}
+\details{
+Labels are identified by searching the rownames of the embedded marker data
+within the plotly object. The plotly mode bar camera icon is set to export to
+svg by default.
 }
