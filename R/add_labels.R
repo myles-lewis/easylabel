@@ -50,6 +50,16 @@ add_labels <- function(p, labs) {
     z <- gsub("`", "", z)
     sz <- dat[ind, z]
     annot <- annot_labs(labs, sx, sy, sz)
+    
+    # check for existing annotation
+    if ("annotations" %in% names(p$x$layoutAttrs[[mlayer]]$scene)) {
+      annot1 <- p$x$layoutAttrs[[mlayer]]$scene$annotations
+      if (length(annot1) == 0) {
+        # volcano3D list() patch
+        p$x$layoutAttrs[[mlayer]]$scene$annotations <- NULL
+      } else annot <- c(annot1, annot)
+    }
+    
     p <- p %>%
       layout(scene = list(annotations = annot)) %>%
       config(edits = list(annotationTail = TRUE),
