@@ -21,7 +21,7 @@
 
 add_labels <- function(p, labs) {
   getmode <- vapply(p$x$attr, "[[", character(1), "mode")
-  mlayer <- which(getmode == "markers")
+  mlayer <- names(getmode)[which(getmode == "markers")]
   if (length(mlayer) == 0) stop("no markers")
   if (length(mlayer) > 1) stop("more than 1 marker layer")
   
