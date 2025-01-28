@@ -57,7 +57,7 @@ add_labels <- function(p, labs) {
       if (length(annot1) == 0) {
         # volcano3D list() patch
         p$x$layoutAttrs[[mlayer]]$scene$annotations <- NULL
-      } else annot <- c(annot1, annot)
+      }
     }
     
     p <- p %>%
@@ -65,9 +65,10 @@ add_labels <- function(p, labs) {
       config(edits = list(annotationTail = TRUE),
              toImageButtonOptions = list(format = "svg"))
     return(p)
-  } 
+  }
   # 2d plot
   annot <- annot_labs(labs, sx, sy)
+  
   p %>%
     layout(annotations = annot) %>%
     config(edits = list(annotationTail = TRUE),
