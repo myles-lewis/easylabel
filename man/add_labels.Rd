@@ -15,5 +15,5 @@ add_labels(p, labs)
 A plotly plot with added labels
 }
 \description{
-Add labels to a plotly scatter plot
+Adds labels to a plotly 2d or 3d scatter plot.
 }

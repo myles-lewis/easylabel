@@ -1,24 +1,31 @@
 
 #' Add labels to a plotly scatter plot
 #' 
+#' Adds labels to a plotly 2d or 3d scatter plot.
+#' 
 #' @param p A plotly scatter plot object
 #' @param labs Character vector of labels to match
 #' @returns A plotly plot with added labels
 #' @export
 
 add_labels <- function(p, labs) {
-  dat <- p$x$visdat[[1]]()
-  x <- p$x$attrs[[1]]$x
+  getmode <- vapply(p$x$attr, "[[", character(1), "mode")
+  mlayer <- which(getmode == "markers")
+  if (length(mlayer) == 0) stop("no markers")
+  if (length(mlayer) > 1) stop("more than 1 marker layer")
+  
+  dat <- p$x$visdat[[mlayer]]()
+  x <- p$x$attrs[[mlayer]]$x
   x <- as.character(x)[2]
   x <- gsub("`", "", x)
-  y <- p$x$attrs[[1]]$y
+  y <- p$x$attrs[[mlayer]]$y
   y <- as.character(y)[2]
   y <- gsub("`", "", y)
-  z <- p$x$attrs[[1]]$z
+  z <- p$x$attrs[[mlayer]]$z
   
   if (any(miss <- !labs %in% rownames(dat))) {
     labs <- labs[!miss]
-    if (length(labs) == 0) stop("No labels found", call. = FALSE)
+    if (length(labs) == 0) stop("no labels found", call. = FALSE)
     message("Labels not found: ", paste(labs[miss], collapse = ", "))
   }
   
