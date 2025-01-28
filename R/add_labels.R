@@ -9,6 +9,9 @@
 #' 
 #' @param p A plotly scatter plot object
 #' @param labs Character vector of labels to match
+#' @param plotGlPixelRatio Integer passed to plotly.js config which controls
+#'   pixel resolution of webGl rendering. Larger values increase resolution of
+#'   points as well as file size.
 #' @returns A plotly plot with added labels
 #' @examples
 #' library(plotly)
@@ -19,7 +22,8 @@
 #' p %>% add_labels(c("Mazda RX4", "Fiat 128"))
 #' @export
 
-add_labels <- function(p, labs) {
+add_labels <- function(p, labs,
+                       plotGlPixelRatio = 8) {
   getmode <- vapply(p$x$attr, "[[", character(1), "mode")
   mlayer <- names(getmode)[which(getmode == "markers")]
   if (length(mlayer) == 0) stop("no markers")
@@ -61,6 +65,7 @@ add_labels <- function(p, labs) {
     p <- p %>%
       layout(scene = list(annotations = annot)) %>%
       config(edits = list(annotationTail = TRUE),
+             plotGlPixelRatio = plotGlPixelRatio,
              toImageButtonOptions = list(format = "svg"))
     return(p)
   }
@@ -70,6 +75,7 @@ add_labels <- function(p, labs) {
   p %>%
     layout(annotations = annot) %>%
     config(edits = list(annotationTail = TRUE),
+           plotGlPixelRatio = plotGlPixelRatio,
            toImageButtonOptions = list(format = "svg"))
 }
 
@@ -101,5 +107,5 @@ annot_labs <- function(labs, sx, sy, sz = NULL) {
 #' @export
 
 arial <- function(p, size = 14) {
-  p %>% layout(font = list(family = "arial", size = size))
+  p %>% layout(font = list(family = "arial", size = size, color = "black"))
 } 

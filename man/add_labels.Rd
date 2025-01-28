@@ -4,12 +4,16 @@
 \alias{add_labels}
 \title{Add labels to a plotly scatter plot}
 \usage{
-add_labels(p, labs)
+add_labels(p, labs, plotGlPixelRatio = 8)
 }
 \arguments{
 \item{p}{A plotly scatter plot object}
 
 \item{labs}{Character vector of labels to match}
+
+\item{plotGlPixelRatio}{Integer passed to plotly.js config which controls
+pixel resolution of webGl rendering. Larger values increase resolution of
+points as well as file size.}
 }
 \value{
 A plotly plot with added labels
