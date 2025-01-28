@@ -22,3 +22,11 @@ Labels are identified by searching the rownames of the embedded marker data
 within the plotly object. The plotly mode bar camera icon is set to export to
 svg by default.
 }
+\examples{
+library(plotly)
+data(mtcars)
+
+p <- plot_ly(mtcars, x = ~mpg, y = ~wt, color = ~cyl,
+             type = 'scatter', mode = 'markers')
+p \%>\% add_labels(c("Mazda RX4", "Fiat 128"))
+}

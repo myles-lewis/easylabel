@@ -17,3 +17,12 @@ A plotly object
 \description{
 Change plotly font to Arial
 }
+\examples{
+library(plotly)
+data(mtcars)
+
+p <- plot_ly(mtcars, x = ~mpg, y = ~wt, color = ~cyl,
+             type = 'scatter', mode = 'markers')
+p \%>\% arial
+p \%>\% arial(18)
+}

@@ -10,6 +10,13 @@
 #' @param p A plotly scatter plot object
 #' @param labs Character vector of labels to match
 #' @returns A plotly plot with added labels
+#' @examples
+#' library(plotly)
+#' data(mtcars)
+#' 
+#' p <- plot_ly(mtcars, x = ~mpg, y = ~wt, color = ~cyl,
+#'              type = 'scatter', mode = 'markers')
+#' p %>% add_labels(c("Mazda RX4", "Fiat 128"))
 #' @export
 
 add_labels <- function(p, labs) {
@@ -74,6 +81,14 @@ annot_labs <- function(labs, sx, sy, sz = NULL) {
 #' @param p A plotly object
 #' @param size Font size
 #' @returns A plotly object
+#' @examples
+#' library(plotly)
+#' data(mtcars)
+#' 
+#' p <- plot_ly(mtcars, x = ~mpg, y = ~wt, color = ~cyl,
+#'              type = 'scatter', mode = 'markers')
+#' p %>% arial
+#' p %>% arial(18)
 #' @export
 
 arial <- function(p, size = 14) {
