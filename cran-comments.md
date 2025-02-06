@@ -1,6 +1,9 @@
 ## R CMD check results
 0 errors ✓ | 0 warnings ✓ | 0 notes ✓
 
+## Update
+* Mostly bugfixes
+
 ## Update to version 0.3.2
 Added new features:
 * Save and restore settings from within the shiny interface.
