@@ -1,6 +1,11 @@
 News
 =====
 
+# easylabel 0.3.4
+###### 21/3/2025
+* Improvements to `add_labels()` to handle a plotly in which a dataframe has not 
+been supplied.
+
 # easylabel 0.3.3
 ###### 28/1/2025
 * Fixed problem with xlim and ylim (thanks to RC2754).
