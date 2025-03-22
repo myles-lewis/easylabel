@@ -55,8 +55,6 @@ add_labels <- function(p, labs,
   if (any(miss)) message("Labels not found: ", paste(labs[miss], collapse = ", "))
   
   if (empty_dat) {
-    x <- p$x$attrs[[mlayer]]$x
-    y <- p$x$attrs[[mlayer]]$y
     sx <- x[ind]
     sy <- y[ind]
   } else {
