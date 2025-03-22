@@ -31,28 +31,48 @@ add_labels <- function(p, labs,
   
   dat <- p$x$visdat[[mlayer]]()
   x <- p$x$attrs[[mlayer]]$x
-  x <- as.character(x)[2]
-  x <- gsub("`", "", x)
   y <- p$x$attrs[[mlayer]]$y
-  y <- as.character(y)[2]
-  y <- gsub("`", "", y)
   z <- p$x$attrs[[mlayer]]$z
+  text <- p$x$attrs[[mlayer]]$text
   
-  if (any(miss <- !labs %in% rownames(dat))) {
-    labs <- labs[!miss]
-    if (length(labs) == 0) stop("no labels found", call. = FALSE)
-    message("Labels not found: ", paste(labs[miss], collapse = ", "))
+  empty_dat <- nrow(dat) == 0
+  if (empty_dat) {
+    # no dataframe
+    ind <- match(labs, text)
+    miss <- is.na(ind)
+    ind <- ind[!miss]
+  } else {
+    # dataframe
+    x <- as.character(x)[2]
+    x <- gsub("`", "", x)
+    y <- as.character(y)[2]
+    y <- gsub("`", "", y)
+    ind <- match(labs, rownames(dat))
+    miss <- is.na(ind)
+    ind <- ind[!miss]
   }
+  if (length(ind) == 0) stop("no labels found", call. = FALSE)
+  if (any(miss)) message("Labels not found: ", paste(labs[miss], collapse = ", "))
   
-  ind <- match(labs, rownames(dat))
-  sx <- dat[ind, x]
-  sy <- dat[ind, y]
+  if (empty_dat) {
+    x <- p$x$attrs[[mlayer]]$x
+    y <- p$x$attrs[[mlayer]]$y
+    sx <- x[ind]
+    sy <- y[ind]
+  } else {
+    sx <- dat[ind, x]
+    sy <- dat[ind, y]
+  }
   
   if (!is.null(z)) {
     # 3d plot
-    z <- as.character(z)[2]
-    z <- gsub("`", "", z)
-    sz <- dat[ind, z]
+    if (empty_dat) {
+      sz <- z[ind]
+    } else {
+      z <- as.character(z)[2]
+      z <- gsub("`", "", z)
+      sz <- dat[ind, z]
+    }
     annot <- annot_labs(labs, sx, sy, sz)
     
     # check for existing annotation
