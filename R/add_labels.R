@@ -52,7 +52,10 @@ add_labels <- function(p, labs,
     ind <- ind[!miss]
   }
   if (length(ind) == 0) stop("no labels found", call. = FALSE)
-  if (any(miss)) message("Labels not found: ", paste(labs[miss], collapse = ", "))
+  if (any(miss)) {
+    message("Labels not found: ", paste(labs[miss], collapse = ", "))
+    labs <- labs[!miss]
+  }
   
   if (empty_dat) {
     sx <- x[ind]
